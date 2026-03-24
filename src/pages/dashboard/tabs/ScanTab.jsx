@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { 
-    Globe, Target, ShieldAlert, Zap, Loader2, 
+import {
+    Globe, Target, ShieldAlert, Zap, Loader2,
     CheckCircle2, Hash, Settings2, Shield, Server,
     Activity, Cpu, Lock
 } from 'lucide-react';
@@ -9,21 +9,22 @@ import API from "../../../services/api";
 
 const ScanTab = () => {
     const navigate = useNavigate();
-    const [step, setStep] = useState(1); 
+    const [step, setStep] = useState(1);
     const [domainInput, setDomainInput] = useState("");
     const [assets, setAssets] = useState([]);
     const [loading, setLoading] = useState(false);
-    
+
     const [selectedAssets, setSelectedAssets] = useState([]);
     const [scanType, setScanType] = useState("soft");
 
     // Technical Discovery State
     const [expandedAssetId, setExpandedAssetId] = useState(null);
-    const [assetServices, setAssetServices] = useState({}); 
+    const [assetServices, setAssetServices] = useState({});
     const [loadingServices, setLoadingServices] = useState(false);
 
     // Business Context State
     const [assetContexts, setAssetContexts] = useState({});
+    const [searchTerm, setSearchTerm] = useState("");
 
     const handleDiscover = async (e) => {
         e.preventDefault();
@@ -33,7 +34,7 @@ const ScanTab = () => {
             const domainId = domainRes.data._id;
             await API.post(`/asset-discovery/${domainId}/discover`);
             const assetsRes = await API.get(`/asset-discovery/${domainId}/assets`);
-            
+
             const fetchedAssets = assetsRes.data.assets;
             setAssets(fetchedAssets);
 
@@ -105,6 +106,11 @@ const ScanTab = () => {
         }
     };
 
+    const filteredAssets = assets.filter(asset =>
+        asset.host?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        asset.ip?.includes(searchTerm)
+    );
+
     return (
         <div className="space-y-6 pb-20 animate-in fade-in duration-500">
             {step === 1 ? (
@@ -115,7 +121,7 @@ const ScanTab = () => {
                     </div>
                     <form onSubmit={handleDiscover} className="relative group max-w-2xl mx-auto">
                         <Globe className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 w-6 h-6 group-focus-within:text-orange-500 transition-colors" />
-                        <input 
+                        <input
                             type="text" required value={domainInput} onChange={(e) => setDomainInput(e.target.value)}
                             placeholder="e.g. internal-admin.net"
                             className="w-full bg-white border-2 border-slate-100 rounded-3xl py-6 pl-16 pr-40 text-lg font-bold shadow-2xl focus:outline-none focus:border-orange-400 transition-all"
@@ -130,13 +136,13 @@ const ScanTab = () => {
                     {/* Control Bar */}
                     <div className="bg-[#0f172a] p-6 rounded-[2.5rem] text-white shadow-xl flex flex-col md:flex-row justify-between items-center gap-6">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 bg-slate-800 rounded-2xl text-orange-500"><Settings2 size={24}/></div>
+                            <div className="p-3 bg-slate-800 rounded-2xl text-orange-500"><Settings2 size={24} /></div>
                             <div>
                                 <h3 className="font-black uppercase text-sm leading-none">Scan Engine</h3>
                                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Audit Mode: {scanType}</p>
                             </div>
                         </div>
-                        
+
                         <div className="flex bg-slate-800 p-1.5 rounded-2xl border border-slate-700">
                             {['soft', 'deep'].map(type => (
                                 <button key={type} onClick={() => setScanType(type)} className={`px-8 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${scanType === type ? 'bg-orange-500 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>
@@ -145,7 +151,7 @@ const ScanTab = () => {
                             ))}
                         </div>
 
-                        <button 
+                        <button
                             onClick={handleStartScan}
                             disabled={selectedAssets.length === 0 || loading}
                             className="bg-white hover:bg-orange-500 text-slate-900 hover:text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-3 transition-all disabled:opacity-20"
@@ -155,11 +161,28 @@ const ScanTab = () => {
                         </button>
                     </div>
 
+                    {/* Search and Selection Summary */}
+                    <div className="flex flex-col md:flex-row justify-between items-end gap-4 px-4">
+                        <div className="relative w-full md:w-96">
+                            <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                            <input
+                                type="text"
+                                placeholder="Search by host or IP..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                            />
+                        </div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Showing {filteredAssets.length} of {assets.length} Assets — <span className="text-orange-500">{selectedAssets.length} Selected</span>
+                        </p>
+                    </div>
+
                     {/* Assets Inventory */}
                     <div className="grid grid-cols-1 gap-6">
-                        {assets.map((asset) => (
+                        {filteredAssets.map((asset) => (
                             <div key={asset._id} className={`bg-white border-2 rounded-[3rem] p-8 transition-all flex flex-col xl:flex-row gap-8 ${selectedAssets.includes(asset._id) ? 'border-orange-500 shadow-xl' : 'border-slate-100 shadow-sm'}`}>
-                                
+
                                 {/* Asset Header */}
                                 <div className="xl:w-1/4 space-y-4">
                                     <div className="flex items-start gap-4">
@@ -174,8 +197,8 @@ const ScanTab = () => {
                                             <p className="text-xs font-mono text-slate-400 font-bold mt-1">{asset.ip}</p>
                                         </div>
                                     </div>
-                                    
-                                    <button 
+
+                                    <button
                                         onClick={() => toggleServices(asset._id)}
                                         className="w-full bg-slate-50 hover:bg-slate-100 py-3 rounded-2xl text-[9px] font-black uppercase text-slate-500 flex items-center justify-center gap-2 transition-all"
                                     >
@@ -197,12 +220,12 @@ const ScanTab = () => {
                                 {/* Environmental CIA Configuration */}
                                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6 bg-slate-50/50 p-8 rounded-[2.5rem]">
                                     {[
-                                        { key: 'confidentialityWeight', label: 'Confidentiality', icon: <Lock size={12}/> },
-                                        { key: 'integrityWeight', label: 'Integrity', icon: <Activity size={12}/> },
-                                        { key: 'availabilityWeight', label: 'Availability', icon: <Zap size={12}/> },
-                                        { key: 'assetCriticality', label: 'Criticality', icon: <Shield size={12}/> },
-                                        { key: 'slaRequirement', label: 'SLA Priority', icon: <Cpu size={12}/> },
-                                        { key: 'dependentServices', label: 'Node Dependencies', icon: <Hash size={12}/> }
+                                        { key: 'confidentialityWeight', label: 'Confidentiality', icon: <Lock size={12} /> },
+                                        { key: 'integrityWeight', label: 'Integrity', icon: <Activity size={12} /> },
+                                        { key: 'availabilityWeight', label: 'Availability', icon: <Zap size={12} /> },
+                                        { key: 'assetCriticality', label: 'Criticality', icon: <Shield size={12} /> },
+                                        { key: 'slaRequirement', label: 'SLA Priority', icon: <Cpu size={12} /> },
+                                        { key: 'dependentServices', label: 'Node Dependencies', icon: <Hash size={12} /> }
                                     ].map(item => (
                                         <div key={item.key} className="space-y-3">
                                             <div className="flex justify-between items-center">
@@ -213,8 +236,8 @@ const ScanTab = () => {
                                                     {assetContexts[asset._id][item.key]}
                                                 </span>
                                             </div>
-                                            <input 
-                                                type="range" min="0" max="10" 
+                                            <input
+                                                type="range" min="0" max="10"
                                                 disabled={!selectedAssets.includes(asset._id)}
                                                 value={assetContexts[asset._id][item.key]}
                                                 onChange={(e) => updateAssetContext(asset._id, item.key, Number(e.target.value))}
@@ -225,6 +248,11 @@ const ScanTab = () => {
                                 </div>
                             </div>
                         ))}
+                        {filteredAssets.length === 0 && (
+                            <div className="text-center py-20 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200">
+                                <p className="text-slate-400 font-bold uppercase text-xs tracking-widest">No assets match your search</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

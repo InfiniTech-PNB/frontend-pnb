@@ -32,6 +32,14 @@ const ScanResultsTab = () => {
     const runFullOrchestration = async () => {
         setLoading(true);
         try {
+            setStatusMsg("Fetching cryptographic scan results...");
+            const res = await API.get(`/scan/${scanId}/results`);
+            setScanResults(res.data);
+
+            if (res.data.length === 0) {
+                throw new Error("SCAN_EMPTY");
+            }
+
             setStatusMsg("Synchronizing Cryptographic Bill of Materials...");
             let currentCbom;
             try {
@@ -49,11 +57,10 @@ const ScanResultsTab = () => {
             const recGenRes = await API.post(`/scan/${scanId}/recommendations`);
             setAssetPlans(recGenRes.data);
 
-            setStatusMsg("Finalizing ML risk classifications...");
-            const res = await API.get(`/scan/${scanId}/results`);
-            setScanResults(res.data);
-
         } catch (err) {
+            if (err.message === "SCAN_EMPTY") {
+                setStatusMsg("No data found for this scan ID.");
+            }
             console.error("Orchestration Error:", err);
         } finally {
             setLoading(false);
@@ -169,19 +176,81 @@ const ScanResultsTab = () => {
                                     <div className="px-10 pb-10 animate-in slide-in-from-top-4 duration-300">
                                         <div className="grid grid-cols-1 xl:grid-cols-3 gap-10 border-t border-slate-50 pt-10">
                                             <div className="space-y-4">
-                                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><LockIcon size={14} /> Node Crypto</h4>
+                                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                    <LockIcon size={14} /> Node Crypto
+                                                </h4>
                                                 <div className="bg-slate-900 rounded-[2.5rem] p-7 text-slate-300 text-[11px] font-bold space-y-4 shadow-2xl">
-                                                    <div className="flex justify-between items-center"><span className="text-slate-500 uppercase text-[9px]">TLS Version</span> <span className="bg-orange-500/10 text-orange-400 px-2 py-1 rounded-md">{res.tlsVersion}</span></div>
-                                                    <div className="flex justify-between items-center"><span className="text-slate-500 uppercase text-[9px]">Cipher Suite</span> <span className="text-white truncate max-w-[150px]">{res.cipher}</span></div>
-                                                    <div className="flex justify-between items-center"><span className="text-slate-500 uppercase text-[9px]">KEX / Size</span> <span className="text-white">{res.keyExchange} ({res.keySize}b)</span></div>
-                                                    <div className="flex justify-between items-center"><span className="text-slate-500 uppercase text-[9px]">PFS Enabled</span> <span className={res.pfsSupported ? 'text-emerald-400' : 'text-red-400'}>{res.pfsSupported ? 'YES' : 'NO'}</span></div>
+                                                    {/* Existing Fields */}
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-slate-500 uppercase text-[9px]">TLS Version</span>
+                                                        <span className="bg-orange-500/10 text-orange-400 px-2 py-1 rounded-md">{res.tlsVersion}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-slate-500 uppercase text-[9px]">Cipher Suite</span>
+                                                        <span className="text-white truncate max-w-[150px]">{res.cipher}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-slate-500 uppercase text-[9px]">KEX / Size</span>
+                                                        <span className="text-white">{res.keyExchange} ({res.keySize}b)</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-slate-500 uppercase text-[9px]">PFS Enabled</span>
+                                                        <span className={res.pfsSupported ? 'text-emerald-400' : 'text-red-400'}>{res.pfsSupported ? 'YES' : 'NO'}</span>
+                                                    </div>
+
+                                                    {/* --- NEW PQC FIELDS WITH CONDITIONAL CHECKS --- */}
+
+                                                    {/* 1. Negotiated KEX (Single String check) */}
+                                                    {res.pqcNegotiatedKex && (
+                                                        <div className="flex justify-between items-center pt-2 border-t border-slate-800/50">
+                                                            <span className="text-emerald-500 uppercase text-[9px]">PQC Negotiated</span>
+                                                            <span className="text-emerald-400 font-mono">{res.pqcNegotiatedKex}</span>
+                                                        </div>
+                                                    )}
+
+                                                    {/* 2. Supported KEX (Array check) */}
+                                                    {res.pqcSupportedKex && res.pqcSupportedKex.length > 0 && (
+                                                        <div className="pt-2 border-t border-slate-800/50">
+                                                            <span className="text-slate-500 uppercase text-[9px] block mb-2">Supported PQC Groups</span>
+                                                            <div className="flex flex-wrap gap-1">
+                                                                {res.pqcSupportedKex.map((algo, i) => (
+                                                                    <span key={i} className="bg-orange-500/10 text-orange-400 text-[8px] px-2 py-0.5 rounded border border-orange-500/20">
+                                                                        {algo}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* 3. Negotiated Signature (Single String check) */}
+                                                    {res.pqcNegotiatedSig && (
+                                                        <div className="flex justify-between items-center pt-2 border-t border-slate-800/50">
+                                                            <span className="text-emerald-500 uppercase text-[9px]">PQC Signature</span>
+                                                            <span className="text-emerald-400 font-mono">{res.pqcNegotiatedSig}</span>
+                                                        </div>
+                                                    )}
+
+                                                    {/* 4. Supported Signatures (Array check) */}
+                                                    {res.pqcSupportedSig && res.pqcSupportedSig.length > 0 && (
+                                                        <div className="pt-2 border-t border-slate-800/50">
+                                                            <span className="text-slate-500 uppercase text-[9px] block mb-2">Supported PQC Sig Algos</span>
+                                                            <div className="flex flex-wrap gap-1">
+                                                                {res.pqcSupportedSig.map((sig, i) => (
+                                                                    <span key={i} className="bg-blue-500/10 text-blue-400 text-[8px] px-2 py-0.5 rounded border border-blue-500/20">
+                                                                        {sig}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Existing Signature Algorithm */}
                                                     <div className="pt-2 border-t border-slate-800">
-                                                        <span className="text-slate-500 uppercase text-[9px] block mb-2">Signature Algorithm</span>
+                                                        <span className="text-slate-500 uppercase text-[9px] block mb-2">Classical Signature</span>
                                                         <span className="text-slate-400 italic font-medium">{res.signatureAlgorithm}</span>
                                                     </div>
                                                 </div>
                                             </div>
-
                                             <div className="space-y-4">
                                                 <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><BarChart3 size={14} /> ML Weight Distribution</h4>
                                                 <div className="grid grid-cols-2 gap-4">
