@@ -79,6 +79,8 @@ frontend-pnb/
 ├── tailwind.config.js   # Theme configuration
 └── package.json         # Dependencies
 
+---
+
 ## ⚙️ Setup & Installation
 
 ### Prerequisites
@@ -96,13 +98,14 @@ frontend-pnb/
    npm install
 
 3. Configure environment variables:
-    Create a .env file in the root directory:
    ```env
    VITE_API_BASE_URL=http://localhost:5000/api
 
 4. Start Development Server:
    ```bash
    npm run dev
+
+---
 
 ## 📊 Application Modules
 
