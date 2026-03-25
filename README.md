@@ -65,19 +65,18 @@ It enables security administrators to monitor infrastructure **Quantum Readiness
 
 ## 📂 Project Structure
 
-```text
-frontend-pnb/
-├── public/              # Static assets and branding
-├── src/
-│   ├── assets/          # Images and global styles
-│   ├── components/      # Reusable UI components
-│   ├── layouts/         # Layout wrappers (Auth, Dashboard)
-│   ├── pages/           # Views (Scan, History, Results, Chat)
-│   ├── services/        # API configuration (Axios)
-│   ├── utils/           # Helpers (CIA scoring, formatters)
-│   └── App.jsx          # Root component & protected routes
-├── tailwind.config.js   # Theme configuration
-└── package.json         # Dependencies
+    frontend-pnb/
+    ├── public/              # Static assets and branding
+    ├── src/
+    │   ├── assets/          # Images and global styles
+    │   ├── components/      # Reusable UI components
+    │   ├── layouts/         # Layout wrappers (Auth, Dashboard)
+    │   ├── pages/           # Views (Scan, History, Results, Chat)
+    │   ├── services/        # API configuration (Axios)
+    │   ├── utils/           # Helpers (CIA scoring, formatters)
+    │   └── App.jsx          # Root component & protected routes
+    ├── tailwind.config.js   # Theme configuration
+    └── package.json         # Dependencies
 
 ---
 
@@ -89,19 +88,19 @@ frontend-pnb/
 
 ### Setup
 
-1. Navigate to the frontend folder:
+1. **Navigate to the frontend folder**:
    ```bash
    cd frontend-pnb
 
-2. Install dependencies:
+2. **Install dependencies**:
    ```bash
    npm install
 
-3. Configure environment variables:
+3. **Configure environment variables**:
    ```env
    VITE_API_BASE_URL=http://localhost:5000/api
 
-4. Start Development Server:
+4. **Start Development Server**:
    ```bash
    npm run dev
 
