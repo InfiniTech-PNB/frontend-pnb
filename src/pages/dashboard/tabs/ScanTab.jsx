@@ -41,7 +41,7 @@ const ScanTab = () => {
             const initialContexts = {};
             fetchedAssets.forEach(a => {
                 initialContexts[a._id] = {
-                    assetCriticality: 3,
+                    assetCriticality: 5,
                     confidentialityWeight: 5,
                     integrityWeight: 5,
                     availabilityWeight: 5,
@@ -69,7 +69,8 @@ const ScanTab = () => {
             setLoadingServices(true);
             try {
                 const res = await API.get(`/services/${assetId}/services`);
-                setAssetServices(prev => ({ ...prev, [assetId]: res.data }));
+                const serviceData = Array.isArray(res.data) ? res.data : (res.data.services || []);
+                setAssetServices(prev => ({ ...prev, [assetId]: serviceData }));
             } catch (err) {
                 console.error("Failed to fetch services", err);
             } finally {
@@ -93,7 +94,7 @@ const ScanTab = () => {
                 scanType,
                 assets: selectedAssets.map(id => ({
                     assetId: id,
-                    business_context: assetContexts[id]
+                    businessContext: assetContexts[id]
                 }))
             };
             const res = await API.post("/scan", payload);
@@ -191,7 +192,7 @@ const ScanTab = () => {
                                         </div>
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <p className="font-black text-slate-900 text-lg truncate leading-none">{asset.host}</p>
+                                                <p className="font-black text-slate-900 text-lg leading-none">{asset.host}</p>
                                                 <span className="bg-slate-100 text-slate-500 text-[8px] px-1.5 py-0.5 rounded font-black uppercase">{asset.assetType}</span>
                                             </div>
                                             <p className="text-xs font-mono text-slate-400 font-bold mt-1">{asset.ip}</p>
@@ -225,7 +226,8 @@ const ScanTab = () => {
                                         { key: 'availabilityWeight', label: 'Availability', icon: <Zap size={12} /> },
                                         { key: 'assetCriticality', label: 'Criticality', icon: <Shield size={12} /> },
                                         { key: 'slaRequirement', label: 'SLA Priority', icon: <Cpu size={12} /> },
-                                        { key: 'dependentServices', label: 'Node Dependencies', icon: <Hash size={12} /> }
+                                        { key: 'dependentServices', label: 'Node Dependencies', icon: <Hash size={12} /> },
+                                        { key: 'remediationDifficulty', label: 'Remediation Effort', icon: <Settings2 size={12} /> }
                                     ].map(item => (
                                         <div key={item.key} className="space-y-3">
                                             <div className="flex justify-between items-center">
@@ -241,7 +243,10 @@ const ScanTab = () => {
                                                 disabled={!selectedAssets.includes(asset._id)}
                                                 value={assetContexts[asset._id][item.key]}
                                                 onChange={(e) => updateAssetContext(asset._id, item.key, Number(e.target.value))}
-                                                className="w-full accent-orange-500 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                                className={`w-full h-1.5 rounded-lg appearance-none cursor-pointer transition-all ${selectedAssets.includes(asset._id)
+                                                        ? 'accent-orange-500 bg-slate-200'
+                                                        : 'accent-slate-300 bg-slate-100 opacity-30'
+                                                    }`}
                                             />
                                         </div>
                                     ))}

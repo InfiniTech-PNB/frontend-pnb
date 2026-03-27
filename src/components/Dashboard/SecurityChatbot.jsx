@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Send, X, Bot, User, Loader2, Minimize2 } from 'lucide-react';
+import { MessageSquare, Send, Bot, Loader2, Minimize2 } from 'lucide-react';
 import API from "../../services/api";
 
 const SecurityChatbot = ({ scanId }) => {
@@ -9,14 +9,12 @@ const SecurityChatbot = ({ scanId }) => {
     const [loading, setLoading] = useState(false);
     const scrollRef = useRef(null);
 
-    // 1. Load chat history when scanId changes or chat opens
     useEffect(() => {
         if (scanId && isOpen) {
             fetchChatHistory();
         }
     }, [scanId, isOpen]);
 
-    // Auto-scroll to bottom
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
@@ -24,7 +22,6 @@ const SecurityChatbot = ({ scanId }) => {
     const fetchChatHistory = async () => {
         try {
             const res = await API.get(`/chatbot/${scanId}`);
-            // Map backend Chat model to local state
             const history = res.data.flatMap(chat => [
                 { role: 'user', text: chat.question },
                 { role: 'bot', text: chat.answer }
@@ -54,82 +51,90 @@ const SecurityChatbot = ({ scanId }) => {
         }
     };
 
+    // --- Parsing Logic for New Format ---
+    const renderBotMessage = (text) => {
+        // Regex to split by the new headers
+        const sections = text.split(/(Answer:|Key Findings:|Technical Reasoning:|PQC Assessment:|Risk Evaluation:|Recommendations:)/g);
+        
+        return (
+            <div className="space-y-3">
+                {sections.map((part, index) => {
+                    const trimmed = part.trim();
+                    if (!trimmed) return null;
+
+                    // Header Styling
+                    const headerMap = {
+                        "Answer:": { label: "Direct Answer", color: "text-amber-600" },
+                        "Key Findings:": { label: "Key Findings", color: "text-blue-600" },
+                        "Technical Reasoning:": { label: "Technical Reasoning", color: "text-slate-500" },
+                        "PQC Assessment:": { label: "PQC Assessment", color: "text-purple-600" },
+                        "Risk Evaluation:": { label: "Risk Evaluation", color: "text-red-600" },
+                        "Recommendations:": { label: "Strategic Steps", color: "text-emerald-600" }
+                    };
+
+                    if (headerMap[trimmed]) {
+                        return (
+                            <div key={index} className={`text-[10px] font-black uppercase tracking-tighter mt-3 first:mt-0 ${headerMap[trimmed].color}`}>
+                                {headerMap[trimmed].label}
+                            </div>
+                        );
+                    }
+
+                    // Content Styling (Bullet points and standard text)
+                    const isContentAfterHeader = index > 0 && headerMap[sections[index - 1].trim()];
+                    
+                    return (
+                        <div key={index} className={`text-xs leading-relaxed ${isContentAfterHeader ? 'text-slate-700 font-medium' : 'text-slate-500'}`}>
+                            {trimmed.split('\n').map((line, lIdx) => (
+                                <p key={lIdx} className={line.startsWith('-') ? "ml-2 pl-2 border-l-2 border-slate-100 my-1" : "mb-1"}>
+                                    {line}
+                                </p>
+                            ))}
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
+
     if (!isOpen) return (
-        <button
-            onClick={() => setIsOpen(true)}
-            className="fixed bottom-8 right-8 bg-slate-900 text-amber-500 p-4 rounded-full shadow-2xl hover:scale-110 transition-all border border-amber-500/20 z-50"
-        >
+        <button onClick={() => setIsOpen(true)} className="fixed bottom-8 right-8 bg-slate-900 text-amber-500 p-4 rounded-full shadow-2xl hover:scale-110 transition-all border border-amber-500/20 z-50">
             <MessageSquare size={24} />
         </button>
     );
 
     return (
-        <div className="fixed bottom-8 right-8 w-96 h-[500px] bg-white border border-slate-200 rounded-[2rem] shadow-2xl flex flex-col overflow-hidden z-50 animate-in slide-in-from-bottom-4 duration-300">
-            {/* Header */}
+        <div className="fixed bottom-8 right-8 w-96 h-[550px] bg-white border border-slate-200 rounded-[2rem] shadow-2xl flex flex-col overflow-hidden z-50 animate-in slide-in-from-bottom-4 duration-300">
             <div className="bg-slate-900 p-4 flex justify-between items-center text-white">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500">
-                        <Bot size={20} />
-                    </div>
+                    <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500"><Bot size={20} /></div>
                     <div>
-                        <h4 className="text-xs font-black uppercase tracking-widest">PQC Analyst</h4>
-                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">Scan ID: {scanId?.substring(0, 8)}</p>
+                        <h4 className="text-xs font-black uppercase tracking-widest">PQC Analyst v2</h4>
+                        <p className="text-[9px] text-slate-400 font-bold">Scan: {scanId?.substring(0, 8)}</p>
                     </div>
                 </div>
-                <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white transition-colors">
-                    <Minimize2 size={18} />
-                </button>
+                <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white"><Minimize2 size={18} /></button>
             </div>
 
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
+            <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50/50">
                 {messages.length === 0 && (
-                    <div className="text-center py-10 space-y-2 opacity-50">
-                        <Bot size={32} className="mx-auto text-slate-300" />
-                        <p className="text-[10px] font-black uppercase text-slate-400">Ask me about your TLS vulnerabilities</p>
+                    <div className="text-center py-10 opacity-50">
+                        <Bot size={32} className="mx-auto text-slate-300 mb-2" />
+                        <p className="text-[10px] font-black uppercase text-slate-400">System Ready for Cryptographic Analysis</p>
                     </div>
                 )}
 
                 {messages.map((msg, i) => (
                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[90%] p-4 rounded-2xl text-xs shadow-sm leading-relaxed ${msg.role === 'user'
-                                ? 'bg-slate-900 text-white rounded-tr-none font-medium'
-                                : 'bg-white border border-slate-100 text-slate-700 rounded-tl-none'
-                            }`}>
-                            {msg.role === 'user' ? (
-                                msg.text
-                            ) : (
-                                <div className="space-y-4">
-                                    {/* Section Parsing Logic */}
-                                    {msg.text.split(/(Answer:|Reasoning:|Recommendations \(if applicable\):)/g).map((part, index, array) => {
-                                        const trimmedPart = part.trim();
-                                        if (!trimmedPart) return null;
-
-                                        // Style the Headers
-                                        if (trimmedPart === "Answer:") {
-                                            return <div key={index} className="text-[10px] font-black text-amber-600 uppercase tracking-tighter mb-1">Answer</div>;
-                                        }
-                                        if (trimmedPart === "Reasoning:") {
-                                            return <div key={index} className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-1 pt-2 border-t border-slate-50">Technical Reasoning</div>;
-                                        }
-                                        if (trimmedPart === "Recommendations (if applicable):") {
-                                            return <div key={index} className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter mb-1 pt-2 border-t border-slate-50">Strategic Recommendations</div>;
-                                        }
-
-                                        // Style the Content
-                                        const isHeader = array[index - 1]?.match(/(Answer:|Reasoning:|Recommendations \(if applicable\):)/);
-                                        return (
-                                            <div key={index} className={`${isHeader ? 'mb-2 font-bold text-slate-800' : 'text-slate-600 font-medium'}`}>
-                                                {trimmedPart}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
+                        <div className={`max-w-[92%] p-4 rounded-2xl shadow-sm ${
+                            msg.role === 'user' 
+                            ? 'bg-slate-900 text-white rounded-tr-none text-xs font-medium' 
+                            : 'bg-white border border-slate-100 rounded-tl-none'
+                        }`}>
+                            {msg.role === 'user' ? msg.text : renderBotMessage(msg.text)}
                         </div>
                     </div>
                 ))}
-
                 {loading && (
                     <div className="flex justify-start">
                         <div className="bg-white border border-slate-100 p-3 rounded-2xl rounded-tl-none">
@@ -140,20 +145,14 @@ const SecurityChatbot = ({ scanId }) => {
                 <div ref={scrollRef} />
             </div>
 
-            {/* Input Area */}
             <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-slate-100 flex gap-2">
                 <input
-                    type="text"
-                    value={input}
+                    type="text" value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Ask about crypto risks..."
-                    className="flex-1 bg-slate-50 border-none rounded-xl px-4 py-2 text-xs font-bold outline-none focus:ring-1 ring-amber-500/50 transition-all"
+                    placeholder="Ask about PQC readiness..."
+                    className="flex-1 bg-slate-50 border-none rounded-xl px-4 py-2 text-xs font-bold outline-none focus:ring-1 ring-amber-500/50"
                 />
-                <button
-                    disabled={loading || !scanId}
-                    type="submit"
-                    className="bg-slate-900 text-white p-2 rounded-xl hover:bg-amber-500 transition-colors disabled:opacity-30"
-                >
+                <button disabled={loading || !scanId} type="submit" className="bg-slate-900 text-white p-2 rounded-xl hover:bg-amber-500 transition-colors disabled:opacity-30">
                     <Send size={18} />
                 </button>
             </form>

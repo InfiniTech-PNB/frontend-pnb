@@ -21,6 +21,46 @@ const HistoryTab = () => {
     const [loading, setLoading] = useState(false);
     const [expandedAssetId, setExpandedAssetId] = useState(null);
 
+    const [expandedField, setExpandedField] = React.useState(null);
+
+    const toggleField = (field) => {
+        setExpandedField(expandedField === field ? null : field);
+    };
+
+    const ExpandableRow = ({ label, data, colorClass = "text-white" }) => {
+        const count = data?.length || 0;
+        const isExpanded = expandedField === label;
+
+        return (
+            <div className="border-b border-slate-800/50 py-3 last:border-0">
+                <div
+                    className="flex justify-between items-center cursor-pointer hover:bg-slate-800/30 transition-colors rounded-lg px-2 -mx-2"
+                    onClick={() => count > 0 && toggleField(label)}
+                >
+                    <span className="text-slate-500 uppercase text-[9px]">{label}</span>
+                    <div className="flex items-center gap-2">
+                        <span className={`${count > 0 ? colorClass : 'text-slate-600'} text-[10px]`}>
+                            {count} {count === 1 ? 'Item' : 'Items'} Found
+                        </span>
+                        {count > 0 && (
+                            <ChevronDown size={12} className={`text-slate-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                        )}
+                    </div>
+                </div>
+
+                {isExpanded && count > 0 && (
+                    <div className="mt-3 space-y-2 pl-2 border-l border-slate-700 animate-in fade-in slide-in-from-top-1">
+                        {data.map((item, i) => (
+                            <div key={i} className="text-[10px] font-mono text-slate-400 break-all leading-tight">
+                                • {item}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     // Initial Load: Fetch Domains
     useEffect(() => {
         const fetchDomains = async () => {
@@ -155,19 +195,19 @@ const HistoryTab = () => {
 
                                 <div className="relative z-10">
                                     <div className="flex flex-wrap items-center gap-3 mb-8">
-                                        <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${domainSummary.recommendation?.riskLevel === 'HIGH'
+                                        <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${domainSummary?.recommendation?.riskLevel === 'HIGH'
                                             ? 'bg-red-500/20 text-red-400 border-red-500/30'
                                             : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
                                             }`}>
-                                            Threat Level: {domainSummary.recommendation?.riskLevel}
+                                            Threat Level: {domainSummary?.recommendation?.riskLevel}
                                         </div>
                                         <div className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-[9px] font-black text-slate-300 uppercase tracking-widest">
-                                            Node Coverage: {domainSummary.assets?.scanned_assets} / {domainSummary.assets?.total_assets}
+                                            Node Coverage: {domainSummary.assets?.scannedAssets} / {domainSummary.assets?.totalAssets}
                                         </div>
                                     </div>
 
                                     <h3 className="text-6xl font-black italic uppercase leading-none tracking-tighter mb-6">
-                                        Grade: <span className="text-emerald-400">{Math.round(domainSummary.pqc_readiness?.average_score * 1000)}</span>
+                                        Grade: <span className="text-emerald-400">{Math.round(domainSummary.pqcReadiness?.averageScore * 1000)}</span>
                                     </h3>
 
                                     <p className="text-slate-300 text-sm font-bold leading-relaxed max-w-3xl mb-10 border-l-2 border-orange-500 pl-6 py-2 bg-orange-500/5 rounded-r-xl">
@@ -296,82 +336,96 @@ const HistoryTab = () => {
                                                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-10 border-t border-slate-50 pt-10">
                                                     <div className="space-y-4">
                                                         <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                                            <LockIcon size={14} /> Node Crypto
+                                                            <LockIcon size={14} /> Node Crypto Analysis
                                                         </h4>
-                                                        <div className="bg-slate-900 rounded-[2.5rem] p-7 text-slate-300 text-[11px] font-bold space-y-4 shadow-2xl">
-                                                            {/* Existing Fields */}
-                                                            <div className="flex justify-between items-center">
-                                                                <span className="text-slate-500 uppercase text-[9px]">TLS Version</span>
-                                                                <span className="bg-orange-500/10 text-orange-400 px-2 py-1 rounded-md">{res.tlsVersion}</span>
-                                                            </div>
-                                                            <div className="flex justify-between items-center">
-                                                                <span className="text-slate-500 uppercase text-[9px]">Cipher Suite</span>
-                                                                <span className="text-white truncate max-w-[150px]">{res.cipher}</span>
-                                                            </div>
-                                                            <div className="flex justify-between items-center">
-                                                                <span className="text-slate-500 uppercase text-[9px]">KEX / Size</span>
-                                                                <span className="text-white">{res.keyExchange} ({res.keySize}b)</span>
-                                                            </div>
-                                                            <div className="flex justify-between items-center">
-                                                                <span className="text-slate-500 uppercase text-[9px]">PFS Enabled</span>
-                                                                <span className={res.pfsSupported ? 'text-emerald-400' : 'text-red-400'}>{res.pfsSupported ? 'YES' : 'NO'}</span>
-                                                            </div>
+                                                        <div className="bg-slate-900 rounded-[2.5rem] p-7 text-slate-300 shadow-2xl">
 
-                                                            {/* --- NEW PQC FIELDS WITH CONDITIONAL CHECKS --- */}
-
-                                                            {/* 1. Negotiated KEX (Single String check) */}
-                                                            {res.pqcNegotiatedKex && (
-                                                                <div className="flex justify-between items-center pt-2 border-t border-slate-800/50">
-                                                                    <span className="text-emerald-500 uppercase text-[9px]">PQC Negotiated</span>
-                                                                    <span className="text-emerald-400 font-mono">{res.pqcNegotiatedKex}</span>
+                                                            {/* --- 1. NEGOTIATED SUMMARY (Non-Expandable) --- */}
+                                                            <div className="grid grid-cols-2 gap-4 mb-6">
+                                                                <div className="bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
+                                                                    <p className="text-slate-500 uppercase text-[8px] mb-1">Active TLS</p>
+                                                                    <p className="text-orange-400 font-black text-[11px]">{res.negotiated?.tlsVersion || 'N/A'}</p>
                                                                 </div>
-                                                            )}
-
-                                                            {/* 2. Supported KEX (Array check) */}
-                                                            {res.pqcSupportedKex && res.pqcSupportedKex.length > 0 && (
-                                                                <div className="pt-2 border-t border-slate-800/50">
-                                                                    <span className="text-slate-500 uppercase text-[9px] block mb-2">Supported PQC Groups</span>
-                                                                    <div className="flex flex-wrap gap-1">
-                                                                        {res.pqcSupportedKex.map((algo, i) => (
-                                                                            <span key={i} className="bg-orange-500/10 text-orange-400 text-[8px] px-2 py-0.5 rounded border border-orange-500/20">
-                                                                                {algo}
-                                                                            </span>
-                                                                        ))}
-                                                                    </div>
+                                                                <div className="bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
+                                                                    <p className="text-slate-500 uppercase text-[8px] mb-1">KEX / Size</p>
+                                                                    <p className="text-white font-black text-[11px]">
+                                                                        {res.negotiated?.keyExchange || 'N/A'} <span className="text-slate-500 text-[9px]">({res.negotiated?.serverTempKeySize || 0}b)</span>
+                                                                    </p>
                                                                 </div>
-                                                            )}
-
-                                                            {/* 3. Negotiated Signature (Single String check) */}
-                                                            {res.pqcNegotiatedSig && (
-                                                                <div className="flex justify-between items-center pt-2 border-t border-slate-800/50">
-                                                                    <span className="text-emerald-500 uppercase text-[9px]">PQC Signature</span>
-                                                                    <span className="text-emerald-400 font-mono">{res.pqcNegotiatedSig}</span>
+                                                                <div className="col-span-2 bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
+                                                                    <p className="text-slate-500 uppercase text-[8px] mb-1">Negotiated Cipher</p>
+                                                                    <p className="text-white font-mono text-[10px] truncate">{res.negotiated?.cipher || 'N/A'}</p>
                                                                 </div>
-                                                            )}
+                                                            </div>
 
-                                                            {/* 4. Supported Signatures (Array check) */}
-                                                            {res.pqcSupportedSig && res.pqcSupportedSig.length > 0 && (
-                                                                <div className="pt-2 border-t border-slate-800/50">
-                                                                    <span className="text-slate-500 uppercase text-[9px] block mb-2">Supported PQC Sig Algos</span>
-                                                                    <div className="flex flex-wrap gap-1">
-                                                                        {res.pqcSupportedSig.map((sig, i) => (
-                                                                            <span key={i} className="bg-blue-500/10 text-blue-400 text-[8px] px-2 py-0.5 rounded border border-blue-500/20">
-                                                                                {sig}
-                                                                            </span>
-                                                                        ))}
-                                                                    </div>
+                                                            {/* --- 2. THE EXPANDABLE SECTION (Using Your Helper) --- */}
+                                                            <div className="space-y-1">
+                                                                {/* New Negotiated Fields */}
+                                                                <ExpandableRow
+                                                                    label="ALPN Protocols"
+                                                                    data={res.negotiated?.alpn ? [res.negotiated.alpn] : []}
+                                                                />
+
+                                                                <ExpandableRow
+                                                                    label="Supported TLS Versions"
+                                                                    data={res.supported?.tlsVersions}
+                                                                    colorClass="text-blue-400"
+                                                                />
+
+                                                                <ExpandableRow
+                                                                    label="Supported Cipher Suites"
+                                                                    data={res.supported?.cipherSuites}
+                                                                />
+
+                                                                <ExpandableRow
+                                                                    label="PQC Negotiated"
+                                                                    data={res.pqc?.negotiated}
+                                                                    colorClass="text-emerald-400"
+                                                                />
+
+                                                                <ExpandableRow
+                                                                    label="PQC Supported Groups"
+                                                                    data={res.pqc?.supported}
+                                                                    colorClass="text-orange-400"
+                                                                />
+
+                                                                <ExpandableRow
+                                                                    label="Weak Ciphers"
+                                                                    data={res.weakCiphers}
+                                                                    colorClass="text-red-400"
+                                                                />
+
+                                                                <ExpandableRow
+                                                                    label="Vulnerabilities"
+                                                                    data={res.vulnerabilities}
+                                                                    colorClass="text-red-500"
+                                                                />
+                                                            </div>
+
+                                                            {/* --- 3. SYSTEM FLAGS --- */}
+                                                            <div className="mt-6 pt-4 border-t border-slate-800 grid grid-cols-2 gap-4 text-[10px]">
+                                                                <div className="flex justify-between">
+                                                                    <span className="text-slate-500 uppercase text-[8px]">PFS Support</span>
+                                                                    <span className={res.pfsSupported ? 'text-emerald-400' : 'text-red-400'}>
+                                                                        {res.pfsSupported ? 'YES' : 'NO'}
+                                                                    </span>
                                                                 </div>
-                                                            )}
-
-                                                            {/* Existing Signature Algorithm */}
-                                                            <div className="pt-2 border-t border-slate-800">
-                                                                <span className="text-slate-500 uppercase text-[9px] block mb-2">Classical Signature</span>
-                                                                <span className="text-slate-400 italic font-medium">{res.signatureAlgorithm}</span>
+                                                                <div className="flex justify-between">
+                                                                    <span className="text-slate-500 uppercase text-[8px]">OCSP Stapled</span>
+                                                                    <span className="text-slate-300">{res.negotiated?.ocsp?.stapled ? 'YES' : 'NO'}</span>
+                                                                </div>
+                                                                <div className="flex justify-between">
+                                                                    <span className="text-slate-500 uppercase text-[8px]">Session Reused</span>
+                                                                    <span className="text-slate-300">{res.negotiated?.sessionReused ? 'YES' : 'NO'}</span>
+                                                                </div>
+                                                                <div className="flex justify-between">
+                                                                    <span className="text-slate-500 uppercase text-[8px]">PQC Confidence</span>
+                                                                    <span className="text-emerald-500 italic">{res.pqc?.confidence || 'N/A'}</span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-
-                                                    <div className="space-y-4">
+                                                    <div className="space-y-10">
                                                         <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><BarChart3 size={14} /> ML Weight Distribution</h4>
                                                         <div className="grid grid-cols-2 gap-4">
                                                             <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-[2.5rem] text-center shadow-sm">
@@ -395,20 +449,48 @@ const HistoryTab = () => {
                                                     </div>
 
                                                     <div className="space-y-4">
-                                                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><ClipboardList size={14} /> AI Migration Advisor</h4>
+                                                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                            <ClipboardList size={14} /> AI Migration Advisor
+                                                        </h4>
                                                         <div className="bg-orange-50/50 border border-orange-100 rounded-[2.5rem] p-7 h-full flex flex-col justify-evenly shadow-sm">
+
+                                                            {/* 1. AI Recommendation Text */}
                                                             <div>
-                                                                <h4 className="text-[15px] font-black text-slate-400 tracking-widest flex items-center">AI Recommendation</h4>
-                                                                <p className="text-[11px] font-bold text-slate-700 leading-relaxed italic">"{matchingPlan?.recommendations || 'Aggregating per-asset neural analysis...'}"</p>
+                                                                <h4 className="text-[15px] font-black text-slate-400 tracking-widest flex items-center mb-1">AI Recommendation</h4>
+                                                                <p className="text-[11px] font-bold text-slate-700 leading-relaxed italic">
+                                                                    "{matchingPlan?.recommendations || 'Aggregating per-asset neural analysis...'}"
+                                                                </p>
                                                             </div>
-                                                            <div className="mt-2 space-y-3">
-                                                                <h4 className="text-[15px] font-black text-slate-400 tracking-widest flex items-center">AI Migration Steps</h4>
-                                                                {matchingPlan?.migrationSteps?.slice(0, 3).map((step, idx) => (
-                                                                    <div key={idx} className="flex gap-3 items-start text-[10px] font-bold text-slate-600 leading-tight">
-                                                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0" /> {step}
+
+                                                            {/* 2. NEW: PQC Technical Targets Section */}
+                                                            <div className="mt-4 py-4 border-y border-orange-100/50 grid grid-cols-2 gap-4">
+                                                                <div>
+                                                                    <h5 className="text-[9px] font-black text-orange-500 uppercase tracking-tighter mb-1">Recommended PQC KEX</h5>
+                                                                    <div className="bg-white border border-orange-100 px-3 py-2 rounded-2xl text-[11px] font-mono font-black text-slate-800 shadow-sm">
+                                                                        {matchingPlan?.recommendedPqcKex || "ML-KEM-768"}
                                                                     </div>
-                                                                ))}
+                                                                </div>
+                                                                <div>
+                                                                    <h5 className="text-[9px] font-black text-orange-500 uppercase tracking-tighter mb-1">Recommended PQC Signature</h5>
+                                                                    <div className="bg-white border border-orange-100 px-3 py-2 rounded-2xl text-[11px] font-mono font-black text-slate-800 shadow-sm">
+                                                                        {matchingPlan?.recommendedPqcSignature || "CRYSTALS-Dilithium"}
+                                                                    </div>
+                                                                </div>
                                                             </div>
+
+                                                            {/* 3. Migration Steps */}
+                                                            <div className="mt-4 space-y-3">
+                                                                <h4 className="text-[15px] font-black text-slate-400 tracking-widest flex items-center">AI Migration Steps</h4>
+                                                                <div className="space-y-2">
+                                                                    {matchingPlan?.migrationSteps?.slice(0, 3).map((step, idx) => (
+                                                                        <div key={idx} className="flex gap-3 items-start text-[10px] font-bold text-slate-600 leading-tight">
+                                                                            <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0" />
+                                                                            {step}
+                                                                        </div>
+                                                                    )) || <p className="text-[10px] italic text-slate-400">Analysis in progress...</p>}
+                                                                </div>
+                                                            </div>
+
                                                         </div>
                                                     </div>
                                                 </div>
