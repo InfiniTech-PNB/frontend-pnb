@@ -2,13 +2,14 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../../components/Dashboard/Navbar';
 import Footer from '../../components/Dashboard/Footer';
-import { LayoutDashboard, ShieldAlert, Activity, History, FileCode } from 'lucide-react';
+import { LayoutDashboard, ShieldAlert, Activity, History, FileCode, Database } from 'lucide-react';
 
 const DashboardLayout = () => {
     const menuItems = [
         { name: 'Home', path: '/dashboard', icon: LayoutDashboard },
         { name: 'Scan', path: '/dashboard/scan', icon: ShieldAlert },
         { name: 'Scan Results', path: '/dashboard/results', icon: Activity },
+        { name: 'Asset Inventory', path: '/dashboard/assets', icon: Database },
         { name: 'History', path: '/dashboard/history', icon: History },
         { name: 'CBOM History', path: '/dashboard/cbom', icon: FileCode },
     ];

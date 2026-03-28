@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, Globe, Search, Cpu, ShieldCheck, Zap, FileText, Lock, Server } from 'lucide-react';
+import { LayoutDashboard, Globe, Search, Cpu, ShieldCheck, Zap, FileText, Lock, Server, Database } from 'lucide-react';
 
 // Import our new components
 import Navbar from '../../components/Dashboard/Navbar';
 import HomeTab from '../../components/Dashboard/HomeTab';
-// import InventoryTab from '../../components/Dashboard/InventoryTab';
 import DiscoveryTab from '../../components/Dashboard/DiscoveryTab';
 import CBOMTab from '../../components/Dashboard/CBOMTab';
 import PQCTab from '../../components/Dashboard/PQCTab';
-// import CyberRatingTab from '../../components/Dashboard/CyberRatingTab';
 import ReportingTab from '../../components/Dashboard/ReportingTab';
+import AssetInventoryTab from './tabs/AssetInventoryTab';
 
 const Dashboard = () => {
     const { logout } = useAuth();
@@ -23,6 +22,7 @@ const Dashboard = () => {
         { name: 'Home', icon: LayoutDashboard },
         { name: 'Scan', icon: Search },
         { name: 'CBOM', icon: Cpu },
+        { name: 'Asset Inventory', icon: Database },
         { name: 'Posture of PQC', icon: ShieldCheck },
         { name: 'Reporting', icon: FileText },
     ];
@@ -40,6 +40,8 @@ const Dashboard = () => {
                 return <DiscoveryTab />;
             case 'CBOM':
                 return <CBOMTab />
+            case 'Asset Inventory':
+                return <AssetInventoryTab />
             case 'Posture of PQC':
                 return <PQCTab />
             case 'Reporting':

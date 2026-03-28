@@ -1,0 +1,266 @@
+import React, { useState, useEffect } from 'react';
+import {
+    Globe, Server, Search, Loader2, Activity,
+    Shield, Cpu, Network, ChevronDown, ChevronUp, Lock as LockIcon, Zap, LayoutGrid
+} from 'lucide-react';
+import API from "../../../services/api";
+
+const AssetInventoryTab = () => {
+    // Selection & Data States
+    const [domains, setDomains] = useState([]);
+    const [selectedDomain, setSelectedDomain] = useState("");
+    const [assets, setAssets] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+
+    // UI Interaction States
+    const [expandedAssetId, setExpandedAssetId] = useState(null);
+    const [detailedServices, setDetailedServices] = useState({}); // Stores results of the second route
+
+    // 1. Initial Load: Fetch Domains
+    useEffect(() => {
+        const fetchDomains = async () => {
+            try {
+                const res = await API.get("/domains");
+                setDomains(res.data || []);
+            } catch (err) { console.error("Error fetching domains:", err); }
+        };
+        fetchDomains();
+    }, []);
+
+    // 2. Fetch Assets when Domain changes (Route 1)
+    const handleDomainChange = async (domainId) => {
+        setSelectedDomain(domainId);
+        if (!domainId) {
+            setAssets([]);
+            return;
+        }
+        setLoading(true);
+        try {
+            const res = await API.get(`/asset-discovery/${domainId}/assets`);
+            setAssets(res.data.assets || []);
+            setExpandedAssetId(null); // Reset UI
+        } catch (err) {
+            console.error("Error fetching assets:", err);
+            setAssets([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 3. Toggle Expansion and Fetch Service Details (Route 2)
+    const toggleAssetExpansion = async (assetId) => {
+        if (expandedAssetId === assetId) {
+            setExpandedAssetId(null);
+            return;
+        }
+
+        setExpandedAssetId(assetId);
+
+        // Only fetch if we haven't cached the deep service data yet
+        if (!detailedServices[assetId]) {
+            try {
+                const res = await API.get(`/services/${assetId}/services`);
+                setDetailedServices(prev => ({ ...prev, [assetId]: res.data }));
+            } catch (err) {
+                console.error("Error fetching deep service details:", err);
+            }
+        }
+    };
+
+    const filteredAssets = assets.filter(a =>
+        a.host?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        a.ip?.includes(searchTerm)
+    );
+
+    return (
+        <div className="space-y-10 pb-32 animate-in fade-in duration-500">
+
+            {/* --- SELECTION HUD (Consistent with HistoryTab) --- */}
+            <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div className="flex items-center gap-6">
+                        <div className="p-5 bg-blue-50 rounded-[2rem] text-blue-600 shadow-inner">
+                            <Server size={32} />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase italic leading-none">Global Inventory</h2>
+                            <p className="text-[10px] font-mono text-slate-400 mt-2 uppercase tracking-widest font-bold">Network Endpoint Discovery</p>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                        <div className="relative">
+                            <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" size={16} />
+                            <select
+                                value={selectedDomain}
+                                onChange={(e) => handleDomainChange(e.target.value)}
+                                className="w-full sm:w-64 pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none shadow-inner"
+                            >
+                                <option value="">Select Domain</option>
+                                {domains.map(d => <option key={d._id} value={d._id}>{d.domainName}</option>)}
+                            </select>
+                        </div>
+
+                        <div className="relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                            <input
+                                type="text"
+                                placeholder="SEARCH ENDPOINTS..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full sm:w-64 pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 shadow-inner"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* --- DATA AREA --- */}
+            {loading ? (
+                <div className="flex flex-col items-center justify-center py-40">
+                    <Loader2 className="animate-spin text-blue-500 mb-4" size={48} />
+                    <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em] animate-pulse">Mapping Infrastructure Topography...</p>
+                </div>
+            ) : selectedDomain ? (
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3 px-4 mb-2">
+                        <LayoutGrid className="text-blue-500" size={20} />
+                        <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight italic">
+                            Detected Assets ({filteredAssets.length})
+                        </h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
+                        {filteredAssets.map((asset) => {
+                            const isExpanded = expandedAssetId === asset._id;
+                            const services = detailedServices[asset._id] || asset.services || [];
+
+                            return (
+                                <div key={asset._id} className={`bg-white border border-slate-100 rounded-[2.5rem] overflow-hidden transition-all shadow-sm ${isExpanded ? 'ring-2 ring-blue-500 border-transparent' : ''}`}>
+
+                                    {/* Asset Summary Row */}
+                                    <div className="p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-4 rounded-[1.5rem] bg-slate-900 text-blue-400 shadow-lg group-hover:scale-110 transition-transform">
+                                                <Activity size={24} />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-lg font-black text-slate-900 uppercase italic leading-none">{asset.host}</h4>
+                                                <p className="text-[10px] font-mono text-slate-400 mt-2 font-bold">{asset.ip} • <span className="text-blue-600 uppercase">{asset.assetType || 'Compute Node'}</span></p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-8">
+                                            <div className="hidden lg:block text-right">
+                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Services</p>
+                                                <div className="flex gap-1 justify-end">
+                                                    {asset.services?.slice(0, 3).map((s, idx) => (
+                                                        <span key={idx} className="bg-slate-100 text-slate-600 text-[9px] px-2 py-0.5 rounded font-black">{s.port}</span>
+                                                    ))}
+                                                    {asset.services?.length > 3 && <span className="text-slate-400 text-[9px] font-black">+{asset.services.length - 3}</span>}
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                onClick={() => toggleAssetExpansion(asset._id)}
+                                                className={`p-3 rounded-full transition-all ${isExpanded ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                                            >
+                                                {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Asset Detail Expansion (Deep Dive) */}
+                                    {isExpanded && (
+                                        <div className="px-8 pb-8 animate-in slide-in-from-top-4 duration-300">
+                                            <div className="border-t border-slate-50 pt-8 grid grid-cols-1 xl:grid-cols-12 gap-8">
+
+                                                {/* Left: Services List (Deep Data from Route 2) */}
+                                                <div className="xl:col-span-8 space-y-4">
+                                                    <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                        <Network size={14} className="text-blue-500" /> Active Service Topography
+                                                    </h5>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                        {services.length > 0 ? services.map((svc, sIdx) => (
+                                                            <div key={sIdx} className="bg-slate-900 rounded-[1.5rem] p-5 flex items-center justify-between group hover:bg-slate-800 transition-colors">
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className="p-3 bg-white/5 rounded-xl text-emerald-400">
+                                                                        <Zap size={16} />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-white font-black text-xs uppercase tracking-tight">{svc.protocolName || 'TCP'}</p>
+                                                                        <p className="text-[10px] font-mono text-slate-500">Port {svc.port}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    <span className="text-[9px] font-black text-blue-500 uppercase border border-blue-500/30 px-2 py-1 rounded-lg bg-blue-500/5">
+                                                                        Active
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        )) : (
+                                                            <p className="text-[10px] text-slate-400 italic col-span-2 py-4">No active services detected in latest scan.</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Right: Technical Metadata (Infrastructure side-bar) */}
+                                                <div className="xl:col-span-4 space-y-6">
+                                                    <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                        <Cpu size={14} className="text-blue-500" /> Node Metadata
+                                                    </h5>
+                                                    <div className="bg-slate-50 rounded-[2rem] p-6 space-y-4 shadow-inner">
+
+                                                        {/* 1. Asset Type (Direct from assetType field) */}
+                                                        <div className="flex justify-between items-center border-b border-slate-200/50 pb-3">
+                                                            <span className="text-[9px] font-black text-slate-400 uppercase">Asset Classification</span>
+                                                            <span className="text-[10px] font-bold text-slate-700 uppercase">
+                                                                {asset.assetType || 'N/A'}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* 2. IPv4 Address (Direct from ip field) */}
+                                                        <div className="flex justify-between items-center border-b border-slate-200/50 pb-3">
+                                                            <span className="text-[9px] font-black text-slate-400 uppercase">Mapped IP</span>
+                                                            <span className="text-[10px] font-mono font-bold text-slate-700">
+                                                                {asset.ip || '0.0.0.0'}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* 3. Service Count (Direct count of the services array) */}
+                                                        <div className="flex justify-between items-center border-b border-slate-200/50 pb-3">
+                                                            <span className="text-[9px] font-black text-slate-400 uppercase">Active Services</span>
+                                                            <span className="text-[10px] font-bold text-slate-700">
+                                                                {services?.length || 0} {services?.length === 1 ? 'Port' : 'Ports'}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* 4. Primary Protocol (Uses the first protocolName from the services list) */}
+                                                        <div className="flex justify-between items-center border-b border-slate-200/50 pb-3">
+                                                            <span className="text-[9px] font-black text-slate-400 uppercase">Primary Protocol</span>
+                                                            <span className="text-[10px] font-bold text-blue-600">
+                                                                {services?.[0]?.protocolName || 'None'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            ) : (
+                <div className="flex flex-col items-center justify-center py-40 opacity-30 text-center">
+                    <Search size={64} className="text-slate-300 mb-6" />
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em]">Select domain to initiate inventory lookup</p>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default AssetInventoryTab;

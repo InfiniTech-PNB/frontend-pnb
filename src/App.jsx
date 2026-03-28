@@ -16,6 +16,7 @@ import ScanTab from './pages/dashboard/tabs/ScanTab';
 import ScanResultsTab from './pages/dashboard/tabs/ScanResultsTab';
 import HistoryTab from './pages/dashboard/tabs/HistoryTab';
 import CBOMHistoryTab from './pages/dashboard/tabs/CBOMHistoryTab';
+import AssetInventoryTab from './pages/dashboard/tabs/AssetInventoryTab';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
             {/* These routes render at '/dashboard/scan', '/dashboard/results', etc. */}
             <Route path="scan" element={<ScanTab />} />
             <Route path="results" element={<ScanResultsTab />} />
+            <Route path="assets" element={<AssetInventoryTab />} />
             <Route path="history" element={<HistoryTab />} />
             <Route path="cbom" element={<CBOMHistoryTab />} />
           </Route>
