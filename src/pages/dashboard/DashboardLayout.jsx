@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../../components/Dashboard/Navbar';
 import Footer from '../../components/Dashboard/Footer';
-import { LayoutDashboard, ShieldAlert, Activity, History, FileCode, Database } from 'lucide-react';
+import { LayoutDashboard, ShieldAlert, Activity, History, FileCode, Database, FileText } from 'lucide-react';
 
 const DashboardLayout = () => {
     const menuItems = [
@@ -12,6 +12,7 @@ const DashboardLayout = () => {
         { name: 'Asset Inventory', path: '/dashboard/assets', icon: Database },
         { name: 'History', path: '/dashboard/history', icon: History },
         { name: 'CBOM History', path: '/dashboard/cbom', icon: FileCode },
+        { name: 'Reporting', path: '/dashboard/reporting', icon: FileText },
     ];
 
     return (

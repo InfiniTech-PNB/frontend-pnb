@@ -9,8 +9,10 @@ const Footer = () => {
         { label: 'Home', path: '/dashboard' },
         { label: 'Scan', path: '/dashboard/scan' },
         { label: 'Scan results', path: '/dashboard/results' },
+        { label: 'Asset Inventory', path: '/dashboard/assets' },
         { label: 'History', path: '/dashboard/history' },
-        { label: 'CBOM History', path: '/dashboard/cbom'}
+        { label: 'CBOM History', path: '/dashboard/cbom'},
+        { label: 'Reporting', path: '/dashboard/reporting' },
     ];
 
     return (
