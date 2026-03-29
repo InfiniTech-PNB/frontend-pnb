@@ -1,4 +1,5 @@
 import './App.css';
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
@@ -24,6 +25,20 @@ import OnDemandReportingTab from './pages/dashboard/tabs/OnDemandReportingTab';
 import ExecutivesReportingTab from './pages/dashboard/tabs/ExecutivesReportingTab';
 
 function App() {
+  useEffect(() => {
+    // 1. Check if user has a saved preference
+    const savedTheme = localStorage.getItem('pnb-theme');
+
+    // 2. Check if the system OS is set to dark
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // 3. Apply the correct class immediately
+    if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
   return (
     <AuthProvider>
       <Router>

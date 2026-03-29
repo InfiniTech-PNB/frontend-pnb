@@ -138,7 +138,7 @@ const ExecutivesReportingTab = () => {
                         <h3 className="font-black uppercase text-xs tracking-widest italic">Assets Inventory</h3>
                     </div>
                     <div className="space-y-3">
-                        <InventoryItem label="SSL Certificates" value={data.inventory.ssl} icon={<Lock size={12} />} />
+                        <InventoryItem label="TLS Certificates" value={data.inventory.tls} icon={<Lock size={12} />} />
                         <InventoryItem label="Software Nodes" value={data.inventory.software} icon={<Cpu size={12} />} />
 
                         {/* REPLACED IOT WITH APIs */}

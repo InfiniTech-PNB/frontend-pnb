@@ -25,6 +25,10 @@ const ScheduledReportingTab = () => {
     const [activeSchedules, setActiveSchedules] = useState([]);
     const [formData, setFormData] = useState(DEFAULT_FORM_STATE);
 
+    const [availableAssets, setAvailableAssets] = useState([]); // Assets for selected domain
+    const [selectedAssets, setSelectedAssets] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+
     useEffect(() => {
         const fetchDomains = async () => {
             try {
@@ -69,28 +73,93 @@ const ScheduledReportingTab = () => {
         }
     };
 
+    const handleDomainChange = async (domainId) => {
+        setFormData({ ...formData, targetDomainId: domainId });
+        setSelectedAssets([]); // Reset selection
+        if (!domainId) return;
+
+        try {
+            const res = await API.get(`/asset-discovery/${domainId}/assets`);
+            setAvailableAssets(res.data.assets || []);
+        } catch (err) { console.error("Error loading assets"); }
+    };
+
+    const envMetrics = [
+        { id: 'assetCriticality', label: 'Asset Criticality' },
+        { id: 'confidentialityWeight', label: 'Confidentiality' },
+        { id: 'integrityWeight', label: 'Integrity' },
+        { id: 'availabilityWeight', label: 'Availability' },
+        { id: 'slaRequirement', label: 'SLA Requirement' },
+        { id: 'dependentServices', label: 'Dependent Services' }
+    ];
+
+    const handleToggleAsset = (assetId) => {
+        setSelectedAssets(prev => {
+            const exists = prev.find(a => a.assetId === assetId);
+            if (exists) return prev.filter(a => a.assetId !== assetId);
+
+            // 🔥 INITIALIZE WITH DEFAULT SLIDER VALUES (5/10)
+            return [...prev, {
+                assetId,
+                businessContext: {
+                    assetCriticality: 5,
+                    confidentialityWeight: 5,
+                    integrityWeight: 5,
+                    availabilityWeight: 5,
+                    slaRequirement: 5,
+                    dependentServices: 0
+                }
+            }];
+        });
+    };
+
+    const filteredAssets = availableAssets.filter(asset =>
+        asset.host.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        asset.ip.includes(searchTerm)
+    );
+
+    const updateMetric = (assetId, metricId, value) => {
+        setSelectedAssets(prev => prev.map(a =>
+            a.assetId === assetId
+                ? { ...a, businessContext: { ...a.businessContext, [metricId]: parseInt(value) } }
+                : a
+        ));
+    };
+
     const handleSave = async () => {
-        if (!formData.scheduleName.trim()) {
-            alert("Please provide a name for this schedule (e.g., Weekly Project Sync).");
+        // 1. Validation
+        if (!formData.scheduleName.trim() || !formData.targetDomainId || selectedAssets.length === 0) {
+            alert("Please provide an Audit Name, select a Domain, and choose at least one Asset.");
             return;
         }
+
         setLoading(true);
         try {
-            await API.post("/reports/schedule", { ...formData, isEnabled: enabled });
+            // 2. API Call
+            await API.post("/reports/schedule", {
+                ...formData,
+                // Ensure we are sending the objects { assetId, businessContext }
+                selectedAssets: selectedAssets.map(a => ({
+                    assetId: a.assetId,
+                    businessContext: a.businessContext
+                })),
+                isEnabled: enabled
+            });
 
-            // ✅ Change 1: Force a fresh object to clear the inputs
-            setFormData({ ...DEFAULT_FORM_STATE });
-            setEnabled(true);
+            // 3. 🔥 THE RESET LOGIC: Go back to default mode
+            setFormData(DEFAULT_FORM_STATE); // Reset name, email, time, etc.
+            setSelectedAssets([]);           // Clear selected assets & their sliders
+            setAvailableAssets([]);          // Clear the scrollable topography list
+            setSearchTerm("");               // Clear the search bar
+            setEnabled(true);                // Reset the toggle to enabled
 
-            // ✅ Change 2: Optional - If you want the form to stay empty even 
-            // if there's an active schedule, you don't call fetchCurrentSchedule here.
-            // But if you want to see the new schedule in the dark card below, keep it:
+            // 4. Refresh the registry below the form
             fetchCurrentSchedule();
 
-            alert("Schedule saved and form reset to defaults.");
+            alert("🚀 Audit Schedule registered successfully. Form reset to defaults.");
         } catch (err) {
             console.error("Save failed:", err);
-            alert("Error saving schedule.");
+            alert("Error saving schedule. Please check your connection.");
         } finally {
             setLoading(false);
         }
@@ -168,16 +237,143 @@ const ScheduledReportingTab = () => {
                             </div>
                         </div>
 
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Domain Scope</label>
-                            <select
-                                value={formData.targetDomainId}
-                                onChange={(e) => setFormData({ ...formData, targetDomainId: e.target.value })}
-                                className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-xs uppercase"
-                            >
-                                <option value="all">Consolidated Audit</option>
-                                {domains.map(d => <option key={d._id} value={d._id}>{d.domainName}</option>)}
-                            </select>
+                        <div className="p-12">
+                            {/* 1. Domain Selection */}
+                            <div className="space-y-3 mb-8">
+                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Target Domain Scope</label>
+                                <select
+                                    value={formData.targetDomainId}
+                                    onChange={(e) => handleDomainChange(e.target.value)}
+                                    className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-xs uppercase outline-none focus:border-orange-500 transition-all"
+                                >
+                                    <option value="">Select a Domain to Discover Assets</option>
+                                    {domains.map(d => <option key={d._id} value={d._id}>{d.domainName}</option>)}
+                                </select>
+                            </div>
+
+                            {/* 2. Asset Discovery & Search Box */}
+                            {availableAssets.length > 0 && (
+                                <div className="space-y-6 animate-in slide-in-from-bottom-4">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                        <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">
+                                            Network Topography ({availableAssets.length} Nodes Found)
+                                        </h4>
+
+                                        {/* 🔍 Search Input */}
+                                        <div className="relative group">
+                                            <div className="absolute inset-y-0 left-4 flex items-center text-slate-400 group-focus-within:text-orange-500 transition-colors">
+                                                <Activity size={14} />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                placeholder="SEARCH HOST OR IP..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className="pl-10 pr-4 py-2 bg-slate-50 border-2 border-slate-100 rounded-xl text-[10px] font-black uppercase outline-none focus:border-orange-500 w-full md:w-64 transition-all"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* 📦 SCROLLABLE ASSET GRID */}
+                                    <div className="flex flex-col gap-2 max-h-[450px] overflow-y-auto p-4 bg-slate-50 dark:bg-slate-900/50 rounded-[2.5rem] border-2 border-slate-100 dark:border-slate-800 shadow-inner custom-scrollbar">
+                                        {filteredAssets.map(asset => {
+                                            const selection = selectedAssets.find(s => s.assetId === asset._id);
+                                            return (
+                                                <div
+                                                    key={asset._id}
+                                                    onClick={() => handleToggleAsset(asset._id)}
+                                                    className={`group flex items-center justify-between p-5 rounded-2xl border-2 transition-all cursor-pointer ${selection
+                                                        ? 'border-orange-500 bg-white dark:bg-slate-800 shadow-md translate-x-1'
+                                                        : 'border-white dark:border-transparent bg-white dark:bg-slate-800 hover:border-slate-200'
+                                                        }`}
+                                                >
+                                                    {/* Left Side: Checkbox & Identity */}
+                                                    <div className="flex items-center gap-5">
+                                                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${selection ? 'bg-orange-500 border-orange-500' : 'border-slate-200'
+                                                            }`}>
+                                                            {selection && <ShieldCheck size={14} className="text-white" />}
+                                                        </div>
+
+                                                        <div className="flex flex-col">
+                                                            {/* Full Hostname - No Truncation */}
+                                                            <span className="text-xs font-black text-slate-800 dark:text-slate-100 uppercase italic tracking-tight">
+                                                                {asset.host}
+                                                            </span>
+                                                            {/* Full IP Address */}
+                                                            <span className="text-[10px] font-bold text-slate-400 font-mono mt-0.5">
+                                                                {asset.ip}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Right Side: Status/Type Badge */}
+                                                    <div className="flex items-center gap-4">
+                                                        <span className="hidden sm:inline-block text-[8px] font-black px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-full uppercase tracking-widest">
+                                                            {asset.assetType || 'Compute Node'}
+                                                        </span>
+
+                                                        {/* Active Pulse for Selection */}
+                                                        {selection && (
+                                                            <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+
+                                        {filteredAssets.length === 0 && (
+                                            <div className="py-20 text-center">
+                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                                    No matching nodes found in the topography
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* 3. Slider Configuration (Renders only if assets are selected) */}
+                            {selectedAssets.length > 0 && (
+                                <div className="mt-12 space-y-6 animate-in fade-in">
+                                    <h4 className="text-[10px] font-black uppercase text-orange-500 tracking-[0.2em] ml-1">
+                                        Adjust Risk Parameters for {selectedAssets.length} Selected Nodes
+                                    </h4>
+                                    <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                                        {selectedAssets.map(selection => {
+                                            const asset = availableAssets.find(a => a._id === selection.assetId);
+                                            if (!asset) return null;
+                                            return (
+                                                <div key={asset._id} className="bg-white border-2 border-orange-100 rounded-[2rem] p-6 shadow-sm">
+                                                    <div className="flex justify-between items-center mb-6">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="p-2 bg-orange-50 text-orange-500 rounded-lg"><Database size={14} /></div>
+                                                            <span className="text-[11px] font-black text-slate-800 uppercase italic">{asset.host}</span>
+                                                        </div>
+                                                        <button onClick={() => handleToggleAsset(asset._id)} className="text-slate-300 hover:text-red-500"><Trash2 size={16} /></button>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                        {envMetrics.map(metric => (
+                                                            <div key={metric.id} className="space-y-2">
+                                                                <div className="flex justify-between">
+                                                                    <label className="text-[8px] font-black uppercase text-slate-400">{metric.label}</label>
+                                                                    <span className="text-[10px] font-black text-orange-500">{selection.businessContext[metric.id]}</span>
+                                                                </div>
+                                                                <input
+                                                                    type="range" min="1" max="10"
+                                                                    value={selection.businessContext[metric.id]}
+                                                                    onChange={(e) => updateMetric(asset._id, metric.id, e.target.value)}
+                                                                    className="w-full h-1 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 

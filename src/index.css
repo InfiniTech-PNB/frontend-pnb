@@ -1,1 +1,54 @@
 @import "tailwindcss";
+
+@theme {
+  --dark-mode: selector(.dark);
+}
+
+/* THE GLOBAL OVERRIDE STRATEGY */
+@layer base {
+  /* 1. Force the background of the entire app */
+  .dark body, .dark #root {
+    background-color: #0f172a !important; /* Deep Dark Navy */
+    color: #f1f5f9 !important;
+  }
+
+  /* 2. Force every 'bg-white' element to turn dark slate */
+  .dark .bg-white {
+    background-color: #1e293b !important; /* Lighter Slate for cards */
+    border-color: #334155 !important;
+  }
+
+  /* 3. Force your Slate-50 HUDs/Sections to turn darker */
+  .dark .bg-slate-50, .dark .bg-slate-50\/50 {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+  }
+
+  /* 4. Fix standard text colors */
+  .dark .text-slate-900, .dark .text-slate-700, .dark .text-slate-800 {
+    color: #ffffff !important;
+  }
+  
+  .dark .text-slate-500, .dark .text-slate-400,  .dark .text-slate-700 {
+    color: #94a3b8 !important;
+  }
+
+  /* 5. Fix Inputs and Selects */
+  .dark input, .dark select {
+    background-color: #0f172a !important;
+    color: white !important;
+    border: 1px solid #334155 !important;
+  }
+}
+
+/* History Tab Orange Accents */
+.dark .bg-orange-50 {
+    background-color: rgba(251, 146, 60, 0.1) !important; /* Dark Orange tint */
+    color: #fb923c !important;
+}
+
+/* Inventory Tab Blue Accents */
+.dark .bg-blue-50, .dark .bg-slate-200 {
+    background-color: rgba(59, 130, 246, 0.1) !important; /* Dark Blue tint */
+    color: #60a5fa !important;
+}
