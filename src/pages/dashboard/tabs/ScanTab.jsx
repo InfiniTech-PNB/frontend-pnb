@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
     Globe, Target, ShieldAlert, Zap, Loader2,
     CheckCircle2, Hash, Settings2, Shield, Server,
-    Activity, Cpu, Lock
+    Activity, Cpu, Lock, Info
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import API from "../../../services/api";
@@ -46,7 +46,6 @@ const ScanTab = () => {
                     integrityWeight: 5,
                     availabilityWeight: 5,
                     slaRequirement: 5,
-                    remediationDifficulty: 5,
                     dependentServices: 0
                 };
             });
@@ -221,18 +220,21 @@ const ScanTab = () => {
                                 {/* Environmental CIA Configuration */}
                                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6 bg-slate-50/50 p-8 rounded-[2.5rem]">
                                     {[
-                                        { key: 'confidentialityWeight', label: 'Confidentiality', icon: <Lock size={12} /> },
-                                        { key: 'integrityWeight', label: 'Integrity', icon: <Activity size={12} /> },
-                                        { key: 'availabilityWeight', label: 'Availability', icon: <Zap size={12} /> },
-                                        { key: 'assetCriticality', label: 'Criticality', icon: <Shield size={12} /> },
-                                        { key: 'slaRequirement', label: 'SLA Priority', icon: <Cpu size={12} /> },
-                                        { key: 'dependentServices', label: 'Node Dependencies', icon: <Hash size={12} /> },
-                                        { key: 'remediationDifficulty', label: 'Remediation Effort', icon: <Settings2 size={12} /> }
+                                        { key: 'confidentialityWeight', label: 'Confidentiality', icon: <Lock size={12} />, description: 'Measures how sensitive the data is and the impact if it is exposed to unauthorized users' },
+                                        { key: 'integrityWeight', label: 'Integrity', icon: <Activity size={12} />, description: 'Measures the importance of keeping data accurate, consistent, and free from unauthorized modifications' },
+                                        { key: 'availabilityWeight', label: 'Availability', icon: <Zap size={12} />, description: 'Measures how critical it is for the system or data to be accessible without interruptions when needed' },
+                                        { key: 'assetCriticality', label: 'Criticality', icon: <Shield size={12} />, description: 'Represents the overall importance of the asset to business operations and the impact if it fails' },
+                                        { key: 'slaRequirement', label: 'SLA Priority', icon: <Cpu size={12} />, description: 'Defines the required uptime, performance, and response commitments based on service level agreements' },
+                                        { key: 'dependentServices', label: 'Node Dependencies', icon: <Hash size={12} />, description: 'Indicates how many other systems or services rely on this asset, reflecting its role in the infrastructure' }
                                     ].map(item => (
                                         <div key={item.key} className="space-y-3">
                                             <div className="flex justify-between items-center">
-                                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                                                <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-1 group relative cursor-help">
                                                     {item.icon} {item.label}
+                                                    <Info size={10} className="text-slate-500 group-hover:text-orange-500 transition-colors" />
+                                                    <span className="hidden group-hover:block absolute bottom-full left-0 mb-2 w-48 p-2 bg-slate-900 text-white text-[8px] font-bold rounded-lg shadow-xl z-50 normal-case leading-tight pointer-events-none">
+                                                        {item.description}
+                                                    </span>
                                                 </span>
                                                 <span className="bg-white border border-slate-200 text-orange-500 text-[10px] font-black px-2 py-0.5 rounded-lg shadow-sm">
                                                     {assetContexts[asset._id][item.key]}
@@ -244,8 +246,8 @@ const ScanTab = () => {
                                                 value={assetContexts[asset._id][item.key]}
                                                 onChange={(e) => updateAssetContext(asset._id, item.key, Number(e.target.value))}
                                                 className={`w-full h-1.5 rounded-lg appearance-none cursor-pointer transition-all ${selectedAssets.includes(asset._id)
-                                                        ? 'accent-orange-500 bg-slate-200'
-                                                        : 'accent-slate-300 bg-slate-100 opacity-30'
+                                                    ? 'accent-orange-500 bg-slate-200'
+                                                    : 'accent-slate-300 bg-slate-100 opacity-30'
                                                     }`}
                                             />
                                         </div>

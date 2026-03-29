@@ -11,7 +11,7 @@ const Footer = () => {
         { label: 'Scan results', path: '/dashboard/results' },
         { label: 'Asset Inventory', path: '/dashboard/assets' },
         { label: 'History', path: '/dashboard/history' },
-        { label: 'CBOM History', path: '/dashboard/cbom'},
+        { label: 'CBOM History', path: '/dashboard/cbom' },
         { label: 'Reporting', path: '/dashboard/reporting' },
     ];
 
@@ -21,7 +21,7 @@ const Footer = () => {
                 {/* Simplified Menu Items */}
                 <ul className="flex flex-wrap items-center gap-8">
                     {menuItems.map((item, index) => (
-                        <li 
+                        <li
                             key={index}
                             onClick={() => navigate(item.path)}
                             className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] hover:text-orange-500 cursor-pointer transition-colors"
