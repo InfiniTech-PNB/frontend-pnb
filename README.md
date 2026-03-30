@@ -1,3 +1,9 @@
+## 🔗 Related Repositories
+
+- **Backend**: [InfiniTech-PNB/backend](https://github.com/InfiniTech-PNB/backend)
+- **Crypto Scanner**: [InfiniTech-PNB/crypto-scanner](https://github.com/InfiniTech-PNB/crypto-scanner)
+- **PQC Prediction ML**: [InfiniTech-PNB/pqc-prediction-ml](https://github.com/InfiniTech-PNB/pqc-prediction-ml)
+
 # 🛡️ KavachAI Frontend – Quantum-Safe Infrastructure Dashboard
 
 This frontend application provides a powerful and interactive dashboard for visualizing cryptographic vulnerabilities and managing the transition to **Post-Quantum Cryptography (PQC)**.
