@@ -1,8 +1,8 @@
 ## 🔗 Related Repositories
 
 - **Backend**: [InfiniTech-PNB/backend](https://github.com/InfiniTech-PNB/backend)
-- **Crypto Scanner**: [InfiniTech-PNB/crypto-scanner](https://github.com/InfiniTech-PNB/crypto-scanner)
-- **PQC Prediction ML**: [InfiniTech-PNB/pqc-prediction-ml](https://github.com/InfiniTech-PNB/pqc-prediction-ml)
+- **Crypto Scanner**: [InfiniTech-PNB/crypto-scanner](https://github.com/InfiniTech-PNB/crypto-service)
+- **PQC Prediction ML**: [InfiniTech-PNB/pqc-prediction-ml](https://github.com/InfiniTech-PNB/pqc-score-predictor)
 
 # 🛡️ KavachAI Frontend – Quantum-Safe Infrastructure Dashboard
 
