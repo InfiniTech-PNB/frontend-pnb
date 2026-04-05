@@ -1,8 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Footer = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const currentYear = new Date().getFullYear();
 
     const menuItems = [
@@ -16,25 +17,41 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="fixed bottom-0 left-0 right-0 z-[50] bg-white/80 backdrop-blur-md border-t border-slate-100 py-4 px-10">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                {/* Simplified Menu Items */}
-                <ul className="flex flex-wrap items-center gap-8">
-                    {menuItems.map((item, index) => (
-                        <li
-                            key={index}
-                            onClick={() => navigate(item.path)}
-                            className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] hover:text-orange-500 cursor-pointer transition-colors"
-                        >
-                            {item.label}
-                        </li>
-                    ))}
-                </ul>
+        <footer
+            className="mt-16 border-t px-6 py-10 lg:px-10"
+            style={{
+                borderColor: 'color-mix(in srgb, var(--outline) 48%, transparent)',
+                backgroundColor: 'color-mix(in srgb, var(--surface-soft) 75%, transparent)'
+            }}
+        >
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <p className="editorial-title text-xl italic">PNB Secure</p>
+                    <p className="mt-2 editorial-label text-slate-500">
+                        {currentYear} archival-grade security monitoring
+                    </p>
+                </div>
 
-                {/* Copyright only */}
-                <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-                    © {currentYear} PNB
-                </p>
+                <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                    {menuItems.map((item) => {
+                        const isActive = item.path === '/dashboard'
+                            ? location.pathname === '/dashboard'
+                            : location.pathname.startsWith(item.path);
+
+                        return (
+                            <li key={item.path}>
+                                <button
+                                    onClick={() => navigate(item.path)}
+                                    className={`font-headline text-sm transition-colors ${
+                                        isActive ? 'text-blue-700 font-bold underline underline-offset-4' : 'text-slate-500 hover:text-slate-900'
+                                    }`}
+                                >
+                                    {item.label}
+                                </button>
+                            </li>
+                        );
+                    })}
+                </ul>
             </div>
         </footer>
     );

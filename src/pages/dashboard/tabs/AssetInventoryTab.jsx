@@ -74,17 +74,17 @@ const AssetInventoryTab = () => {
     );
 
     return (
-        <div className="space-y-10 pb-32 animate-in fade-in duration-500">
+        <div className="space-y-10 pb-24 animate-in fade-in duration-500">
 
             {/* --- SELECTION HUD (Consistent with HistoryTab) --- */}
-            <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
+            <div className="editorial-shell p-8">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
                         <div className="p-5 bg-blue-50 rounded-[2rem] text-blue-600 shadow-inner">
                             <Server size={32} />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase italic leading-none">Global Inventory</h2>
+                            <h2 className="editorial-title text-2xl tracking-tight uppercase italic leading-none">Global Inventory</h2>
                             <p className="text-[10px] font-mono text-slate-400 mt-2 uppercase tracking-widest font-bold">Network Endpoint Discovery</p>
                         </div>
                     </div>
@@ -95,7 +95,7 @@ const AssetInventoryTab = () => {
                             <select
                                 value={selectedDomain}
                                 onChange={(e) => handleDomainChange(e.target.value)}
-                                className="w-full sm:w-64 pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none shadow-inner"
+                                className="w-full sm:w-64 pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none"
                             >
                                 <option value="">Select Domain</option>
                                 {domains.map(d => <option key={d._id} value={d._id}>{d.domainName}</option>)}
@@ -109,7 +109,7 @@ const AssetInventoryTab = () => {
                                 placeholder="SEARCH ENDPOINTS..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full sm:w-64 pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 shadow-inner"
+                                className="w-full sm:w-64 pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
                     </div>
@@ -137,12 +137,12 @@ const AssetInventoryTab = () => {
                             const services = detailedServices[asset._id] || asset.services || [];
 
                             return (
-                                <div key={asset._id} className={`bg-white border border-slate-100 rounded-[2.5rem] overflow-hidden transition-all shadow-sm ${isExpanded ? 'ring-2 ring-blue-500 border-transparent' : ''}`}>
+                                <div key={asset._id} className={`editorial-shell rounded-[1.5rem] overflow-hidden transition-all ${isExpanded ? 'ring-2 ring-blue-500 border-transparent' : ''}`}>
 
                                     {/* Asset Summary Row */}
                                     <div className="p-8 flex flex-col md:flex-row justify-between items-center gap-6">
                                         <div className="flex items-center gap-4">
-                                            <div className="p-4 rounded-[1.5rem] bg-slate-900 text-blue-400 shadow-lg group-hover:scale-110 transition-transform">
+                                            <div className="p-4 rounded-[1.5rem] bg-slate-100 text-blue-700 shadow-sm group-hover:scale-110 transition-transform">
                                                 <Activity size={24} />
                                             </div>
                                             <div>
@@ -183,18 +183,18 @@ const AssetInventoryTab = () => {
                                                     </h5>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                                         {services.length > 0 ? services.map((svc, sIdx) => (
-                                                            <div key={sIdx} className="bg-slate-900 rounded-[1.5rem] p-5 flex items-center justify-between group hover:bg-slate-800 transition-colors">
+                                                            <div key={idx} className="bg-slate-100 rounded-[1.5rem] p-5 flex items-center justify-between group hover:bg-slate-200 transition-colors">
                                                                 <div className="flex items-center gap-4">
-                                                                    <div className="p-3 bg-white/5 rounded-xl text-emerald-400">
+                                                                    <div className="p-3 bg-white rounded-xl text-emerald-500 border border-slate-200">
                                                                         <Zap size={16} />
                                                                     </div>
                                                                     <div>
-                                                                        <p className="text-white font-black text-xs uppercase tracking-tight">{svc.protocolName || 'TCP'}</p>
+                                                                        <p className="text-slate-900 font-black text-xs uppercase tracking-tight">{svc.protocolName || 'TCP'}</p>
                                                                         <p className="text-[10px] font-mono text-slate-500">Port {svc.port}</p>
                                                                     </div>
                                                                 </div>
                                                                 <div className="text-right">
-                                                                    <span className="text-[9px] font-black text-blue-500 uppercase border border-blue-500/30 px-2 py-1 rounded-lg bg-blue-500/5">
+                                                                    <span className="text-[9px] font-black text-blue-700 uppercase border border-blue-200 px-2 py-1 rounded-lg bg-blue-50">
                                                                         Active
                                                                     </span>
                                                                 </div>

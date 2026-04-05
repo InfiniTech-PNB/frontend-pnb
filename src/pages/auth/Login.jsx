@@ -61,6 +61,7 @@ const Login = () => {
             setLoading(true);
             setError(null);
             const response = await API.post("/auth/verify-otp", { email, otp });
+            console.log("OTP Verification Response:", response.data);
 
             login(response.data.token);
             navigate("/dashboard");

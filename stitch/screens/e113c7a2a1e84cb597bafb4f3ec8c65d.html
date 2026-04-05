@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Global Inventory | Alexandria Cybersecurity</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@400;500;600&amp;family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#f2f0f1",
+                        "on-tertiary-fixed": "#211b00",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#b1c5ff",
+                        "on-primary-fixed": "#001946",
+                        "primary-fixed": "#d9e2ff",
+                        "on-surface": "#1b1c1d",
+                        "on-background": "#1b1c1d",
+                        "surface-container-low": "#f5f3f4",
+                        "inverse-surface": "#303031",
+                        "secondary-fixed": "#dfe3e8",
+                        "on-secondary": "#ffffff",
+                        "background": "#faf9fa",
+                        "surface-dim": "#dbdadb",
+                        "on-secondary-fixed": "#171c20",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#f9e37a",
+                        "primary-container": "#3366cc",
+                        "surface-container": "#efedee",
+                        "on-secondary-container": "#606569",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#bfab49",
+                        "on-tertiary-container": "#4a3f00",
+                        "surface-tint": "#2259bf",
+                        "secondary-container": "#dfe3e8",
+                        "surface": "#faf9fa",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e3e2e3",
+                        "tertiary": "#6d5e00",
+                        "secondary": "#5a5f63",
+                        "surface-container-high": "#e9e8e9",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "on-primary-container": "#e7ebff",
+                        "outline": "#737784",
+                        "on-primary-fixed-variant": "#00419d",
+                        "surface-bright": "#faf9fa",
+                        "surface-container-highest": "#e3e2e3",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "outline-variant": "#c3c6d5",
+                        "primary": "#094cb2",
+                        "on-surface-variant": "#434653",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed-variant": "#42474b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "body": ["Inter"],
+                        "label": ["Public Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Noto Serif', serif; }
+        .font-label { font-family: 'Public Sans', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<main class="flex-grow">
+<!-- Header Section -->
+<header class="pt-20 pb-12 px-8 lg:px-24 bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-6">
+<div class="space-y-2">
+<h1 class="text-5xl lg:text-7xl font-headline tracking-tight text-on-surface">GLOBAL INVENTORY</h1>
+<p class="text-primary font-label text-xs tracking-[0.2em] uppercase font-bold">NETWORK ENDPOINT DISCOVERY</p>
+</div>
+<div class="flex flex-col items-end gap-4 w-full md:w-auto">
+<div class="flex items-center gap-3 px-4 py-2 bg-surface-container-low rounded-xl outline outline-1 outline-outline-variant/15 w-full md:w-80">
+<span class="material-symbols-outlined text-outline text-lg">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm font-body w-full" placeholder="Search for endpoints..." type="text"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Tool Bar / Selection -->
+<nav class="sticky top-0 z-50 glass-panel border-b border-outline-variant/10 px-8 lg:px-24 py-4">
+<div class="max-w-7xl mx-auto flex justify-between items-center">
+<div class="flex items-center gap-8">
+<div class="flex flex-col">
+<span class="text-[10px] font-label text-on-surface-variant font-bold uppercase tracking-widest">Active Domain</span>
+<button class="flex items-center gap-2 group">
+<span class="font-headline text-xl text-on-surface">MIORISH.COM</span>
+<span class="material-symbols-outlined text-primary group-hover:translate-y-0.5 transition-transform">expand_more</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant/30 hidden md:block"></div>
+<div class="hidden md:flex gap-6">
+<div class="flex flex-col">
+<span class="text-[10px] font-label text-on-surface-variant font-bold uppercase tracking-widest">Asset Count</span>
+<span class="font-headline text-xl">1,248</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-label text-on-surface-variant font-bold uppercase tracking-widest">Risk Level</span>
+<span class="font-headline text-xl text-tertiary">LOW</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg bg-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">filter_list</span>
+</button>
+<button class="bg-gradient-to-r from-primary to-primary-container text-white px-6 py-2 rounded-full font-label text-sm font-semibold tracking-wide shadow-lg shadow-primary/20">
+                        EXPORT ARCHIVE
+                    </button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<section class="px-8 lg:px-24 py-16 max-w-7xl mx-auto w-full">
+<div class="mb-12 flex justify-between items-baseline">
+<h2 class="font-headline text-3xl text-on-surface">Detected Assets</h2>
+<span class="font-label text-sm text-on-surface-variant italic">Showing 42 of 1,248 total endpoints</span>
+</div>
+<div class="grid grid-cols-1 gap-12">
+<!-- Asset Card: admin.miorish.com -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500 flex flex-col md:flex-row outline outline-1 outline-outline-variant/10">
+<div class="md:w-1/3 relative min-h-[300px]">
+<img class="absolute inset-0 w-full h-full object-cover grayscale opacity-80 mix-blend-multiply" data-alt="Monochrome photograph of an old server rack in a scholarly library with warm amber lights and soft bokeh" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCK5SGYr0xFe4LLxge19YeHudQfJw9MPvmzO1ytSzQ1LbxbNXSn-_X8Jwc-gPS66n6Rhehq6cjfyISshhmAHCxoILQfFQsoco74Kh2jS5himUb_5lCBtDYqlqNj7kxunikPA8SYGS-SGNbfEK7bWnCYnoyIWdHoMTEwRv-VcxXEzbuXu8hmVpYn0HDH_mE_nNSBolVpse9EbN5gWjs_3zmWUsKx4xIQWgZkroXMngXudsNS2BS_qF_r-DBdlB5XVOO2yX64N3TGchM"/>
+<div class="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent"></div>
+<div class="absolute bottom-6 left-6 right-6 p-6 glass-panel rounded-lg outline outline-1 outline-white/20">
+<h3 class="font-headline text-2xl text-on-surface mb-1">admin.miorish.com</h3>
+<p class="font-label text-xs tracking-widest text-primary font-bold">192.168.1.104</p>
+<div class="mt-4 flex gap-2">
+<span class="bg-tertiary text-on-tertiary text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-tighter">ADMIN</span>
+<span class="bg-surface-container-highest text-on-surface-variant text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-tighter">INTERNAL</span>
+</div>
+</div>
+</div>
+<div class="flex-1 p-8 lg:p-12 flex flex-col lg:flex-row gap-12">
+<!-- Node Metadata -->
+<div class="flex-1 space-y-8">
+<div>
+<h4 class="font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4">Node Metadata</h4>
+<dl class="grid grid-cols-2 gap-y-4 gap-x-8">
+<div>
+<dt class="text-[11px] font-label text-outline uppercase tracking-tight">OS Fingerprint</dt>
+<dd class="font-body text-sm text-on-surface mt-1">Ubuntu 22.04 LTS</dd>
+</div>
+<div>
+<dt class="text-[11px] font-label text-outline uppercase tracking-tight">First Seen</dt>
+<dd class="font-body text-sm text-on-surface mt-1">Oct 12, 2023</dd>
+</div>
+<div>
+<dt class="text-[11px] font-label text-outline uppercase tracking-tight">Data Center</dt>
+<dd class="font-body text-sm text-on-surface mt-1">London-DC3</dd>
+</div>
+<div>
+<dt class="text-[11px] font-label text-outline uppercase tracking-tight">Owner</dt>
+<dd class="font-body text-sm text-on-surface mt-1 italic">Security Operations</dd>
+</div>
+</dl>
+</div>
+<div class="pt-8 border-t border-outline-variant/15">
+<h4 class="font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4">Vulnerability Summary</h4>
+<div class="flex items-center gap-4">
+<div class="h-2 flex-grow bg-surface-container rounded-full overflow-hidden flex">
+<div class="h-full bg-error w-[15%]"></div>
+<div class="h-full bg-tertiary w-[35%]"></div>
+<div class="h-full bg-primary-container w-[50%]"></div>
+</div>
+<span class="font-label text-xs font-bold text-on-surface-variant">HEALTHY</span>
+</div>
+</div>
+</div>
+<!-- Active Service Topography -->
+<div class="flex-1 bg-surface-container-low rounded-xl p-6 outline outline-1 outline-outline-variant/10">
+<h4 class="font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-6">Active Service Topography</h4>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">shield</span>
+<div>
+<p class="font-body text-sm font-semibold">SSH</p>
+<p class="text-[10px] text-outline">Port 22 • Open</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-tertiary">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">language</span>
+<div>
+<p class="font-body text-sm font-semibold">HTTP</p>
+<p class="text-[10px] text-outline">Port 80 • Closed</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline/30">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">lock</span>
+<div>
+<p class="font-body text-sm font-semibold">HTTPS</p>
+<p class="text-[10px] text-outline">Port 443 • Open</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-tertiary">chevron_right</span>
+</div>
+</div>
+<button class="w-full mt-6 py-2 font-label text-[10px] font-bold text-primary uppercase tracking-widest hover:underline transition-all">
+                                View Detailed Node Graph
+                            </button>
+</div>
+</div>
+</article>
+<!-- Asset Grid: Secondary Assets (Subtle cards) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<article class="p-6 bg-surface-container-lowest outline outline-1 outline-outline-variant/10 rounded-lg group hover:bg-white transition-all">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline text-xl text-on-surface">mail.miorish.com</h3>
+<p class="font-label text-[10px] tracking-widest text-outline">192.168.1.105</p>
+</div>
+<span class="material-symbols-outlined text-primary-container opacity-0 group-hover:opacity-100 transition-opacity">open_in_new</span>
+</div>
+<div class="flex gap-4 mt-6">
+<div class="flex flex-col">
+<span class="text-[9px] font-label text-outline uppercase tracking-tighter">Services</span>
+<span class="font-body text-sm font-medium">SMTP, IMAP</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[9px] font-label text-outline uppercase tracking-tighter">Status</span>
+<span class="text-tertiary text-sm font-bold">MONITORED</span>
+</div>
+</div>
+</article>
+<article class="p-6 bg-surface-container-lowest outline outline-1 outline-outline-variant/10 rounded-lg group hover:bg-white transition-all">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline text-xl text-on-surface">dev-test.miorish.com</h3>
+<p class="font-label text-[10px] tracking-widest text-outline">192.168.2.11</p>
+</div>
+<span class="material-symbols-outlined text-primary-container opacity-0 group-hover:opacity-100 transition-opacity">open_in_new</span>
+</div>
+<div class="flex gap-4 mt-6">
+<div class="flex flex-col">
+<span class="text-[9px] font-label text-outline uppercase tracking-tighter">Services</span>
+<span class="font-body text-sm font-medium">HTTP, RPC</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[9px] font-label text-outline uppercase tracking-tighter">Status</span>
+<span class="text-primary text-sm font-bold">SANDBOX</span>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Component Integration -->
+<footer class="bg-slate-50 dark:bg-slate-950 font-serif text-sm leading-relaxed tracking-tight full-width p-12 mt-auto bg-slate-100 dark:bg-slate-900 tonal shift flat no shadows">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-8 border-t border-slate-200/10">
+<div class="text-lg font-serif italic text-slate-900 dark:text-slate-100">
+                Alexandria Cybersecurity
+            </div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="text-slate-500 dark:text-slate-400 hover:underline decoration-blue-700/30 transition-all opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="text-slate-500 dark:text-slate-400 hover:underline decoration-blue-700/30 transition-all opacity-80 hover:opacity-100" href="#">Privacy Protocol</a>
+<a class="text-slate-500 dark:text-slate-400 hover:underline decoration-blue-700/30 transition-all opacity-80 hover:opacity-100" href="#">Archival Access</a>
+</div>
+<div class="text-slate-500 dark:text-slate-400 opacity-80">
+                © 2024 Alexandria Cybersecurity. All rights reserved.
+            </div>
+</div>
+</footer>
+</body></html>

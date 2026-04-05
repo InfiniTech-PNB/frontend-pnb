@@ -187,14 +187,14 @@ const ScanResultsTab = () => {
 
     if (loading) return (
         <div className="flex flex-col items-center justify-center py-40">
-            <Loader2 className="animate-spin text-orange-500 mb-4" size={48} />
+            <Loader2 className="animate-spin mb-4" style={{ color: 'var(--primary)' }} size={48} />
             <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em] animate-pulse">{statusMsg}</p>
         </div>
     );
 
     if (!scanId) return (
         <div className="flex flex-col items-center justify-center py-40 animate-in fade-in duration-700">
-            <div className="p-8 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200 flex flex-col items-center text-center max-w-md">
+            <div className="p-8 editorial-shell border-dashed border-2 border-slate-200 flex flex-col items-center text-center max-w-md">
                 <div className="p-5 bg-white shadow-xl rounded-2xl mb-6 text-slate-300">
                     <Search size={48} />
                 </div>
@@ -213,11 +213,11 @@ const ScanResultsTab = () => {
 
             {/* --- TOP HUD --- */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <div className="lg:col-span-3 bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm flex items-center justify-between">
+                <div className="lg:col-span-3 editorial-shell p-8 flex items-center justify-between">
                     <div className="flex items-center gap-6">
-                        <div className="p-5 bg-orange-50 rounded-[2rem] text-orange-600 shadow-inner"><Globe size={32} /></div>
+                        <div className="p-5 bg-blue-50 rounded-[2rem] text-blue-700 shadow-inner"><Globe size={32} /></div>
                         <div>
-                            <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">
+                            <h2 className="editorial-title text-2xl tracking-tight uppercase leading-none">
                                 {location.state?.domainName || "Network Audit"}
                             </h2>
                             <p className="text-[10px] font-mono text-slate-400 mt-2 uppercase font-bold tracking-tighter">REF_ID: {scanId}</p>
@@ -225,10 +225,10 @@ const ScanResultsTab = () => {
                     </div>
                 </div>
 
-                <div className="bg-[#0f172a] rounded-[2.5rem] p-8 text-white flex flex-col items-center justify-center shadow-2xl relative overflow-hidden">
-                    <ShieldCheck className="absolute -right-4 -bottom-4 w-24 h-24 text-emerald-500/10" />
+                <div className="rounded-[2.5rem] p-8 text-white flex flex-col items-center justify-center shadow-2xl relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--primary-soft) 0%, var(--primary) 100%)' }}>
+                    <ShieldCheck className="absolute -right-4 -bottom-4 w-24 h-24 text-white/20" />
                     <h4 className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4">Domain Score</h4>
-                    <div className="text-6xl font-black text-emerald-400 drop-shadow-lg">
+                    <div className="text-6xl font-black text-white drop-shadow-lg">
                         {avgScanScore}
                     </div>
                 </div>
@@ -237,8 +237,8 @@ const ScanResultsTab = () => {
             {/* --- PER-ASSET ANALYSIS --- */}
             <div className="space-y-4">
                 <div className="flex items-center gap-3 px-4">
-                    <Server className="text-orange-500" size={20} />
-                    <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight italic">Asset Intelligence</h3>
+                    <Server className="text-blue-700" size={20} />
+                    <h3 className="editorial-title text-lg uppercase tracking-tight italic">Asset Intelligence</h3>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">

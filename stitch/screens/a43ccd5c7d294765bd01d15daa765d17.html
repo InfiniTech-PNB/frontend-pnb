@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Audit History | Alexandria Cybersecurity</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@400;500;600&amp;family=Public+Sans:wght@300;400;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "secondary": "#5a5f63",
+                        "background": "#faf9fa",
+                        "surface-dim": "#dbdadb",
+                        "on-primary-fixed-variant": "#00419d",
+                        "on-primary-fixed": "#001946",
+                        "on-tertiary-fixed": "#211b00",
+                        "surface": "#faf9fa",
+                        "on-error": "#ffffff",
+                        "tertiary": "#6d5e00",
+                        "surface-variant": "#e3e2e3",
+                        "on-surface-variant": "#434653",
+                        "on-secondary-fixed": "#171c20",
+                        "surface-container": "#efedee",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "on-tertiary-container": "#4a3f00",
+                        "tertiary-fixed": "#f9e37a",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "inverse-on-surface": "#f2f0f1",
+                        "outline": "#737784",
+                        "surface-container-high": "#e9e8e9",
+                        "outline-variant": "#c3c6d5",
+                        "surface-container-highest": "#e3e2e3",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "surface-tint": "#2259bf",
+                        "on-secondary-container": "#606569",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "error": "#ba1a1a",
+                        "primary-container": "#3366cc",
+                        "inverse-primary": "#b1c5ff",
+                        "on-surface": "#1b1c1d",
+                        "tertiary-container": "#bfab49",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f5f3f4",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#dfe3e8",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#faf9fa",
+                        "on-primary-container": "#e7ebff",
+                        "inverse-surface": "#303031",
+                        "on-background": "#1b1c1d",
+                        "secondary-container": "#dfe3e8",
+                        "error-container": "#ffdad6",
+                        "primary": "#094cb2",
+                        "primary-fixed": "#d9e2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "body": ["Inter"],
+                        "label": ["Public Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #faf9fa;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="font-body text-on-surface">
+<main class="max-w-6xl mx-auto px-6 py-16 md:py-24">
+<!-- Header Section -->
+<header class="mb-16">
+<h1 class="font-headline text-5xl md:text-6xl font-bold tracking-tight text-on-surface mb-6 uppercase">
+                AUDIT HISTORY
+            </h1>
+<div class="flex flex-wrap items-center gap-4">
+<div class="px-4 py-1.5 bg-surface-container-highest rounded-full border border-outline-variant/20">
+<span class="font-label text-xs font-semibold tracking-widest text-on-surface-variant uppercase">Domain</span>
+<span class="ml-2 font-body text-sm font-medium text-primary">google.com</span>
+</div>
+<div class="px-4 py-1.5 bg-surface-container-highest rounded-full border border-outline-variant/20">
+<span class="font-label text-xs font-semibold tracking-widest text-on-surface-variant uppercase">Last Audit</span>
+<span class="ml-2 font-body text-sm font-medium text-on-surface">Oct 24, 2024 — 14:32 UTC</span>
+</div>
+</div>
+</header>
+<!-- Grade & Summary Section -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+<!-- Grade Card -->
+<div class="lg:col-span-5 bg-primary-container bg-gradient-to-br from-primary-container to-primary p-10 rounded-xl flex flex-col justify-between text-on-primary-container">
+<div>
+<span class="font-label text-xs font-bold tracking-[0.2em] uppercase opacity-80">Assessment Results</span>
+<h2 class="font-headline text-8xl font-bold mt-4">GRADE: 0</h2>
+</div>
+<div class="mt-12 space-y-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-3xl" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<p class="font-body text-lg font-medium">Critical Vulnerability Detected</p>
+</div>
+<p class="font-body text-sm leading-relaxed opacity-90 max-w-sm">
+                        This endpoint relies on legacy RSA-2048 primitives. It is highly susceptible to future quantum decryption (Store Now, Decrypt Later threats).
+                    </p>
+</div>
+</div>
+<!-- Metadata Cards -->
+<div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="p-8 bg-surface-container-low rounded-xl flex flex-col justify-between">
+<div>
+<span class="font-label text-xs font-bold tracking-widest text-tertiary uppercase">Security Posture</span>
+<h3 class="font-headline text-3xl mt-4">THREAT LEVEL: HIGH</h3>
+</div>
+<div class="mt-8">
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-error w-[92%] h-full"></div>
+</div>
+<p class="mt-2 font-label text-[10px] text-on-surface-variant font-medium">92nd Percentile Risk Exposure</p>
+</div>
+</div>
+<div class="p-8 bg-surface-container-low rounded-xl flex flex-col justify-between">
+<div>
+<span class="font-label text-xs font-bold tracking-widest text-on-surface-variant uppercase">Network Reach</span>
+<h3 class="font-headline text-3xl mt-4">NODE COVERAGE: 1/195</h3>
+</div>
+<div class="mt-8 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="hub">hub</span>
+<p class="font-body text-sm text-secondary italic">Isolated secure node detected.</p>
+</div>
+</div>
+<div class="md:col-span-2 p-8 bg-surface-container-low rounded-xl">
+<span class="font-label text-xs font-bold tracking-widest text-on-surface-variant uppercase">System Logic</span>
+<p class="font-headline text-xl mt-4 leading-relaxed italic text-on-surface/80">
+                        "The integrity of archival data hinges on the immediate transition to Lattice-based cryptography before the emergence of Y2Q."
+                    </p>
+</div>
+</div>
+</section>
+<!-- Recommendations Grid -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
+<!-- PQC Stack -->
+<div class="p-10 bg-white rounded-xl shadow-sm border border-outline-variant/10">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-12 h-12 bg-primary-container/10 flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
+</div>
+<h3 class="font-headline text-2xl font-bold">RECOMMENDED PQC STACK</h3>
+</div>
+<div class="space-y-6">
+<div class="flex items-start justify-between pb-6 border-b border-surface-variant/50">
+<div>
+<p class="font-label text-[11px] font-bold text-primary tracking-widest uppercase mb-1">Key Exchange</p>
+<p class="font-body font-semibold text-lg">ML-KEM-768</p>
+</div>
+<span class="px-2 py-1 bg-tertiary/10 text-tertiary font-label text-[10px] font-bold rounded">VERIFIED</span>
+</div>
+<div class="flex items-start justify-between">
+<div>
+<p class="font-label text-[11px] font-bold text-primary tracking-widest uppercase mb-1">Digital Signature</p>
+<p class="font-body font-semibold text-lg">CRYSTALS-Dilithium</p>
+</div>
+<span class="px-2 py-1 bg-tertiary/10 text-tertiary font-label text-[10px] font-bold rounded">NIST FIPS 204</span>
+</div>
+</div>
+</div>
+<!-- Migration Strategy -->
+<div class="p-10 bg-white rounded-xl shadow-sm border border-outline-variant/10">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-12 h-12 bg-primary-container/10 flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="account_tree">account_tree</span>
+</div>
+<h3 class="font-headline text-2xl font-bold">MIGRATION STRATEGY</h3>
+</div>
+<ol class="space-y-6">
+<li class="flex gap-4">
+<span class="font-headline text-xl text-outline-variant italic">01.</span>
+<p class="font-body text-on-surface leading-snug">Migrate all sensitive digital assets to post-quantum safe cold storage.</p>
+</li>
+<li class="flex gap-4">
+<span class="font-headline text-xl text-outline-variant italic">02.</span>
+<p class="font-body text-on-surface leading-snug">Implement ML-KEM-768 encapsulation for all internal communications.</p>
+</li>
+<li class="flex gap-4">
+<span class="font-headline text-xl text-outline-variant italic">03.</span>
+<p class="font-body text-on-surface leading-snug">Update TLS stack to support hybrid classical-quantum handshake.</p>
+</li>
+</ol>
+</div>
+</section>
+<!-- Visualization Section -->
+<section class="mb-16">
+<div class="p-10 bg-surface-container-lowest rounded-xl border border-outline-variant/10">
+<div class="flex justify-between items-end mb-12">
+<div>
+<span class="font-label text-xs font-bold tracking-widest text-on-surface-variant uppercase">Structural Analysis</span>
+<h3 class="font-headline text-3xl font-bold mt-2">CIPHER FOOTPRINT</h3>
+</div>
+<div class="text-right">
+<p class="font-label text-[11px] font-bold text-on-surface-variant uppercase mb-1">Density Map</p>
+<p class="font-body text-sm font-medium">84.2% Legacy Primitive Concentration</p>
+</div>
+</div>
+<div class="relative h-[400px] w-full flex items-center justify-center">
+<!-- Placeholder for the Radial Map -->
+<div class="absolute inset-0 flex items-center justify-center opacity-10">
+<div class="w-[350px] h-[350px] border border-primary rounded-full"></div>
+<div class="absolute w-[250px] h-[250px] border border-primary rounded-full"></div>
+<div class="absolute w-[150px] h-[150px] border border-primary rounded-full"></div>
+</div>
+<!-- Nodes -->
+<div class="relative w-full h-full">
+<div class="absolute top-1/4 left-1/3 group">
+<div class="w-4 h-4 bg-error rounded-full animate-pulse shadow-lg shadow-error/40"></div>
+<div class="hidden group-hover:block absolute top-6 left-0 bg-white p-3 rounded shadow-xl border border-outline-variant/20 z-10 w-48">
+<p class="text-[10px] font-bold text-error uppercase mb-1">Critical Point</p>
+<p class="text-xs font-medium font-body">RSA-2048 Root Cert</p>
+</div>
+</div>
+<div class="absolute top-1/2 right-1/4 group">
+<div class="w-3 h-3 bg-primary rounded-full shadow-lg shadow-primary/40"></div>
+<div class="hidden group-hover:block absolute top-6 right-0 bg-white p-3 rounded shadow-xl border border-outline-variant/20 z-10 w-48">
+<p class="text-[10px] font-bold text-primary uppercase mb-1">Secure Anchor</p>
+<p class="text-xs font-medium font-body">X25519 Ephemeral</p>
+</div>
+</div>
+<div class="absolute bottom-1/3 left-1/2 group">
+<div class="w-2 h-2 bg-on-surface-variant rounded-full opacity-40"></div>
+</div>
+</div>
+<!-- Schematic overlay -->
+<div class="absolute bottom-0 right-0 p-4 border-l border-t border-outline-variant/20 font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
+                        Fig 4.2: Cryptographic dependency lattice
+                    </div>
+</div>
+</div>
+</section>
+<!-- Footer Breakdown Header -->
+<section class="border-t border-surface-variant pt-12">
+<h4 class="font-label text-xs font-bold tracking-[0.3em] uppercase text-center text-on-surface-variant mb-4">Historical Node Breakdown</h4>
+<p class="text-center font-headline italic text-lg text-secondary max-w-2xl mx-auto opacity-70">
+                A chronological archival record of node discovery and vulnerability status across the global Alexandria observation network.
+            </p>
+</section>
+</main>
+<!-- Predicted Footer from JSON -->
+<footer class="w-full border-t border-stone-200 bg-stone-50 py-16">
+<div class="max-w-7xl mx-auto px-12 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="font-serif italic text-lg text-stone-900">
+                Alexandria Cybersecurity
+            </div>
+<nav class="flex flex-wrap justify-center gap-8">
+<a class="font-serif text-sm tracking-tight leading-relaxed text-stone-500 hover:text-blue-800 transition-colors duration-300 cursor-pointer active:opacity-70" href="#">Methodology</a>
+<a class="font-serif text-sm tracking-tight leading-relaxed text-stone-500 hover:text-blue-800 transition-colors duration-300 cursor-pointer active:opacity-70" href="#">Compliance Standards</a>
+<a class="font-serif text-sm tracking-tight leading-relaxed text-blue-700 font-semibold underline underline-offset-4 cursor-pointer active:opacity-70" href="#">Archival Records</a>
+<a class="font-serif text-sm tracking-tight leading-relaxed text-stone-500 hover:text-blue-800 transition-colors duration-300 cursor-pointer active:opacity-70" href="#">Security Policy</a>
+</nav>
+<div class="font-serif text-sm tracking-tight leading-relaxed text-stone-500 text-center md:text-right">
+                © 2024 Alexandria Cybersecurity Editorial. All rights reserved.<br/>
+                Proprietary and Confidential.
+            </div>
+</div>
+</footer>
+</body></html>

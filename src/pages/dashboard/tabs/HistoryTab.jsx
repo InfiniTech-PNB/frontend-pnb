@@ -154,23 +154,23 @@ const HistoryTab = () => {
             }} />
 
             {/* --- SELECTION HUD --- */}
-            <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
+            <div className="editorial-shell p-8">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
-                        <div className="p-5 bg-orange-50 rounded-[2rem] text-orange-600 shadow-inner">
+                        <div className="p-5 bg-blue-50 rounded-[2rem] text-blue-700 shadow-inner">
                             <History size={32} />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase italic leading-none">Audit History</h2>
+                            <h2 className="editorial-title text-2xl tracking-tight uppercase italic leading-none">Audit History</h2>
                         </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-center gap-4">
-                        <select value={selectedDomain} onChange={(e) => setSelectedDomain(e.target.value)} className="w-full sm:w-64 pl-6 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-orange-500 appearance-none shadow-inner">
+                        <select value={selectedDomain} onChange={(e) => setSelectedDomain(e.target.value)} className="w-full sm:w-64 pl-6 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none">
                             <option value="">Select Domain</option>
                             {domains.map(d => <option key={d._id} value={d._id}>{d.domainName}</option>)}
                         </select>
-                        <select value={selectedScan} disabled={!selectedDomain} onChange={(e) => handleFetchHistory(e.target.value)} className="w-full sm:w-64 pl-6 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-orange-500 appearance-none shadow-inner disabled:opacity-30">
+                        <select value={selectedScan} disabled={!selectedDomain} onChange={(e) => handleFetchHistory(e.target.value)} className="w-full sm:w-64 pl-6 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-30">
                             <option value="">Select Audit Entry</option>
                             {scans.map(s => <option key={s._id} value={s._id}>{new Date(s.createdAt).toLocaleString()}</option>)}
                         </select>
@@ -180,7 +180,7 @@ const HistoryTab = () => {
 
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-40">
-                    <Loader2 className="animate-spin text-orange-500 mb-4" size={48} />
+                    <Loader2 className="animate-spin mb-4" style={{ color: 'var(--primary)' }} size={48} />
                     <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em] animate-pulse">Reconstructing Audit Environment...</p>
                 </div>
             ) : domainSummary ? (
@@ -190,7 +190,7 @@ const HistoryTab = () => {
                         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
                             {/* Main Strategic Overview Card */}
-                            <div className="xl:col-span-2 bg-[#0f172a] rounded-[3rem] p-10 text-white relative overflow-hidden shadow-2xl border border-slate-800">
+                            <div className="xl:col-span-2 rounded-[3rem] p-10 text-white relative overflow-hidden shadow-2xl border border-slate-800" style={{ background: 'linear-gradient(135deg, var(--primary-soft) 0%, var(--primary) 100%)' }}>
                                 <ShieldCheck className="absolute -right-10 -bottom-10 w-64 h-64 text-emerald-500/5" />
 
                                 <div className="relative z-10">
@@ -290,8 +290,8 @@ const HistoryTab = () => {
                     {/* --- TACTICAL ASSET BREAKDOWN (Results Tab Design) --- */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-3 px-4">
-                            <Activity className="text-orange-500" size={20} />
-                            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight italic">Historical Node Breakdown</h3>
+                            <Activity className="text-blue-700" size={20} />
+                            <h3 className="editorial-title text-lg uppercase tracking-tight italic">Historical Node Breakdown</h3>
                         </div>
 
                         <div className="grid grid-cols-1 gap-4">

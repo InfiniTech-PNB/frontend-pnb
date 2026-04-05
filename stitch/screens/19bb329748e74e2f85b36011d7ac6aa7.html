@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PNB Secure - Scan Engine</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&amp;family=Inter:wght@400;500;600&amp;family=Public+Sans:wght@300;400;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#2259bf",
+                        "surface-container-highest": "#e3e2e3",
+                        "secondary-container": "#dfe3e8",
+                        "on-tertiary-fixed": "#211b00",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#e7ebff",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "on-surface": "#1b1c1d",
+                        "surface": "#faf9fa",
+                        "surface-variant": "#e3e2e3",
+                        "on-surface-variant": "#434653",
+                        "tertiary-container": "#bfab49",
+                        "tertiary": "#6d5e00",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#dfe3e8",
+                        "primary-fixed": "#d9e2ff",
+                        "on-background": "#1b1c1d",
+                        "surface-container-low": "#f5f3f4",
+                        "tertiary-fixed": "#f9e37a",
+                        "surface-dim": "#dbdadb",
+                        "surface-bright": "#faf9fa",
+                        "surface-container": "#efedee",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#b1c5ff",
+                        "secondary": "#5a5f63",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f2f0f1",
+                        "inverse-surface": "#303031",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#c2c7cc",
+                        "primary": "#094cb2",
+                        "on-secondary-fixed-variant": "#42474b",
+                        "background": "#faf9fa",
+                        "tertiary-fixed-dim": "#dcc661",
+                        "outline-variant": "#c3c6d5",
+                        "on-tertiary-fixed-variant": "#524600",
+                        "on-tertiary-container": "#4a3f00",
+                        "on-secondary-fixed": "#171c20",
+                        "on-error": "#ffffff",
+                        "primary-container": "#3366cc",
+                        "on-secondary-container": "#606569",
+                        "on-primary-fixed": "#001946",
+                        "outline": "#737784",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#00419d",
+                        "surface-container-high": "#e9e8e9",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "body": ["Inter"],
+                        "label": ["Public Sans"]
+                    }
+                },
+            }
+        }
+    </script>
+<style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Noto Serif', serif; }
+        .label-text { font-family: 'Public Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<div class="main-content min-h-screen flex flex-col">
+<main class="flex-1 px-8 md:px-16 pt-20 pb-20 max-w-screen-xl mx-auto w-full">
+<section class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
+<div>
+<span class="label-text text-xs uppercase tracking-[0.25em] text-tertiary mb-4 block font-semibold">Security Operations</span>
+<h1 class="text-6xl md:text-7xl font-bold text-on-surface tracking-tight uppercase">Scan Engine</h1>
+</div>
+<div class="flex items-center gap-4">
+<!-- Mode Toggle -->
+<div class="flex items-center bg-stone-100 p-1 rounded-lg border border-stone-200">
+<button class="px-6 py-2.5 text-xs font-bold label-text tracking-widest uppercase bg-white text-primary rounded shadow-sm border border-stone-200/50">
+                            Soft Scan
+                        </button>
+<button class="px-6 py-2.5 text-xs font-bold label-text tracking-widest uppercase text-stone-400 hover:text-stone-600 transition-colors">
+                            Deep Audit
+                        </button>
+</div>
+<!-- Action Button -->
+<button class="bg-primary text-white px-8 py-3.5 rounded-lg font-serif font-bold text-sm tracking-wide hover:opacity-95 transition-all shadow-md shadow-primary/10">
+                        FINALIZE &amp; RUN AUDIT
+                    </button>
+</div>
+</section>
+<!-- Filter Tabs -->
+<div class="mb-10 flex items-center justify-between border-b border-stone-200">
+<div class="flex gap-10">
+<button class="text-primary font-serif font-bold border-b-2 border-primary pb-4 -mb-[1px] text-lg">Inventory (14)</button>
+<button class="text-stone-400 font-serif font-medium hover:text-stone-600 pb-4 transition-all text-lg">Vulnerabilities</button>
+<button class="text-stone-400 font-serif font-medium hover:text-stone-600 pb-4 transition-all text-lg">Policy Deviations</button>
+</div>
+<div class="flex items-center gap-4 pb-4">
+<span class="label-text text-[10px] text-stone-400 uppercase tracking-widest font-bold">Filter By</span>
+<select class="bg-transparent border-none text-sm font-serif text-stone-700 focus:ring-0 cursor-pointer font-bold">
+<option>High Criticality</option>
+<option>Latest Discovered</option>
+<option>Pending Review</option>
+</select>
+</div>
+</div>
+<!-- Results Area -->
+<div class="space-y-8">
+<!-- Expanded Asset -->
+<div class="bg-white rounded-2xl overflow-hidden border border-stone-200 shadow-sm">
+<div class="p-8 flex flex-col md:flex-row justify-between items-start gap-8">
+<div class="flex gap-6">
+<div class="w-16 h-16 rounded-xl bg-blue-50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div>
+<div class="flex items-center gap-3">
+<h3 class="text-2xl font-bold text-stone-900">accounts.google.com</h3>
+<span class="bg-tertiary-container/20 text-on-tertiary-container px-2 py-0.5 rounded text-[10px] font-bold label-text tracking-tighter uppercase border border-tertiary-container/30">Verified Anchor</span>
+</div>
+<p class="text-stone-500 font-body text-sm mt-1">ID: 0x8823-GAuth-Prod | Last Audited: 24m ago</p>
+</div>
+</div>
+<button class="px-8 py-3 bg-stone-50 text-stone-800 label-text font-bold text-xs tracking-widest rounded-lg border border-stone-200 hover:bg-stone-100 transition-colors uppercase">
+                            Inspect Services
+                        </button>
+</div>
+<div class="bg-stone-50/50 px-8 py-10 border-t border-stone-100">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-10">
+<!-- Metric -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="text-[10px] label-text font-bold uppercase tracking-[0.2em] text-stone-400">Confidentiality</label>
+<span class="text-2xl font-headline font-bold text-primary">05</span>
+</div>
+<div class="h-1.5 w-full bg-stone-200 rounded-full relative">
+<div class="absolute inset-y-0 left-0 bg-primary w-1/2 rounded-full"></div>
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm"></div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="text-[10px] label-text font-bold uppercase tracking-[0.2em] text-stone-400">Integrity</label>
+<span class="text-2xl font-headline font-bold text-primary">05</span>
+</div>
+<div class="h-1.5 w-full bg-stone-200 rounded-full relative">
+<div class="absolute inset-y-0 left-0 bg-primary w-1/2 rounded-full"></div>
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm"></div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="text-[10px] label-text font-bold uppercase tracking-[0.2em] text-stone-400">Availability</label>
+<span class="text-2xl font-headline font-bold text-primary">05</span>
+</div>
+<div class="h-1.5 w-full bg-stone-200 rounded-full relative">
+<div class="absolute inset-y-0 left-0 bg-primary w-1/2 rounded-full"></div>
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm"></div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="text-[10px] label-text font-bold uppercase tracking-[0.2em] text-stone-400">Criticality</label>
+<span class="text-2xl font-headline font-bold text-primary">05</span>
+</div>
+<div class="h-1.5 w-full bg-stone-200 rounded-full relative">
+<div class="absolute inset-y-0 left-0 bg-primary w-1/2 rounded-full"></div>
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm"></div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="text-[10px] label-text font-bold uppercase tracking-[0.2em] text-stone-400">SLA Priority</label>
+<span class="text-2xl font-headline font-bold text-primary">05</span>
+</div>
+<div class="h-1.5 w-full bg-stone-200 rounded-full relative">
+<div class="absolute inset-y-0 left-0 bg-primary w-1/2 rounded-full"></div>
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm"></div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="text-[10px] label-text font-bold uppercase tracking-[0.2em] text-stone-400">Node Dependencies</label>
+<span class="text-2xl font-headline font-bold text-primary">05</span>
+</div>
+<div class="h-1.5 w-full bg-stone-200 rounded-full relative">
+<div class="absolute inset-y-0 left-0 bg-primary w-1/2 rounded-full"></div>
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Collapsed Assets -->
+<div class="bg-stone-50 border border-stone-200 rounded-xl p-6 flex flex-col md:flex-row justify-between items-center group cursor-pointer hover:bg-stone-100 transition-all">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-lg bg-white border border-stone-200 flex items-center justify-center text-stone-400">
+<span class="material-symbols-outlined">dns</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-stone-900">api.internal-services.cloud</h3>
+<p class="text-xs font-body text-stone-500">Endpoint Cluster | Risk Score: Low</p>
+</div>
+</div>
+<div class="flex items-center gap-12">
+<div class="text-center">
+<span class="block text-[10px] label-text font-bold uppercase tracking-widest text-stone-400">Security Index</span>
+<span class="text-xl font-headline font-bold text-stone-800">92/100</span>
+</div>
+<div class="text-center">
+<span class="block text-[10px] label-text font-bold uppercase tracking-widest text-stone-400">Health</span>
+<div class="flex gap-1 mt-1 justify-center">
+<div class="w-4 h-1 bg-primary rounded-full"></div>
+<div class="w-4 h-1 bg-primary rounded-full"></div>
+<div class="w-4 h-1 bg-primary rounded-full"></div>
+<div class="w-4 h-1 bg-stone-200 rounded-full"></div>
+</div>
+</div>
+<span class="material-symbols-outlined text-stone-400 group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+</div>
+</div>
+<div class="mt-12 flex justify-center">
+<button class="label-text text-[10px] font-bold text-primary uppercase tracking-[0.3em] flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    View All Archival Nodes <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+<!-- Footer Section -->
+<footer class="mt-24 border-t border-stone-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-3 text-[10px] label-text font-bold uppercase tracking-widest text-stone-400">
+<a class="hover:text-primary transition-colors" href="#">Workspace</a>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Audits</a>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-stone-900">Current Session</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-9 h-9 flex items-center justify-center rounded-lg border border-stone-200 hover:bg-stone-100 text-stone-400 transition-all">
+<span class="material-symbols-outlined text-lg">first_page</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg border border-stone-200 hover:bg-stone-100 text-stone-400 transition-all">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+</button>
+<div class="flex px-4 gap-2">
+<button class="w-9 h-9 flex items-center justify-center rounded-lg bg-primary text-white font-serif text-sm font-bold shadow-sm">1</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg border border-stone-200 hover:bg-stone-100 text-stone-600 font-serif text-sm font-medium transition-all">2</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg border border-stone-200 hover:bg-stone-100 text-stone-600 font-serif text-sm font-medium transition-all">3</button>
+<span class="text-stone-300 self-center px-1">...</span>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg border border-stone-200 hover:bg-stone-100 text-stone-600 font-serif text-sm font-medium transition-all">12</button>
+</div>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg border border-stone-200 hover:bg-stone-100 text-stone-400 transition-all">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg border border-stone-200 hover:bg-stone-100 text-stone-400 transition-all">
+<span class="material-symbols-outlined text-lg">last_page</span>
+</button>
+</div>
+<p class="text-[10px] label-text font-bold text-stone-400 tracking-widest uppercase">Nodes 1-10 of 124</p>
+</footer>
+</main>
+</div>
+<!-- Floating User Profile - Repositioned to maintain visual balance -->
+<div class="fixed bottom-8 right-8 z-[70] flex items-center gap-4 bg-white/80 backdrop-blur shadow-xl border border-stone-200 p-3 rounded-full">
+<div class="w-10 h-10 rounded-full bg-stone-200 overflow-hidden border border-white shadow-sm">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA212bI7JZOvXWUquG8tyTDZUV6HQTqnSln0Lfk6lQUDs4SUPnCiOKkVOCAQaqXKPMgIladq6Ys7p_V1UM6K-konUqVfXwRwYxh7c5MKFZnm2EFadpsiXyOJY_ngiRqOTz4mXGRqkRS_IqCZJnnPkbwfN86pzCn0N7Z_Vt6K9MIN4iXUJ-hc7MDDoduew5Aqf_0fberYd4rsRSygrDHw6UWufBtSAajjEaQKKrX0spgXWy_wXvERiocWDjNnb2fW4FU4Ba68fiAEBI"/>
+</div>
+<div class="pr-4">
+<p class="text-xs font-bold font-serif leading-none">A. Hamilton</p>
+<p class="text-[9px] label-text text-stone-500 uppercase tracking-tighter mt-0.5">Senior Auditor</p>
+</div>
+</div>
+</body></html>

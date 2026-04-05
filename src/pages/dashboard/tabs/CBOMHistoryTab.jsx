@@ -132,14 +132,14 @@ const CBOMHistoryTab = () => {
             }} />
 
             {/* --- FILTER HUD --- */}
-            <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
+            <div className="editorial-shell p-8">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
-                        <div className="p-5 bg-orange-50 rounded-[2rem] text-orange-600 shadow-inner">
+                        <div className="p-5 bg-blue-50 rounded-[2rem] text-blue-700 shadow-inner">
                             <Database size={32} />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase leading-none italic">
+                            <h2 className="editorial-title text-2xl tracking-tight uppercase leading-none italic">
                                 CBOM Registry
                             </h2>
                             <p className="text-[10px] font-mono text-slate-400 mt-2 uppercase tracking-widest font-bold font-mono">Archive Discovery Engine</p>
@@ -152,7 +152,7 @@ const CBOMHistoryTab = () => {
                             <select
                                 value={selectedDomain}
                                 onChange={(e) => setSelectedDomain(e.target.value)}
-                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-orange-500 appearance-none shadow-inner"
+                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none"
                             >
                                 <option value="">Select Target Domain</option>
                                 {domains.map(d => (
@@ -167,7 +167,7 @@ const CBOMHistoryTab = () => {
                                 value={selectedScan}
                                 disabled={!selectedDomain}
                                 onChange={(e) => handleFetchCBOM(e.target.value)}
-                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-orange-500 appearance-none shadow-inner disabled:opacity-30"
+                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-30"
                             >
                                 <option value="">Select Audit Entry</option>
                                 {Array.isArray(scans) && scans.map(s => (
@@ -183,7 +183,7 @@ const CBOMHistoryTab = () => {
                             className={`flex items-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm
                                     ${!selectedScan
                                     ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                    : 'bg-slate-900 text-white hover:bg-orange-500 active:scale-95'
+                                    : 'bg-slate-900 text-white hover:bg-blue-700 active:scale-95'
                                 }`}
                         >
                             {downloading ? (
@@ -205,7 +205,7 @@ const CBOMHistoryTab = () => {
                 </div>
             ) : loading ? (
                 <div className="flex flex-col items-center justify-center py-40">
-                    <Loader2 className="animate-spin text-orange-500 mb-4" size={48} />
+                    <Loader2 className="animate-spin mb-4" style={{ color: 'var(--primary)' }} size={48} />
                     <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em] animate-pulse">Decrypting CBOM Archive...</p>
                 </div>
             ) : (
