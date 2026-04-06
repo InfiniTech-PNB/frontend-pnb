@@ -49,7 +49,7 @@ const Navbar = ({ menuItems, onToggleSidebar }) => {
 
     return (
         <nav
-            className="sticky top-0 z-[100] border-b px-4 sm:px-6 lg:px-10 py-3"
+            className="sticky top-0 z-100 border-b px-4 sm:px-6 lg:px-10 py-3"
             style={{
                 backgroundColor: 'color-mix(in srgb, var(--surface) 80%, transparent)',
                 borderColor: 'color-mix(in srgb, var(--outline) 48%, transparent)',
@@ -75,33 +75,10 @@ const Navbar = ({ menuItems, onToggleSidebar }) => {
                     </div>
                 </div>
 
-                <div className="hidden xl:flex items-center gap-3">
-                    <div className="relative">
-                        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="Search archive..."
-                            className="editorial-input w-72 pl-9 pr-3 py-2"
-                        />
-                    </div>
-
-                    <button
-                        type="button"
-                        className="rounded-lg border p-2"
-                        style={{
-                            borderColor: 'color-mix(in srgb, var(--outline) 55%, transparent)',
-                            backgroundColor: 'var(--surface-soft)',
-                            color: 'var(--muted)'
-                        }}
-                    >
-                        <Bell size={16} />
-                    </button>
-                </div>
-
                 <div className="flex items-center gap-2 sm:gap-3">
                     <div className="hidden sm:block text-right leading-tight">
                         <p className="editorial-label text-slate-500">{user?.role || 'System User'}</p>
-                        <p className="mt-1 text-sm font-semibold text-slate-700 max-w-[140px] truncate">{user?.name || 'Guest'}</p>
+                        <p className="mt-1 text-sm font-semibold text-slate-700 max-w-35 truncate">{user?.name || 'Guest'}</p>
                     </div>
 
                     <button

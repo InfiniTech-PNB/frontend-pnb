@@ -80,12 +80,12 @@ const AssetInventoryTab = () => {
             <div className="editorial-shell p-8">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
-                        <div className="p-5 bg-blue-50 rounded-[2rem] text-blue-600 shadow-inner">
+                        <div className="p-5 bg-blue-50 rounded-4xl text-blue-600 shadow-inner">
                             <Server size={32} />
                         </div>
                         <div>
                             <h2 className="editorial-title text-2xl tracking-tight uppercase italic leading-none">Global Inventory</h2>
-                            <p className="text-[10px] font-mono text-slate-400 mt-2 uppercase tracking-widest font-bold">Network Endpoint Discovery</p>
+                            <p className="text-md font-mono text-slate-400 mt-2 uppercase tracking-widest font-bold">Network Endpoint Discovery</p>
                         </div>
                     </div>
 
@@ -95,7 +95,7 @@ const AssetInventoryTab = () => {
                             <select
                                 value={selectedDomain}
                                 onChange={(e) => handleDomainChange(e.target.value)}
-                                className="w-full sm:w-64 pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none"
+                                className="w-full sm:w-64 pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-md font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none"
                             >
                                 <option value="">Select Domain</option>
                                 {domains.map(d => <option key={d._id} value={d._id}>{d.domainName}</option>)}
@@ -109,7 +109,7 @@ const AssetInventoryTab = () => {
                                 placeholder="SEARCH ENDPOINTS..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full sm:w-64 pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500"
+                                className="w-full sm:w-64 pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-md font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
                     </div>
@@ -120,7 +120,7 @@ const AssetInventoryTab = () => {
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-40">
                     <Loader2 className="animate-spin text-blue-500 mb-4" size={48} />
-                    <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em] animate-pulse">Mapping Infrastructure Topography...</p>
+                    <p className="text-slate-400 font-black uppercase text-md tracking-[0.3em] animate-pulse">Mapping Infrastructure Topography...</p>
                 </div>
             ) : selectedDomain ? (
                 <div className="space-y-4">
@@ -137,36 +137,36 @@ const AssetInventoryTab = () => {
                             const services = detailedServices[asset._id] || asset.services || [];
 
                             return (
-                                <div key={asset._id} className={`editorial-shell rounded-[1.5rem] overflow-hidden transition-all ${isExpanded ? 'ring-2 ring-blue-500 border-transparent' : ''}`}>
+                                <div key={asset._id} className={`editorial-shell rounded-3xl overflow-hidden transition-all ${isExpanded ? 'ring-2 ring-blue-500 border-transparent' : ''}`}>
 
                                     {/* Asset Summary Row */}
                                     <div className="p-8 flex flex-col md:flex-row justify-between items-center gap-6">
                                         <div className="flex items-center gap-4">
-                                            <div className="p-4 rounded-[1.5rem] bg-slate-100 text-blue-700 shadow-sm group-hover:scale-110 transition-transform">
+                                            <div className="p-4 rounded-3xl bg-slate-100 text-blue-700 shadow-sm group-hover:scale-110 transition-transform">
                                                 <Activity size={24} />
                                             </div>
                                             <div>
-                                                <h4 className="text-lg font-black text-slate-900 uppercase italic leading-none">{asset.host}</h4>
-                                                <p className="text-[10px] font-mono text-slate-400 mt-2 font-bold">{asset.ip} • <span className="text-blue-600 uppercase">{asset.assetType || 'Compute Node'}</span></p>
+                                                <h4 className="text-xl font-black text-slate-900 uppercase italic leading-none">{asset.host}</h4>
+                                                <p className="text-md font-mono text-slate-400 mt-2 font-bold">{asset.ip} • <span className="text-blue-600 uppercase">{asset.assetType || 'Compute Node'}</span></p>
                                             </div>
                                         </div>
 
                                         <div className="flex items-center gap-8">
                                             <div className="hidden lg:block text-right">
-                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Services</p>
+                                                <p className="text-sm font-black text-slate-400 uppercase tracking-widest mb-1">Services</p>
                                                 <div className="flex gap-1 justify-end">
                                                     {asset.services?.slice(0, 3).map((s, idx) => (
-                                                        <span key={idx} className="bg-slate-100 text-slate-600 text-[9px] px-2 py-0.5 rounded font-black">{s.port}</span>
+                                                        <span key={idx} className="bg-slate-100 text-slate-600 text-sm px-2 py-0.5 rounded font-black">{s.port}</span>
                                                     ))}
-                                                    {asset.services?.length > 3 && <span className="text-slate-400 text-[9px] font-black">+{asset.services.length - 3}</span>}
+                                                    {asset.services?.length > 3 && <span className="text-slate-400 text-sm font-black">+{asset.services.length - 3}</span>}
                                                 </div>
                                             </div>
 
                                             <button
                                                 onClick={() => toggleAssetExpansion(asset._id)}
-                                                className={`p-3 rounded-full transition-all ${isExpanded ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                                                className={`p-3 rounded-full transition-all cursor-pointer ${isExpanded ? 'bg-blue-600 shadow-lg' : 'bg-slate-50 text-slate-400 border border-slate-400 hover:bg-slate-100'}`}
                                             >
-                                                {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                                                {isExpanded ? <ChevronUp size={24} color='white' /> : <ChevronDown size={24} />}
                                             </button>
                                         </div>
                                     </div>
@@ -178,68 +178,68 @@ const AssetInventoryTab = () => {
 
                                                 {/* Left: Services List (Deep Data from Route 2) */}
                                                 <div className="xl:col-span-8 space-y-4">
-                                                    <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                    <h5 className="text-md font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                                         <Network size={14} className="text-blue-500" /> Active Service Topography
                                                     </h5>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                        {services.length > 0 ? services.map((svc, sIdx) => (
-                                                            <div key={idx} className="bg-slate-100 rounded-[1.5rem] p-5 flex items-center justify-between group hover:bg-slate-200 transition-colors">
+                                                        {services.length > 0 ? services.map((svc,idx) => (
+                                                            <div key={idx} className="bg-slate-100 rounded-3xl p-5 flex items-center justify-between group hover:bg-slate-200 transition-colors">
                                                                 <div className="flex items-center gap-4">
                                                                     <div className="p-3 bg-white rounded-xl text-emerald-500 border border-slate-200">
-                                                                        <Zap size={16} />
+                                                                        <Zap size={18} />
                                                                     </div>
                                                                     <div>
-                                                                        <p className="text-slate-900 font-black text-xs uppercase tracking-tight">{svc.protocolName || 'TCP'}</p>
-                                                                        <p className="text-[10px] font-mono text-slate-500">Port {svc.port}</p>
+                                                                        <p className="text-slate-900 font-black text-md uppercase tracking-tight">{svc.protocolName || 'TCP'}</p>
+                                                                        <p className="text-md font-mono text-slate-500">Port {svc.port}</p>
                                                                     </div>
                                                                 </div>
                                                                 <div className="text-right">
-                                                                    <span className="text-[9px] font-black text-blue-700 uppercase border border-blue-200 px-2 py-1 rounded-lg bg-blue-50">
+                                                                    <span className="text-sm font-black text-blue-700 uppercase border border-blue-200 px-2 py-1 rounded-lg bg-blue-50">
                                                                         Active
                                                                     </span>
                                                                 </div>
                                                             </div>
                                                         )) : (
-                                                            <p className="text-[10px] text-slate-400 italic col-span-2 py-4">No active services detected in latest scan.</p>
+                                                            <p className="text-md text-slate-400 italic col-span-2 py-4">No active services detected in latest scan.</p>
                                                         )}
                                                     </div>
                                                 </div>
 
                                                 {/* Right: Technical Metadata (Infrastructure side-bar) */}
                                                 <div className="xl:col-span-4 space-y-6">
-                                                    <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                    <h5 className="text-md font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                                         <Cpu size={14} className="text-blue-500" /> Node Metadata
                                                     </h5>
-                                                    <div className="bg-slate-50 rounded-[2rem] p-6 space-y-4 shadow-inner">
+                                                    <div className="bg-slate-50 rounded-4xl p-6 space-y-4 shadow-inner">
 
                                                         {/* 1. Asset Type (Direct from assetType field) */}
                                                         <div className="flex justify-between items-center border-b border-slate-200/50 pb-3">
-                                                            <span className="text-[9px] font-black text-slate-400 uppercase">Asset Classification</span>
-                                                            <span className="text-[10px] font-bold text-slate-700 uppercase">
+                                                            <span className="text-sm font-black text-slate-400 uppercase">Asset Classification</span>
+                                                            <span className="text-md font-bold text-slate-700 uppercase">
                                                                 {asset.assetType || 'N/A'}
                                                             </span>
                                                         </div>
 
                                                         {/* 2. IPv4 Address (Direct from ip field) */}
                                                         <div className="flex justify-between items-center border-b border-slate-200/50 pb-3">
-                                                            <span className="text-[9px] font-black text-slate-400 uppercase">Mapped IP</span>
-                                                            <span className="text-[10px] font-mono font-bold text-slate-700">
+                                                            <span className="text-sm font-black text-slate-400 uppercase">Mapped IP</span>
+                                                            <span className="text-md font-mono font-bold text-slate-700">
                                                                 {asset.ip || '0.0.0.0'}
                                                             </span>
                                                         </div>
 
                                                         {/* 3. Service Count (Direct count of the services array) */}
                                                         <div className="flex justify-between items-center border-b border-slate-200/50 pb-3">
-                                                            <span className="text-[9px] font-black text-slate-400 uppercase">Active Services</span>
-                                                            <span className="text-[10px] font-bold text-slate-700">
+                                                            <span className="text-sm font-black text-slate-400 uppercase">Active Services</span>
+                                                            <span className="text-md font-bold text-slate-700">
                                                                 {services?.length || 0} {services?.length === 1 ? 'Port' : 'Ports'}
                                                             </span>
                                                         </div>
 
                                                         {/* 4. Primary Protocol (Uses the first protocolName from the services list) */}
                                                         <div className="flex justify-between items-center border-b border-slate-200/50 pb-3">
-                                                            <span className="text-[9px] font-black text-slate-400 uppercase">Primary Protocol</span>
-                                                            <span className="text-[10px] font-bold text-blue-600">
+                                                            <span className="text-sm font-black text-slate-400 uppercase">Primary Protocol</span>
+                                                            <span className="text-md font-bold text-blue-600">
                                                                 {services?.[0]?.protocolName || 'None'}
                                                             </span>
                                                         </div>
@@ -256,7 +256,7 @@ const AssetInventoryTab = () => {
             ) : (
                 <div className="flex flex-col items-center justify-center py-40 opacity-30 text-center">
                     <Search size={64} className="text-slate-300 mb-6" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em]">Select domain to initiate inventory lookup</p>
+                    <p className="text-md font-black uppercase tracking-[0.4em]">Select domain to initiate inventory lookup</p>
                 </div>
             )}
         </div>
