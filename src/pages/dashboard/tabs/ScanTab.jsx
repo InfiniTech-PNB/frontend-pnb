@@ -118,7 +118,7 @@ const ScanTab = () => {
                     <div className="editorial-shell p-8 lg:p-10">
                         <p className="editorial-label mb-3" style={{ color: 'var(--tertiary)' }}>Security Operations</p>
                         <h2 className="editorial-title text-4xl lg:text-6xl uppercase leading-tight">Scan Engine</h2>
-                        <p className="mt-4 text-slate-600 text-sm lg:text-lg max-w-3xl leading-relaxed">
+                        <p className="mt-4 text-slate-600 text-base lg:text-xl max-w-3xl leading-relaxed">
                             Initiate deep architectural discovery across cloud, on-premise, and shadow IT endpoints.
                         </p>
                     </div>
@@ -128,9 +128,9 @@ const ScanTab = () => {
                         <input
                             type="text" required value={domainInput} onChange={(e) => setDomainInput(e.target.value)}
                             placeholder="Enter target domain, CIDR range, or IP address"
-                            className="w-full bg-transparent border-0 rounded-2xl py-6 pl-16 pr-44 text-base md:text-lg font-semibold focus:outline-none"
+                            className="w-full bg-transparent border-0 rounded-2xl py-6 pl-16 pr-44 text-lg md:text-xl font-semibold focus:outline-none"
                         />
-                        <button type="submit" disabled={loading} className="absolute right-3 top-1/2 -translate-y-1/2 editorial-button editorial-button-primary px-8 py-3.5">
+                        <button type="submit" disabled={loading} className="absolute right-3 top-1/2 -translate-y-1/2 editorial-button editorial-button-primary px-8 py-3.5 text-sm md:text-base">
                             {loading ? <Loader2 className="animate-spin w-4 h-4" /> : "Discover"}
                         </button>
                     </form>
@@ -142,14 +142,14 @@ const ScanTab = () => {
                         <div className="flex items-center gap-4">
                             <div className="p-3 bg-slate-100 rounded-2xl text-blue-700"><Settings2 size={24} /></div>
                             <div>
-                                <h3 className="editorial-title uppercase text-sm leading-none">Scan Engine</h3>
-                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Audit Mode: {scanType}</p>
+                                <h3 className="editorial-title uppercase text-base sm:text-lg leading-none">Scan Engine</h3>
+                                <p className="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Audit Mode: {scanType}</p>
                             </div>
                         </div>
 
                         <div className="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
                             {['soft', 'deep'].map(type => (
-                                <button key={type} onClick={() => setScanType(type)} className={`px-8 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${scanType === type ? 'bg-blue-700 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900'}`}>
+                                <button key={type} onClick={() => setScanType(type)} className={`px-6 py-2 rounded-xl text-sm sm:text-base uppercase transition-all ${scanType === type ? 'bg-blue-700 text-slate-100 font-medium shadow-lg' : 'text-slate-700 hover:text-slate-900'}`}>
                                     {type}
                                 </button>
                             ))}
@@ -158,9 +158,9 @@ const ScanTab = () => {
                         <button
                             onClick={handleStartScan}
                             disabled={selectedAssets.length === 0 || loading}
-                            className="editorial-button editorial-button-primary px-10 py-4 flex items-center gap-3 disabled:opacity-20"
+                            className="editorial-button editorial-button-primary text-sm sm:text-base px-7 py-4 flex items-center gap-3 disabled:opacity-20"
                         >
-                            {loading ? <Loader2 className="animate-spin" /> : <Shield size={16} />}
+                            {loading ? <Loader2 className="animate-spin" /> : <Shield size={18} />}
                             Finalize & Run Audit
                         </button>
                     </div>
@@ -174,10 +174,10 @@ const ScanTab = () => {
                                 placeholder="Search by host or IP..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-sm md:text-base font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                             />
                         </div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        <p className="text-xs sm:text-sm font-black text-slate-400 uppercase tracking-widest">
                             Showing {filteredAssets.length} of {assets.length} Assets — <span className="text-blue-700">{selectedAssets.length} Selected</span>
                         </p>
                     </div>
@@ -190,31 +190,31 @@ const ScanTab = () => {
                                 {/* Asset Header */}
                                 <div className="xl:w-1/4 space-y-4">
                                     <div className="flex items-start gap-4">
-                                        <div onClick={() => setSelectedAssets(prev => prev.includes(asset._id) ? prev.filter(a => a !== asset._id) : [...prev, asset._id])} className={`cursor-pointer w-7 h-7 rounded-xl border-2 flex items-center justify-center flex-shrink-0 transition-all ${selectedAssets.includes(asset._id) ? 'bg-blue-700 border-blue-700 shadow-lg' : 'border-slate-200'}`}>
-                                            {selectedAssets.includes(asset._id) && <CheckCircle2 size={18} className="text-white" />}
+                                        <div onClick={() => setSelectedAssets(prev => prev.includes(asset._id) ? prev.filter(a => a !== asset._id) : [...prev, asset._id])} className={`cursor-pointer w-7 h-7 rounded-xl border-2 flex items-center justify-center shrink-0 transition-all ${selectedAssets.includes(asset._id) ? 'bg-blue-700 border-blue-700 shadow-lg' : 'border-slate-200'}`}>
+                                            {selectedAssets.includes(asset._id) && <CheckCircle2 size={18} color='white' />}
                                         </div>
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <p className="font-black text-slate-900 text-lg leading-none">{asset.host}</p>
-                                                <span className="bg-slate-100 text-slate-500 text-[8px] px-1.5 py-0.5 rounded font-black uppercase">{asset.assetType}</span>
+                                                <p className="font-black text-slate-900 text-xl leading-none">{asset.host}</p>
+                                                <span className="bg-slate-100 text-slate-500 text-xs px-2 py-1 rounded font-black uppercase">{asset.assetType}</span>
                                             </div>
-                                            <p className="text-xs font-mono text-slate-400 font-bold mt-1">{asset.ip}</p>
+                                            <p className="text-sm font-mono text-slate-400 font-bold mt-1">{asset.ip}</p>
                                         </div>
                                     </div>
 
                                     <button
                                         onClick={() => toggleServices(asset._id)}
-                                        className="w-full bg-slate-50 hover:bg-slate-100 py-3 rounded-2xl text-[9px] font-black uppercase text-slate-500 flex items-center justify-center gap-2 transition-all"
+                                        className="w-full bg-slate-50 hover:bg-slate-100 py-3 rounded-2xl text-xs sm:text-sm font-black uppercase text-slate-500 flex items-center justify-center gap-2 transition-all"
                                     >
-                                        <Server size={12} /> {expandedAssetId === asset._id ? 'Close Inspection' : 'Inspect Services'}
+                                        <Server size={14} /> {expandedAssetId === asset._id ? 'Close Inspection' : 'Inspect Services'}
                                     </button>
 
                                     {expandedAssetId === asset._id && (
                                         <div className="grid grid-cols-2 gap-2 animate-in slide-in-from-top-2 duration-300">
                                             {loadingServices ? <Loader2 className="animate-spin text-orange-500 mx-auto" /> : assetServices[asset._id]?.map((svc, idx) => (
                                                 <div key={idx} className="bg-blue-50/60 border border-blue-100 p-2 rounded-xl">
-                                                    <p className="text-[8px] font-black text-blue-700 uppercase leading-none">{svc.protocolName}</p>
-                                                    <p className="text-xs font-black text-slate-800">:{svc.port}</p>
+                                                    <p className="text-[11px] font-black text-blue-700 uppercase leading-none">{svc.protocolName}</p>
+                                                    <p className="text-sm font-black text-slate-800">:{svc.port}</p>
                                                 </div>
                                             ))}
                                         </div>
@@ -233,14 +233,14 @@ const ScanTab = () => {
                                     ].map(item => (
                                         <div key={item.key} className="space-y-3">
                                             <div className="flex justify-between items-center">
-                                                <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-1 group relative cursor-help">
+                                                <span className="text-xs sm:text-sm font-black text-slate-700 uppercase tracking-widest flex items-center gap-1 group relative cursor-help">
                                                     {item.icon} {item.label}
-                                                    <Info size={10} className="text-slate-500 group-hover:text-orange-500 transition-colors" />
-                                                    <span className="hidden group-hover:block absolute bottom-full left-0 mb-2 w-48 p-2 bg-slate-900 text-white text-[8px] font-bold rounded-lg shadow-xl z-50 normal-case leading-tight pointer-events-none">
+                                                    <Info size={12} className="text-slate-500 group-hover:text-orange-500 transition-colors" />
+                                                    <span className="hidden group-hover:block absolute bottom-full left-0 mb-2 w-64 p-3 bg-slate-900 text-white text-xs font-bold rounded-lg shadow-xl z-50 normal-case leading-tight pointer-events-none">
                                                         {item.description}
                                                     </span>
                                                 </span>
-                                                        <span className="bg-white border border-slate-200 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded-lg shadow-sm">
+                                                <span className="bg-white border border-slate-200 text-blue-700 text-sm font-black px-2.5 py-1 rounded-lg shadow-sm">
                                                     {assetContexts[asset._id][item.key]}
                                                 </span>
                                             </div>
@@ -261,7 +261,7 @@ const ScanTab = () => {
                         ))}
                         {filteredAssets.length === 0 && (
                             <div className="text-center py-20 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200">
-                                <p className="text-slate-400 font-bold uppercase text-xs tracking-widest">No assets match your search</p>
+                                <p className="text-slate-400 font-bold uppercase text-sm tracking-widest">No assets match your search</p>
                             </div>
                         )}
                     </div>

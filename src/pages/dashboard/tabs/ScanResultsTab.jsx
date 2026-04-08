@@ -40,13 +40,13 @@ const ScanResultsTab = () => {
                     className="flex justify-between items-center cursor-pointer hover:bg-slate-800/30 transition-colors rounded-lg px-2 -mx-2"
                     onClick={() => count > 0 && toggleField(label)}
                 >
-                    <span className="text-slate-500 uppercase text-[9px]">{label}</span>
+                    <span className="text-slate-500 uppercase text-xs sm:text-sm">{label}</span>
                     <div className="flex items-center gap-2">
-                        <span className={`${count > 0 ? colorClass : 'text-slate-600'} text-[10px]`}>
+                        <span className={`${count > 0 ? colorClass : 'text-slate-600'} text-xs sm:text-sm`}>
                             {count} {count === 1 ? 'Item' : 'Items'} Found
                         </span>
                         {count > 0 && (
-                            <ChevronDown size={12} className={`text-slate-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                            <ChevronDown size={14} className={`text-slate-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                         )}
                     </div>
                 </div>
@@ -54,7 +54,7 @@ const ScanResultsTab = () => {
                 {isExpanded && count > 0 && (
                     <div className="mt-3 space-y-2 pl-2 border-l border-slate-700 animate-in fade-in slide-in-from-top-1">
                         {data.map((item, i) => (
-                            <div key={i} className="text-[10px] font-mono text-slate-400 break-all leading-tight">
+                            <div key={i} className="text-xs sm:text-sm font-mono text-slate-400 break-all leading-tight">
                                 • {item}
                             </div>
                         ))}
@@ -133,8 +133,8 @@ const ScanResultsTab = () => {
     function InfoItem({ label, value, highlight, isRed }) {
         return (
             <div className="flex flex-col">
-                <span className="text-[9px] uppercase font-bold text-slate-400 mb-0.5">{label}</span>
-                <span className={`text-xs break-all ${highlight ? 'font-black text-slate-900' : 'font-medium text-slate-600'} ${isRed ? 'text-rose-500' : ''}`}>
+                <span className="text-xs uppercase font-bold text-slate-400 mb-0.5">{label}</span>
+                <span className={`text-sm break-all ${highlight ? 'font-black text-slate-900' : 'font-medium text-slate-600'} ${isRed ? 'text-rose-500' : ''}`}>
                     {value || "null"}
                 </span>
             </div>
@@ -188,7 +188,7 @@ const ScanResultsTab = () => {
     if (loading) return (
         <div className="flex flex-col items-center justify-center py-40">
             <Loader2 className="animate-spin mb-4" style={{ color: 'var(--primary)' }} size={48} />
-            <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em] animate-pulse">{statusMsg}</p>
+            <p className="text-slate-400 font-black uppercase text-sm tracking-[0.2em] animate-pulse">{statusMsg}</p>
         </div>
     );
 
@@ -201,7 +201,7 @@ const ScanResultsTab = () => {
                 <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight italic mb-2">
                     No Active Audit Found
                 </h2>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
+                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
                     Please initiate a new network scan from the <span className="text-orange-500">Scan Tab</span>.
                 </p>
             </div>
@@ -220,15 +220,15 @@ const ScanResultsTab = () => {
                             <h2 className="editorial-title text-2xl tracking-tight uppercase leading-none">
                                 {location.state?.domainName || "Network Audit"}
                             </h2>
-                            <p className="text-[10px] font-mono text-slate-400 mt-2 uppercase font-bold tracking-tighter">REF_ID: {scanId}</p>
+                            <p className="text-xs sm:text-sm font-mono text-slate-400 mt-2 uppercase font-bold tracking-tighter">REF_ID: {scanId}</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="rounded-[2.5rem] p-8 text-white flex flex-col items-center justify-center shadow-2xl relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--primary-soft) 0%, var(--primary) 100%)' }}>
+                <div className="rounded-[2.5rem] p-8 text-white flex flex-col items-center justify-center shadow-2xl relative overflow-hidden" style={{ background: 'var(--primary)' }}>
                     <ShieldCheck className="absolute -right-4 -bottom-4 w-24 h-24 text-white/20" />
-                    <h4 className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4">Domain Score</h4>
-                    <div className="text-6xl font-black text-white drop-shadow-lg">
+                    <h4 className="text-xs sm:text-sm font-black text-slate-100 uppercase tracking-[0.2em] mb-4">Domain Score</h4>
+                    <div className="text-6xl font-bold text-slate-100 drop-shadow-lg">
                         {avgScanScore}
                     </div>
                 </div>
@@ -255,18 +255,18 @@ const ScanResultsTab = () => {
                                         <div>
                                             <div className="flex items-center gap-2">
                                                 <h4 className="text-lg font-black text-slate-900 uppercase italic leading-none">{res.assetId?.host}</h4>
-                                                <span className="bg-slate-100 text-slate-500 text-[8px] px-1.5 py-0.5 rounded font-black">{res.assetId?.assetType}</span>
+                                                <span className="bg-slate-100 text-slate-500 text-xs px-2 py-1 rounded font-black">{res.assetId?.assetType}</span>
                                             </div>
-                                            <p className="text-[10px] font-mono text-slate-400 mt-2 font-bold">{res.assetId?.ip} • PORT {res.port}</p>
+                                            <p className="text-sm font-mono text-slate-400 mt-2 font-bold">{res.assetId?.ip} • PORT {res.port}</p>
                                         </div>
                                     </div>
 
                                     <div className="flex items-center gap-12">
                                         <div className="text-center">
-                                            <p className={`text-[20px] font-black uppercase ${config.color}`}>{config.label}</p>
+                                            <p className={`text-2xl font-black uppercase ${config.color}`}>{config.label}</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">PQC Score</p>
+                                            <p className="text-xs sm:text-sm font-black text-slate-400 uppercase tracking-widest mb-1">PQC Score</p>
                                             <p className="text-3xl font-black text-slate-900">{Math.round(res.pqcReadyScore * 1000)}</p>
                                         </div>
                                         <button
@@ -282,7 +282,7 @@ const ScanResultsTab = () => {
                                     <div className="px-10 pb-10 animate-in slide-in-from-top-4 duration-300">
                                         <div className="grid grid-cols-1 xl:grid-cols-3 gap-10 border-t border-slate-50 pt-10">
                                             <div className="space-y-4">
-                                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                <h4 className="text-xs sm:text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                                     <LockIcon size={14} /> Node Crypto Analysis
                                                 </h4>
                                                 <div className="bg-slate-900 rounded-[2.5rem] p-7 text-slate-300 shadow-2xl">
@@ -290,18 +290,18 @@ const ScanResultsTab = () => {
                                                     {/* --- 1. NEGOTIATED SUMMARY (Non-Expandable) --- */}
                                                     <div className="grid grid-cols-2 gap-4 mb-6">
                                                         <div className="bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
-                                                            <p className="text-slate-500 uppercase text-[8px] mb-1">Active TLS</p>
-                                                            <p className="text-orange-400 font-black text-[11px]">{res.negotiated?.tlsVersion || 'N/A'}</p>
+                                                            <p className="text-slate-500 uppercase text-xs mb-1">Active TLS</p>
+                                                            <p className="text-orange-400 font-black text-sm">{res.negotiated?.tlsVersion || 'N/A'}</p>
                                                         </div>
                                                         <div className="bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
-                                                            <p className="text-slate-500 uppercase text-[8px] mb-1">KEX / Size</p>
-                                                            <p className="text-white font-black text-[11px]">
-                                                                {res.negotiated?.keyExchange || 'N/A'} <span className="text-slate-500 text-[9px]">({res.negotiated?.serverTempKeySize || 0}b)</span>
+                                                            <p className="text-slate-500 uppercase text-xs mb-1">KEX / Size</p>
+                                                            <p className="text-white font-black text-sm">
+                                                                {res.negotiated?.keyExchange || 'N/A'} <span className="text-slate-500 text-xs">({res.negotiated?.serverTempKeySize || 0}b)</span>
                                                             </p>
                                                         </div>
                                                         <div className="col-span-2 bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
-                                                            <p className="text-slate-500 uppercase text-[8px] mb-1">Negotiated Cipher</p>
-                                                            <p className="text-white font-mono text-[10px] truncate">{res.negotiated?.cipher || 'N/A'}</p>
+                                                            <p className="text-slate-500 uppercase text-xs mb-1">Negotiated Cipher</p>
+                                                            <p className="text-white font-mono text-xs sm:text-sm truncate">{res.negotiated?.cipher || 'N/A'}</p>
                                                         </div>
                                                     </div>
 
@@ -352,59 +352,59 @@ const ScanResultsTab = () => {
                                                     {/* --- 3. SYSTEM FLAGS --- */}
                                                     <div className="mt-6 pt-4 border-t border-slate-800 grid grid-cols-2 gap-4 text-[10px]">
                                                         <div className="flex justify-between">
-                                                            <span className="text-slate-500 uppercase text-[8px]">PFS Support</span>
+                                                            <span className="text-slate-500 uppercase text-xs">PFS Support</span>
                                                             <span className={res.pfsSupported ? 'text-emerald-400' : 'text-red-400'}>
                                                                 {res.pfsSupported ? 'YES' : 'NO'}
                                                             </span>
                                                         </div>
                                                         <div className="flex justify-between">
-                                                            <span className="text-slate-500 uppercase text-[8px]">OCSP Stapled</span>
+                                                            <span className="text-slate-500 uppercase text-xs">OCSP Stapled</span>
                                                             <span className="text-slate-300">{res.negotiated?.ocsp?.stapled ? 'YES' : 'NO'}</span>
                                                         </div>
                                                         <div className="flex justify-between">
-                                                            <span className="text-slate-500 uppercase text-[8px]">Session Reused</span>
+                                                            <span className="text-slate-500 uppercase text-xs">Session Reused</span>
                                                             <span className="text-slate-300">{res.negotiated?.sessionReused ? 'YES' : 'NO'}</span>
                                                         </div>
                                                         <div className="flex justify-between">
-                                                            <span className="text-slate-500 uppercase text-[8px]">PQC Confidence</span>
+                                                            <span className="text-slate-500 uppercase text-xs">PQC Confidence</span>
                                                             <span className="text-emerald-500 italic">{res.pqc?.confidence || 'N/A'}</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="space-y-10">
-                                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><BarChart3 size={14} /> ML Weight Distribution</h4>
+                                                <h4 className="text-xs sm:text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><BarChart3 size={14} /> ML Weight Distribution</h4>
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-[2.5rem] text-center shadow-sm">
-                                                        <p className="text-[9px] font-black text-emerald-600 uppercase mb-2">ML Score</p>
+                                                        <p className="text-xs font-black text-emerald-600 uppercase mb-2">ML Score</p>
                                                         <p className="text-2xl font-black text-emerald-700">{Math.round(res.mlScore * 1000)}</p>
                                                     </div>
                                                     <div className="bg-blue-50 border border-blue-100 p-6 rounded-[2.5rem] text-center shadow-sm">
-                                                        <p className="text-[9px] font-black text-blue-600 uppercase mb-2">Env Score</p>
+                                                        <p className="text-xs font-black text-blue-600 uppercase mb-2">Env Score</p>
                                                         <p className="text-2xl font-black text-blue-700">{Math.round(res.envScore * 1000)}</p>
                                                     </div>
                                                 </div>
                                                 <div className="p-5 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-3">
-                                                    <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">Criticality</span> <span className="text-slate-900">LV: {res.businessContext?.assetCriticality}</span></div>
-                                                    <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">Dependent Services</span> <span className="text-slate-900">{res.businessContext?.dependentServices} Nodes</span></div>
-                                                    <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">Confidentiality Weight</span> <span className="text-slate-900">{res.businessContext?.confidentialityWeight}</span></div>
-                                                    <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">Integrity Weight</span> <span className="text-slate-900">{res.businessContext?.integrityWeight}</span></div>
-                                                    <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">Availability Weight</span> <span className="text-slate-900">{res.businessContext?.availabilityWeight}</span></div>
-                                                    <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">SLA Requirement</span> <span className="text-slate-900">{res.businessContext?.slaRequirement}</span></div>
-                                                    <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">Remediation Difficulty</span> <span className="text-slate-900">{res.businessContext?.remediationDifficulty}</span></div>
+                                                    <div className="flex justify-between text-sm font-black"><span className="text-slate-400">Criticality</span> <span className="text-slate-900">LV: {res.businessContext?.assetCriticality}</span></div>
+                                                    <div className="flex justify-between text-sm font-black"><span className="text-slate-400">Dependent Services</span> <span className="text-slate-900">{res.businessContext?.dependentServices} Nodes</span></div>
+                                                    <div className="flex justify-between text-sm font-black"><span className="text-slate-400">Confidentiality Weight</span> <span className="text-slate-900">{res.businessContext?.confidentialityWeight}</span></div>
+                                                    <div className="flex justify-between text-sm font-black"><span className="text-slate-400">Integrity Weight</span> <span className="text-slate-900">{res.businessContext?.integrityWeight}</span></div>
+                                                    <div className="flex justify-between text-sm font-black"><span className="text-slate-400">Availability Weight</span> <span className="text-slate-900">{res.businessContext?.availabilityWeight}</span></div>
+                                                    <div className="flex justify-between text-sm font-black"><span className="text-slate-400">SLA Requirement</span> <span className="text-slate-900">{res.businessContext?.slaRequirement}</span></div>
+                                                    <div className="flex justify-between text-sm font-black"><span className="text-slate-400">Remediation Difficulty</span> <span className="text-slate-900">{res.businessContext?.remediationDifficulty}</span></div>
                                                 </div>
                                             </div>
 
                                             <div className="space-y-4">
-                                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                <h4 className="text-xs sm:text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                                     <ClipboardList size={14} /> AI Migration Advisor
                                                 </h4>
                                                 <div className="bg-orange-50/50 border border-orange-100 rounded-[2.5rem] p-7 h-full flex flex-col justify-evenly shadow-sm">
 
                                                     {/* 1. AI Recommendation Text */}
                                                     <div>
-                                                        <h4 className="text-[15px] font-black text-slate-400 tracking-widest flex items-center mb-1">AI Recommendation</h4>
-                                                        <p className="text-[11px] font-bold text-slate-700 leading-relaxed italic">
+                                                        <h4 className="text-base font-black text-slate-400 tracking-widest flex items-center mb-1">AI Recommendation</h4>
+                                                        <p className="text-sm font-bold text-slate-700 leading-relaxed italic">
                                                             "{matchingPlan?.recommendations || 'Aggregating per-asset neural analysis...'}"
                                                         </p>
                                                     </div>
@@ -412,14 +412,14 @@ const ScanResultsTab = () => {
                                                     {/* 2. NEW: PQC Technical Targets Section */}
                                                     <div className="mt-4 py-4 border-y border-orange-100/50 grid grid-cols-2 gap-4">
                                                         <div>
-                                                            <h5 className="text-[9px] font-black text-orange-500 uppercase tracking-tighter mb-1">Recommended PQC KEX</h5>
-                                                            <div className="bg-white border border-orange-100 px-3 py-2 rounded-2xl text-[11px] font-mono font-black text-slate-800 shadow-sm">
+                                                            <h5 className="text-xs font-black text-orange-500 uppercase tracking-tighter mb-1">Recommended PQC KEX</h5>
+                                                            <div className="bg-white border border-orange-100 px-3 py-2 rounded-2xl text-sm font-mono font-black text-slate-800 shadow-sm">
                                                                 {matchingPlan?.recommendedPqcKex || "ML-KEM-768"}
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <h5 className="text-[9px] font-black text-orange-500 uppercase tracking-tighter mb-1">Recommended PQC Signature</h5>
-                                                            <div className="bg-white border border-orange-100 px-3 py-2 rounded-2xl text-[11px] font-mono font-black text-slate-800 shadow-sm">
+                                                            <h5 className="text-xs font-black text-orange-500 uppercase tracking-tighter mb-1">Recommended PQC Signature</h5>
+                                                            <div className="bg-white border border-orange-100 px-3 py-2 rounded-2xl text-sm font-mono font-black text-slate-800 shadow-sm">
                                                                 {matchingPlan?.recommendedPqcSignature || "CRYSTALS-Dilithium"}
                                                             </div>
                                                         </div>
@@ -427,14 +427,14 @@ const ScanResultsTab = () => {
 
                                                     {/* 3. Migration Steps */}
                                                     <div className="mt-4 space-y-3">
-                                                        <h4 className="text-[15px] font-black text-slate-400 tracking-widest flex items-center">AI Migration Steps</h4>
+                                                        <h4 className="text-base font-black text-slate-400 tracking-widest flex items-center">AI Migration Steps</h4>
                                                         <div className="space-y-2">
                                                             {matchingPlan?.migrationSteps?.slice(0, 3).map((step, idx) => (
-                                                                <div key={idx} className="flex gap-3 items-start text-[10px] font-bold text-slate-600 leading-tight">
+                                                                <div key={idx} className="flex gap-3 items-start text-sm font-bold text-slate-600 leading-tight">
                                                                     <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0" />
                                                                     {step}
                                                                 </div>
-                                                            )) || <p className="text-[10px] italic text-slate-400">Analysis in progress...</p>}
+                                                            )) || <p className="text-sm italic text-slate-400">Analysis in progress...</p>}
                                                         </div>
                                                     </div>
 
@@ -463,9 +463,9 @@ const ScanResultsTab = () => {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTechTab(tab.id)}
-                                className={`flex items-center gap-3 px-8 py-4 rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${activeTechTab === tab.id ? 'bg-orange-500 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-800'}`}
+                                className={`flex items-center gap-3 px-8 py-4 rounded-[1.8rem] text-sm font-black uppercase tracking-widest transition-all shrink-0 ${activeTechTab === tab.id ? 'bg-orange-500 text-slate-100 shadow-lg' : 'text-slate-800 hover:bg-slate-300'}`}
                             >
-                                <tab.icon size={16} /> {tab.label}
+                                <tab.icon size={18} /> {tab.label}
                             </button>
                         ))}
                     </div>
@@ -474,12 +474,12 @@ const ScanResultsTab = () => {
                     <button
                         onClick={handleDownloadPDF}
                         disabled={downloading}
-                        className={`flex items-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shrink-0 whitespace-nowrap bg-white/10 text-white hover:bg-orange-500 active:scale-95 `}
+                        className={`flex items-center gap-2 px-6 py-4 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-widest transition-all shadow-sm shrink-0 whitespace-nowrap bg-white/10 text-slate-100 hover:bg-orange-500 active:scale-95 `}
                     >
                         {downloading ? (
-                            <Loader2 size={16} className="animate-spin" />
+                            <Loader2 size={18} className="animate-spin" />
                         ) : (
-                            <Database size={16} />
+                            <Database size={18} />
                         )}
                         {downloading ? "Generating..." : "Export PDF"}
                     </button>
@@ -489,7 +489,7 @@ const ScanResultsTab = () => {
                     {activeTechTab !== 'certificates' && (
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-separate border-spacing-y-2">
-                                <thead className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <thead className="text-xs font-black text-slate-400 uppercase tracking-widest">
                                     {activeTechTab === 'algorithms' && (
                                         <tr>
                                             <th className="px-6 py-4">Name</th>
@@ -532,7 +532,7 @@ const ScanResultsTab = () => {
                                                         <td className="px-6 py-5">{item.primitive || "null"}</td>
                                                         <td className="px-6 py-5">{item.mode || "null"}</td>
                                                         <td className="px-6 py-5">{item.classicalSecurityLevel} Bits</td>
-                                                        <td className="px-6 py-5 text-[10px] text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "null"}</td>
+                                                        <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "null"}</td>
                                                     </>
                                                 )}
                                                 {activeTechTab === 'keys' && (
@@ -540,10 +540,10 @@ const ScanResultsTab = () => {
                                                         <td className="px-6 py-5 rounded-l-[1.5rem] font-black uppercase">{item.name || "null"}</td>
                                                         <td className="px-6 py-5">{item.assetType || "null"}</td>
                                                         <td className="px-6 py-5 text-blue-500">{item.size} Bits</td>
-                                                        <td className="px-6 py-5"><span className="px-2 py-1 bg-white border rounded-md text-[9px]">{item.state || "null"}</span></td>
+                                                        <td className="px-6 py-5"><span className="px-2 py-1 bg-white border rounded-md text-xs">{item.state || "null"}</span></td>
                                                         <td className="px-6 py-5 text-slate-400">{item.creationDate || "null"}</td>
                                                         <td className="px-6 py-5 text-slate-400">{item.activationDate || "null"}</td>
-                                                        <td className="px-6 py-5 text-[9px] text-slate-400 font-mono rounded-r-[1.5rem]">{item.id || "null"}</td>
+                                                        <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.id || "null"}</td>
                                                     </>
                                                 )}
                                                 {activeTechTab === 'protocols' && (
@@ -557,7 +557,7 @@ const ScanResultsTab = () => {
                                                             </button>
                                                         </td>
                                                         <td className="px-6 py-5 font-mono">{item.alpn || "N/A"}</td>
-                                                        <td className="px-6 py-5 text-[10px] text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "N/A"}</td>
+                                                        <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "N/A"}</td>
                                                     </>
                                                 )}
                                             </tr>
@@ -567,7 +567,7 @@ const ScanResultsTab = () => {
                                                     <td colSpan="5" className="px-8 pb-4">
                                                         <div className="bg-slate-900 rounded-3xl p-6 grid grid-cols-2 md:grid-cols-3 gap-3 animate-in fade-in zoom-in duration-200">
                                                             {item.cipherSuites?.map((suite, sIdx) => (
-                                                                <div key={sIdx} className="text-[10px] text-slate-400 font-mono border border-slate-800 p-2 rounded-xl flex items-center gap-2">
+                                                                <div key={sIdx} className="text-xs text-slate-400 font-mono border border-slate-800 p-2 rounded-xl flex items-center gap-2">
                                                                     <div className="w-1 h-1 bg-orange-500 rounded-full" /> {suite}
                                                                 </div>
                                                             ))}
@@ -590,12 +590,12 @@ const ScanResultsTab = () => {
                                     {/* Header Strip */}
                                     <div className="bg-slate-900 p-8 flex justify-between items-center">
                                         <div>
-                                            <h2 className="text-2xl font-black text-white tracking-tight">{cert.asset}</h2>
+                                            <h2 className="text-2xl font-black  tracking-tight">{cert.asset}</h2>
                                             <p className="text-orange-500 font-mono text-xs mt-1">Format: {cert.leafCertificate?.certificateFormat}</p>
                                         </div>
                                         <div className="text-right">
-                                            <div className="text-[10px] uppercase text-slate-500 font-bold mb-1">Fingerprint (SHA256)</div>
-                                            <div className="text-[9px] font-mono text-slate-300 bg-slate-800 px-3 py-1 rounded-full">{cert.leafCertificate?.fingerprintSha256}</div>
+                                            <div className="text-xs uppercase text-slate-500 font-bold mb-1">Fingerprint (SHA256)</div>
+                                            <div className="text-xs font-mono text-slate-300 bg-slate-800 px-3 py-1 rounded-full">{cert.leafCertificate?.fingerprintSha256}</div>
                                         </div>
                                     </div>
 
@@ -603,7 +603,7 @@ const ScanResultsTab = () => {
                                         {/* LEFT: LEAF DATA */}
                                         <div className="space-y-8">
                                             <div>
-                                                <h3 className="text-[10px] font-black uppercase text-orange-600 mb-4 tracking-widest">Leaf Identity</h3>
+                                                <h3 className="text-xs sm:text-sm font-black uppercase text-orange-600 mb-4 tracking-widest">Leaf Identity</h3>
                                                 <div className="space-y-4">
                                                     <InfoItem label="Subject" value={cert.leafCertificate?.subjectName} highlight />
                                                     <InfoItem label="Issuer" value={cert.leafCertificate?.issuerName} />
@@ -614,15 +614,15 @@ const ScanResultsTab = () => {
                                                 </div>
                                             </div>
                                             <div className="pt-6 border-t border-slate-100">
-                                                <h3 className="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">Cryptography</h3>
+                                                <h3 className="text-xs sm:text-sm font-black uppercase text-slate-400 mb-4 tracking-widest">Cryptography</h3>
                                                 <div className="flex gap-4">
                                                     <div className="flex-1 bg-slate-50 p-4 rounded-2xl">
-                                                        <p className="text-[9px] text-slate-400 uppercase">Public Key</p>
-                                                        <p className="text-xs font-bold text-slate-700">{cert.leafCertificate?.subjectPublicKeyReference}</p>
+                                                        <p className="text-xs text-slate-400 uppercase">Public Key</p>
+                                                        <p className="text-sm font-bold text-slate-700">{cert.leafCertificate?.subjectPublicKeyReference}</p>
                                                     </div>
                                                     <div className="flex-1 bg-slate-50 p-4 rounded-2xl">
-                                                        <p className="text-[9px] text-slate-400 uppercase">Signature</p>
-                                                        <p className="text-xs font-bold text-slate-700">{cert.leafCertificate?.signatureAlgorithmReference}</p>
+                                                        <p className="text-xs text-slate-400 uppercase">Signature</p>
+                                                        <p className="text-sm font-bold text-slate-700">{cert.leafCertificate?.signatureAlgorithmReference}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -630,21 +630,21 @@ const ScanResultsTab = () => {
 
                                         {/* MIDDLE: EXTENSIONS */}
                                         <div className="bg-slate-50/50 p-8 rounded-[2rem] border border-slate-100">
-                                            <h3 className="text-[10px] font-black uppercase text-slate-400 mb-6 tracking-widest">Cert Extensions</h3>
+                                            <h3 className="text-xs sm:text-sm font-black uppercase text-slate-400 mb-6 tracking-widest">Cert Extensions</h3>
                                             <div className="space-y-6">
                                                 <div>
-                                                    <label className="text-[10px] font-bold text-slate-400 block mb-2">Key Usage</label>
+                                                    <label className="text-xs font-bold text-slate-400 block mb-2">Key Usage</label>
                                                     <div className="flex flex-wrap gap-2">
                                                         {cert.leafCertificate?.certificateExtension?.keyUsage?.map(u => (
-                                                            <span key={u} className="px-2 py-1 bg-blue-600 text-white text-[9px] font-bold rounded-lg uppercase">{u}</span>
+                                                            <span key={u} className="px-2 py-1 bg-blue-600 text-white text-xs font-bold rounded-lg uppercase">{u}</span>
                                                         ))}
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <label className="text-[10px] font-bold text-slate-400 block mb-2">Extended Key Usage</label>
+                                                    <label className="text-xs font-bold text-slate-400 block mb-2">Extended Key Usage</label>
                                                     <div className="flex flex-wrap gap-2">
                                                         {cert.leafCertificate?.certificateExtension?.extendedKeyUsage?.map(u => (
-                                                            <span key={u} className="px-2 py-1 bg-slate-200 text-slate-600 text-[9px] font-bold rounded-lg">{u}</span>
+                                                            <span key={u} className="px-2 py-1 bg-slate-200 text-slate-600 text-xs font-bold rounded-lg">{u}</span>
                                                         ))}
                                                     </div>
                                                 </div>
@@ -657,17 +657,17 @@ const ScanResultsTab = () => {
 
                                         {/* RIGHT: TRUST TREE */}
                                         <div>
-                                            <h3 className="text-[10px] font-black uppercase text-slate-400 mb-6 tracking-widest">Trust Chain Tree</h3>
+                                            <h3 className="text-xs sm:text-sm font-black uppercase text-slate-400 mb-6 tracking-widest">Trust Chain Tree</h3>
                                             <div className="relative pl-6 space-y-4 border-l-2 border-slate-100">
                                                 {cert.certificateChain?.map((node, nIdx) => (
                                                     <div key={nIdx} className="relative bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
                                                         <div className="absolute -left-[33px] top-6 w-4 h-4 rounded-full bg-orange-500 border-4 border-white shadow-sm" />
-                                                        <p className="text-[10px] font-black text-slate-800 break-all">{node.subject}</p>
-                                                        <p className="text-[9px] text-slate-400 mt-1 italic">Issued by: {node.issuer}</p>
+                                                        <p className="text-xs sm:text-sm font-black text-slate-800 break-all">{node.subject}</p>
+                                                        <p className="text-xs text-slate-400 mt-1 italic">Issued by: {node.issuer}</p>
                                                         {/* Added Fingerprint here */}
                                                         <div className="bg-slate-50 p-2 rounded-lg">
-                                                            <p className="text-[8px] text-slate-400 uppercase mb-1 font-bold">SHA256 Fingerprint</p>
-                                                            <p className="text-[8px] font-mono text-slate-600 break-all uppercase leading-tight">
+                                                            <p className="text-[10px] text-slate-400 uppercase mb-1 font-bold">SHA256 Fingerprint</p>
+                                                            <p className="text-xs font-mono text-slate-600 break-all uppercase leading-tight">
                                                                 {node.fingerprintSha256 || "N/A"}
                                                             </p>
                                                         </div>
@@ -675,18 +675,18 @@ const ScanResultsTab = () => {
                                                 ))}
                                             </div>
                                             <div className="mt-8 pt-6 border-t border-slate-100">
-                                                <h3 className="text-[10px] font-black uppercase text-slate-400 mb-3 tracking-widest">Renewal History</h3>
+                                                <h3 className="text-xs sm:text-sm font-black uppercase text-slate-400 mb-3 tracking-widest">Renewal History</h3>
                                                 <div className="space-y-3">
                                                     {cert.leafCertificate?.certificateHistory?.map((h, hIdx) => (
                                                         <div key={hIdx} className="bg-slate-50/50 p-3 rounded-xl border border-slate-100">
-                                                            <p className="text-[10px] font-bold text-slate-700 truncate mb-1">{h.issuer}</p>
-                                                            <div className="flex justify-between items-center text-[9px] font-mono text-slate-500">
+                                                            <p className="text-xs sm:text-sm font-bold text-slate-700 truncate mb-1">{h.issuer}</p>
+                                                            <div className="flex justify-between items-center text-xs font-mono text-slate-500">
                                                                 <span>S: {h.notBefore}</span>
                                                                 <span className="text-slate-300">|</span>
                                                                 <span>E: {h.notAfter}</span>
                                                             </div>
                                                         </div>
-                                                    )) || <p className="text-[10px] italic text-slate-300">No history available</p>}
+                                                    )) || <p className="text-sm italic text-slate-300">No history available</p>}
                                                 </div>
                                             </div>
                                         </div>
@@ -704,7 +704,7 @@ const ScanResultsTab = () => {
                 {/* 1. Speech Bubble - Pre-rendered & Static */}
                 <div className="mb-2 mr-2 pointer-events-none">
                     <div className="bg-white border border-slate-100 shadow-2xl rounded-2xl px-4 py-3 relative max-w-[180px] border-b-2 border-r-2">
-                        <p className="text-[10px] font-black text-slate-700 uppercase tracking-tighter leading-tight">
+                        <p className="text-xs font-black text-slate-700 uppercase tracking-tighter leading-tight">
                             Need help with your <span className="text-orange-500">PQC Strategy?</span>
                         </p>
                         {/* Bubble Tail */}
