@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
     Download, ArrowLeft, Globe, ShieldCheck,
-    Award, Layers, Lock, Search, Cpu, Zap, Activity
+    Award, Layers, Lock, Search, Cpu, Zap
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import API from "../../../services/api";
 import { useSearchParams } from 'react-router-dom';
+import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const ExecutivesReportingTab = () => {
     const [data, setData] = useState(null);
@@ -53,9 +54,27 @@ const ExecutivesReportingTab = () => {
     };
 
     if (loading) return (
-        <div className="flex flex-col items-center justify-center p-40 space-y-4">
-            <Activity className="animate-spin text-orange-500" size={48} />
-            <p className="font-black uppercase text-xs tracking-[0.3em] text-slate-400">Aggregating Global Audit Data...</p>
+        <div className="space-y-8 pb-20 animate-in fade-in duration-500">
+            <div className="px-4 flex justify-between items-center">
+                <SkeletonBlock className="h-6 w-44" />
+                <SkeletonBlock className="h-12 w-56" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 5 }).map((_, idx) => (
+                    <div
+                        key={idx}
+                        className={`rounded-[2.5rem] p-8 border border-slate-100 bg-white shadow-sm space-y-4 ${idx === 3 ? 'lg:col-span-2' : ''}`}
+                    >
+                        <SkeletonBlock className="h-6 w-40" />
+                        <SkeletonBlock className="h-14 w-40" />
+                        <SkeletonBlock className="h-4 w-3/4" />
+                        <SkeletonBlock className="h-4 w-1/2" />
+                    </div>
+                ))}
+            </div>
+
+            <p className="px-4 font-black uppercase text-sm tracking-[0.2em] text-slate-400">Aggregating Global Audit Data...</p>
         </div>
     );
 
@@ -64,15 +83,15 @@ const ExecutivesReportingTab = () => {
             {/* CHANGE 2: Hide Header when Printing */}
             {!isPrintMode && (
                 <div className="flex justify-between items-center px-4">
-                    <Link to="/dashboard/reporting" className="flex items-center gap-2 text-slate-400 hover:text-orange-500 transition-colors text-xs font-black uppercase tracking-widest">
+                    <Link to="/dashboard/reporting" className="flex items-center gap-2 text-slate-400 hover:text-orange-500 transition-colors text-sm font-black uppercase tracking-widest">
                         <ArrowLeft size={16} /> Back to Registry
                     </Link>
                     <button
                         onClick={handleDownload}
                         disabled={isDownloading}
-                        className="bg-slate-900 hover:bg-orange-500 text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-lg disabled:opacity-50"
+                        className="bg-slate-900 hover:bg-orange-500 px-6 py-3 rounded-xl text-xs sm:text-sm font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-lg disabled:opacity-50"
                     >
-                        {isDownloading ? <Activity className="animate-spin" size={14} /> : <Download size={14} />}
+                        {isDownloading ? <SkeletonBlock className="h-4 w-16 bg-white/40 rounded-md" /> : <Download size={16} />}
                         {isDownloading ? 'Generating...' : 'Export Strategic Report'}
                     </button>
                 </div>
@@ -92,18 +111,18 @@ const ExecutivesReportingTab = () => {
                 <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 relative overflow-hidden">
                     <div className="flex items-center gap-3 mb-6 text-orange-500">
                         <Search size={20} />
-                        <h3 className="font-black uppercase text-xs tracking-widest italic">Assets Discovery</h3>
+                        <h3 className="font-black uppercase text-sm tracking-widest italic">Assets Discovery</h3>
                     </div>
                     <div className="space-y-4 relative z-10">
                         <div>
                             <span className="text-4xl font-black text-slate-900 tracking-tighter">
                                 {data.discovery.totalAssets + data.discovery.totalDomains}
                             </span>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Total Domains & Endpoints</p>
+                            <p className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-tight">Total Domains & Endpoints</p>
                         </div>
                         <div>
                             <span className="text-2xl font-black text-slate-900">{data.discovery.cloudAssets}</span>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Cloud-Native Assets</p>
+                            <p className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-tight">Cloud-Native Assets</p>
                         </div>
                     </div>
                     <Globe size={100} className="absolute -right-6 -bottom-6 text-orange-500/5 rotate-12" />
@@ -113,17 +132,17 @@ const ExecutivesReportingTab = () => {
                 <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
                     <div className="flex items-center gap-3 mb-6 text-emerald-500">
                         <Award size={20} />
-                        <h3 className="font-black uppercase text-xs tracking-widest italic">Cyber Rating</h3>
+                        <h3 className="font-black uppercase text-sm tracking-widest italic">Cyber Rating</h3>
                     </div>
                     <div className="space-y-2">
                         {['Excellent', 'Good', 'Satisfactory', 'Needs Improvement'].map((tier, i) => {
                             const isActive = data.cyberRating.includes(tier);
                             return (
-                                <div key={tier} className={`flex items-center gap-4 p-3 rounded-2xl transition-all border ${isActive ? 'bg-emerald-50 border-emerald-100' : 'opacity-20 border-transparent'}`}>
-                                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-[10px] ${isActive ? 'bg-emerald-500 text-white' : 'bg-slate-200'}`}>
+                                <div key={tier} className={`flex items-center gap-4 p-3 rounded-2xl transition-all border ${isActive ? 'bg-emerald-50 border-emerald-100' : 'opacity-60 border-transparent'}`}>
+                                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs ${isActive ? 'bg-emerald-500 text-white' : 'bg-slate-200'}`}>
                                         {String.fromCharCode(65 + i)}
                                     </div>
-                                    <span className="text-[10px] font-black uppercase text-slate-700">Tier {i + 1} {tier}</span>
+                                    <span className="text-sm font-black uppercase text-slate-700">Tier {i + 1} {tier}</span>
                                 </div>
                             );
                         })}
@@ -135,7 +154,7 @@ const ExecutivesReportingTab = () => {
                 <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
                     <div className="flex items-center gap-3 mb-6 text-blue-500">
                         <Layers size={20} />
-                        <h3 className="font-black uppercase text-xs tracking-widest italic">Assets Inventory</h3>
+                        <h3 className="font-black uppercase text-sm tracking-widest italic">Assets Inventory</h3>
                     </div>
                     <div className="space-y-3">
                         <InventoryItem label="TLS Certificates" value={data.inventory.tls} icon={<Lock size={12} />} />
@@ -156,13 +175,13 @@ const ExecutivesReportingTab = () => {
                 <div className="lg:col-span-2 bg-[#0f172a] rounded-[2.5rem] p-10 text-white shadow-xl relative overflow-hidden">
                     <div className="flex items-center gap-3 mb-8 text-orange-500">
                         <ShieldCheck size={24} />
-                        <h3 className="font-black uppercase text-sm tracking-[0.2em] italic underline underline-offset-8">Posture of PQC</h3>
+                        <h3 className="font-black uppercase text-base tracking-[0.2em] italic underline underline-offset-8">Posture of PQC</h3>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
                         <div className="space-y-6">
                             <div className="space-y-2">
-                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                <div className="flex justify-between text-xs sm:text-sm font-black uppercase tracking-widest text-slate-400">
                                     <span>Quantum Resilience Index</span>
                                     <span className="text-orange-500">{data.pqcPosture}%</span>
                                 </div>
@@ -172,7 +191,7 @@ const ExecutivesReportingTab = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                <div className="flex justify-between text-xs sm:text-sm font-black uppercase tracking-widest text-slate-400">
                                     <span>Hybrid Cryptography Adoption</span>
                                     <span className="text-blue-400">{data.pqcHybridPosture}%</span>
                                 </div>
@@ -184,8 +203,8 @@ const ExecutivesReportingTab = () => {
 
                         <div className="flex items-center justify-center border-l border-slate-800 pl-8">
                             <div className="text-center">
-                                <p className="text-5xl font-black text-white tracking-tighter">{data.pqcPosture}</p>
-                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-2">Overall PQC Health</p>
+                                <p className="text-5xl font-black text-slate-900 tracking-tighter">{data.pqcPosture}</p>
+                                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mt-2">Overall PQC Health</p>
                             </div>
                         </div>
                     </div>
@@ -198,12 +217,12 @@ const ExecutivesReportingTab = () => {
                         <div className="mx-auto p-4 bg-orange-50 rounded-2xl text-orange-600 w-fit group-hover:bg-orange-500 group-hover:text-white transition-all">
                             <Layers size={32} />
                         </div>
-                        <h3 className="font-black uppercase text-[10px] tracking-[0.2em] text-slate-500">CBOM Registry</h3>
+                        <h3 className="font-black uppercase text-xs sm:text-sm tracking-[0.2em] text-slate-500">CBOM Registry</h3>
                         <div>
                             <p className="text-4xl font-black text-slate-900 tracking-tighter italic">
                                 {data.totalVulnerabilities.toLocaleString()}
                             </p>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mt-1">Vulnerable Components Detected</p>
+                            <p className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-tight mt-1">Vulnerable Components Detected</p>
                         </div>
                     </div>
                 </div>
@@ -217,9 +236,9 @@ const InventoryItem = ({ label, value, icon }) => (
     <div className="flex justify-between items-center bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100">
         <div className="flex items-center gap-3 text-slate-500">
             {icon}
-            <span className="text-[9px] font-black uppercase tracking-tight">{label}</span>
+            <span className="text-xs sm:text-sm font-black uppercase tracking-tight">{label}</span>
         </div>
-        <span className="text-xs font-black text-slate-900 font-mono">{value.toLocaleString()}</span>
+        <span className="text-sm font-black text-slate-900 font-mono">{value.toLocaleString()}</span>
     </div>
 );
 

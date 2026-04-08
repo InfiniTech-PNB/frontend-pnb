@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import {
-    Globe, Target, ShieldAlert, Zap, Loader2,
+    Globe, Target, ShieldAlert, Zap,
     CheckCircle2, Hash, Settings2, Shield, Server,
     Activity, Cpu, Lock, Info
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import API from "../../../services/api";
+import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const ScanTab = () => {
     const navigate = useNavigate();
@@ -114,11 +115,11 @@ const ScanTab = () => {
     return (
         <div className="space-y-8 pb-20 animate-in fade-in duration-500">
             {step === 1 ? (
-                <div className="max-w-5xl mx-auto mt-12 text-left space-y-8">
-                    <div className="editorial-shell p-8 lg:p-10">
+                <div className="max-w-5xl mx-auto mt-8 text-center space-y-8">
+                    <div className="p-8 lg:p-10">
                         <p className="editorial-label mb-3" style={{ color: 'var(--tertiary)' }}>Security Operations</p>
-                        <h2 className="editorial-title text-4xl lg:text-6xl uppercase leading-tight">Scan Engine</h2>
-                        <p className="mt-4 text-slate-600 text-base lg:text-xl max-w-3xl leading-relaxed">
+                        <h2 className="editorial-title text-3xl lg:text-5xl uppercase leading-tight">Scan Engine</h2>
+                        <p className="mt-4 text-slate-600 text-base lg:text-xl leading-relaxed">
                             Initiate deep architectural discovery across cloud, on-premise, and shadow IT endpoints.
                         </p>
                     </div>
@@ -128,10 +129,10 @@ const ScanTab = () => {
                         <input
                             type="text" required value={domainInput} onChange={(e) => setDomainInput(e.target.value)}
                             placeholder="Enter target domain, CIDR range, or IP address"
-                            className="w-full bg-transparent border-0 rounded-2xl py-6 pl-16 pr-44 text-lg md:text-xl font-semibold focus:outline-none"
+                            className="w-full bg-transparent border-0 rounded-2xl py-4 pl-16 pr-44 text-md md:text-lg font-semibold focus:outline-none"
                         />
-                        <button type="submit" disabled={loading} className="absolute right-3 top-1/2 -translate-y-1/2 editorial-button editorial-button-primary px-8 py-3.5 text-sm md:text-base">
-                            {loading ? <Loader2 className="animate-spin w-4 h-4" /> : "Discover"}
+                        <button type="submit" disabled={loading} className="absolute right-3 top-1/2 -translate-y-1/2 editorial-button editorial-button-primary px-6 py-3.5 text-xs md:text-sm">
+                            {loading ? <SkeletonBlock className="h-4 w-16 bg-white/40 rounded-md" /> : "Discover"}
                         </button>
                     </form>
                 </div>
@@ -160,7 +161,7 @@ const ScanTab = () => {
                             disabled={selectedAssets.length === 0 || loading}
                             className="editorial-button editorial-button-primary text-sm sm:text-base px-7 py-4 flex items-center gap-3 disabled:opacity-20"
                         >
-                            {loading ? <Loader2 className="animate-spin" /> : <Shield size={18} />}
+                            {loading ? <SkeletonBlock className="h-4 w-4 bg-white/40 rounded-full" /> : <Shield size={18} />}
                             Finalize & Run Audit
                         </button>
                     </div>
@@ -211,7 +212,12 @@ const ScanTab = () => {
 
                                     {expandedAssetId === asset._id && (
                                         <div className="grid grid-cols-2 gap-2 animate-in slide-in-from-top-2 duration-300">
-                                            {loadingServices ? <Loader2 className="animate-spin text-orange-500 mx-auto" /> : assetServices[asset._id]?.map((svc, idx) => (
+                                            {loadingServices ? Array.from({ length: 4 }).map((_, idx) => (
+                                                <div key={`svc-skeleton-${idx}`} className="border border-blue-100 p-2 rounded-xl bg-blue-50/50 space-y-2">
+                                                    <SkeletonBlock className="h-3 w-16" />
+                                                    <SkeletonBlock className="h-4 w-10" />
+                                                </div>
+                                            )) : assetServices[asset._id]?.map((svc, idx) => (
                                                 <div key={idx} className="bg-blue-50/60 border border-blue-100 p-2 rounded-xl">
                                                     <p className="text-[11px] font-black text-blue-700 uppercase leading-none">{svc.protocolName}</p>
                                                     <p className="text-sm font-black text-slate-800">:{svc.port}</p>
@@ -236,7 +242,7 @@ const ScanTab = () => {
                                                 <span className="text-xs sm:text-sm font-black text-slate-700 uppercase tracking-widest flex items-center gap-1 group relative cursor-help">
                                                     {item.icon} {item.label}
                                                     <Info size={12} className="text-slate-500 group-hover:text-orange-500 transition-colors" />
-                                                    <span className="hidden group-hover:block absolute bottom-full left-0 mb-2 w-64 p-3 bg-slate-900 text-white text-xs font-bold rounded-lg shadow-xl z-50 normal-case leading-tight pointer-events-none">
+                                                    <span className="hidden group-hover:block absolute bottom-full left-0 mb-2 w-64 p-3 bg-white text-black text-xs font-bold rounded-lg shadow-xl z-50 normal-case leading-tight pointer-events-none">
                                                         {item.description}
                                                     </span>
                                                 </span>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Send, Bot, Loader2, Minimize2 } from 'lucide-react';
+import { MessageSquare, Send, Bot, Minimize2 } from 'lucide-react';
 import API from "../../services/api";
+import SkeletonBlock from '../ui/SkeletonBlock';
 
 const SecurityChatbot = ({ scanId }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -137,8 +138,9 @@ const SecurityChatbot = ({ scanId }) => {
                 ))}
                 {loading && (
                     <div className="flex justify-start">
-                        <div className="bg-white border border-slate-100 p-3 rounded-2xl rounded-tl-none">
-                            <Loader2 className="animate-spin text-amber-500" size={16} />
+                        <div className="bg-white border border-slate-100 p-3 rounded-2xl rounded-tl-none w-48 space-y-2">
+                            <SkeletonBlock className="h-3 w-36" />
+                            <SkeletonBlock className="h-3 w-28" />
                         </div>
                     </div>
                 )}

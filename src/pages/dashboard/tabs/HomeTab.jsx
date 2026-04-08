@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, Legend, CartesianGrid } from 'recharts';
-import { Globe, Server, ShieldCheck, ShieldAlert, Loader2, Activity, Cpu, LayoutGrid } from 'lucide-react';
+import { Globe, Server, ShieldCheck, ShieldAlert, Activity, Cpu, LayoutGrid } from 'lucide-react';
 import API from "../../../services/api";
+import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const ChartContainer = ({ title, children, className = "" }) => (
     <div className={`editorial-shell relative overflow-hidden p-6 rounded-2xl flex flex-col h-80 ${className}`}>
@@ -57,8 +58,31 @@ const HomeTab = () => {
 
     if (loading) {
         return (
-            <div className="py-60 flex justify-center">
-                <Loader2 className="animate-spin" style={{ color: 'var(--primary)' }} size={48} />
+            <div className="space-y-8 animate-in fade-in duration-500 px-1">
+                <section className="editorial-shell p-8 lg:p-10 space-y-4">
+                    <SkeletonBlock className="h-4 w-44" />
+                    <SkeletonBlock className="h-12 w-full max-w-2xl" />
+                    <SkeletonBlock className="h-5 w-full max-w-4xl" />
+                    <SkeletonBlock className="h-5 w-2/3 max-w-3xl" />
+                </section>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    {Array.from({ length: 6 }).map((_, idx) => (
+                        <div key={idx} className="editorial-shell rounded-xl p-5 space-y-3">
+                            <SkeletonBlock className="h-4 w-24" />
+                            <SkeletonBlock className="h-10 w-16" />
+                        </div>
+                    ))}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {Array.from({ length: 4 }).map((_, idx) => (
+                        <div key={idx} className="editorial-shell rounded-2xl p-6 space-y-4 h-80">
+                            <SkeletonBlock className="h-4 w-40" />
+                            <SkeletonBlock className="h-full w-full" />
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }

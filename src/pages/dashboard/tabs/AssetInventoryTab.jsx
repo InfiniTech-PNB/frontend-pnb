@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Globe, Server, Search, Loader2, Activity,
+    Globe, Server, Search, Activity,
     Shield, Cpu, Network, ChevronDown, ChevronUp, Lock as LockIcon, Zap, LayoutGrid
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import API from "../../../services/api";
+import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const AssetInventoryTab = () => {
+    const navigate = useNavigate();
+
     // Selection & Data States
     const [domains, setDomains] = useState([]);
     const [selectedDomain, setSelectedDomain] = useState("");
     const [assets, setAssets] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [scanningAssetId, setScanningAssetId] = useState(null);
 
     // UI Interaction States
     const [expandedAssetId, setExpandedAssetId] = useState(null);
@@ -73,6 +78,36 @@ const AssetInventoryTab = () => {
         a.ip?.includes(searchTerm)
     );
 
+    const handleStartAssetScan = async (assetId) => {
+        setScanningAssetId(assetId);
+        try {
+            const payload = {
+                domainId: assets[0]?.domainId,
+                scanType: "soft",
+                assets: [
+                    {
+                        assetId,
+                        businessContext: {
+                            assetCriticality: 5,
+                            confidentialityWeight: 5,
+                            integrityWeight: 5,
+                            availabilityWeight: 5,
+                            slaRequirement: 5,
+                            dependentServices: 0
+                        }
+                    }
+                ]
+            };
+
+            const res = await API.post("/scan", payload);
+            navigate('/dashboard/results', { state: { activeScanId: res.data.scanId } });
+        } catch (err) {
+            console.error("Scan trigger failed", err);
+        } finally {
+            setScanningAssetId(null);
+        }
+    };
+
     return (
         <div className="space-y-10 pb-24 animate-in fade-in duration-500">
 
@@ -118,9 +153,34 @@ const AssetInventoryTab = () => {
 
             {/* --- DATA AREA --- */}
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-40">
-                    <Loader2 className="animate-spin text-blue-500 mb-4" size={48} />
-                    <p className="text-slate-400 font-black uppercase text-md tracking-[0.3em] animate-pulse">Mapping Infrastructure Topography...</p>
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3 px-4 mb-2">
+                        <LayoutGrid className="text-blue-500" size={20} />
+                        <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight italic">
+                            Detected Assets
+                        </h3>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4">
+                        {Array.from({ length: 3 }).map((_, idx) => (
+                            <div key={idx} className="editorial-shell rounded-3xl p-8 space-y-6">
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                                    <div className="flex items-center gap-4 w-full md:w-auto">
+                                        <SkeletonBlock className="h-14 w-14 rounded-3xl" />
+                                        <div className="space-y-2 w-full">
+                                            <SkeletonBlock className="h-6 w-56" />
+                                            <SkeletonBlock className="h-4 w-64" />
+                                        </div>
+                                    </div>
+                                    <SkeletonBlock className="h-10 w-10 rounded-full" />
+                                </div>
+                                <SkeletonBlock className="h-px w-full" />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <SkeletonBlock className="h-16 w-full" />
+                                    <SkeletonBlock className="h-16 w-full" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             ) : selectedDomain ? (
                 <div className="space-y-4">
@@ -161,6 +221,20 @@ const AssetInventoryTab = () => {
                                                     {asset.services?.length > 3 && <span className="text-slate-400 text-sm font-black">+{asset.services.length - 3}</span>}
                                                 </div>
                                             </div>
+
+                                            <button
+                                                onClick={() => handleStartAssetScan(asset._id)}
+                                                disabled={Boolean(scanningAssetId)}
+                                                className="editorial-button editorial-button-primary px-4 py-2 text-xs sm:text-sm disabled:opacity-50"
+                                            >
+                                                {scanningAssetId === asset._id ? (
+                                                    <SkeletonBlock className="h-4 w-14 bg-white/40 rounded-md" />
+                                                ) : (
+                                                    <span className="flex items-center gap-2">
+                                                        <Shield size={14} /> Scan
+                                                    </span>
+                                                )}
+                                            </button>
 
                                             <button
                                                 onClick={() => toggleAssetExpansion(asset._id)}

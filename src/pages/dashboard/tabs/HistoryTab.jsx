@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-    History, Globe, Clock, Loader2, Search, Activity,
+    History, Globe, Clock, Search, Activity,
     ShieldCheck, BarChart3, ClipboardList, ChevronDown, ChevronUp, Lock as LockIcon, AlertTriangle, Cpu, Zap
 } from 'lucide-react';
 import API from "../../../services/api";
 import SecurityChatbot from '../../../components/Dashboard/SecurityChatbot';
+import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const HistoryTab = () => {
     // Selection States
@@ -179,9 +180,39 @@ const HistoryTab = () => {
             </div>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-40">
-                    <Loader2 className="animate-spin mb-4" style={{ color: 'var(--primary)' }} size={48} />
-                    <p className="text-slate-400 font-black uppercase text-[12px] tracking-[0.3em] animate-pulse">Reconstructing Audit Environment...</p>
+                <div className="space-y-10">
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                            <div className="xl:col-span-2 rounded-[3rem] p-10 border border-slate-200 bg-white shadow-sm space-y-6">
+                                <SkeletonBlock className="h-8 w-52" />
+                                <SkeletonBlock className="h-14 w-2/3" />
+                                <SkeletonBlock className="h-20 w-full" />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <SkeletonBlock className="h-28 w-full" />
+                                    <SkeletonBlock className="h-28 w-full" />
+                                </div>
+                            </div>
+                            <div className="rounded-[3rem] p-8 border border-slate-200 bg-white shadow-sm space-y-4">
+                                {Array.from({ length: 5 }).map((_, idx) => (
+                                    <SkeletonBlock key={idx} className="h-14 w-full" />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        {Array.from({ length: 2 }).map((_, idx) => (
+                            <div key={idx} className="rounded-[2.5rem] p-8 border border-slate-200 bg-white shadow-sm space-y-4">
+                                <SkeletonBlock className="h-6 w-72" />
+                                <SkeletonBlock className="h-5 w-56" />
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <SkeletonBlock className="h-20 w-full" />
+                                    <SkeletonBlock className="h-20 w-full" />
+                                    <SkeletonBlock className="h-20 w-full" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             ) : domainSummary ? (
                 <div className="space-y-10">

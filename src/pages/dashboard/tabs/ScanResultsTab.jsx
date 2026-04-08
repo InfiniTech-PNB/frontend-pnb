@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-    Zap, ShieldCheck, Loader2, FileCode, CheckCircle2, AlertTriangle, Database,
+    Zap, ShieldCheck, FileCode, CheckCircle2, AlertTriangle, Database,
     XCircle, Activity, ClipboardList, Key, Shield,
     ChevronDown, ChevronUp, Cpu, Globe, Server, BarChart3, Info, Hash, Link, Lock as LockIcon, MessageSquareText, Search
 } from 'lucide-react';
 import API from "../../../services/api";
 import SecurityChatbot from '../../../components/Dashboard/SecurityChatbot';
+import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const ScanResultsTab = () => {
     const location = useLocation();
@@ -186,9 +187,43 @@ const ScanResultsTab = () => {
         : 0;
 
     if (loading) return (
-        <div className="flex flex-col items-center justify-center py-40">
-            <Loader2 className="animate-spin mb-4" style={{ color: 'var(--primary)' }} size={48} />
-            <p className="text-slate-400 font-black uppercase text-sm tracking-[0.2em] animate-pulse">{statusMsg}</p>
+        <div className="space-y-10 pb-20 animate-in fade-in duration-500">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div className="lg:col-span-3 editorial-shell p-8 space-y-4">
+                    <SkeletonBlock className="h-8 w-80" />
+                    <SkeletonBlock className="h-5 w-64" />
+                </div>
+                <div className="rounded-[2.5rem] p-8 border border-slate-200 bg-white shadow-sm space-y-4">
+                    <SkeletonBlock className="h-4 w-32" />
+                    <SkeletonBlock className="h-16 w-28" />
+                </div>
+            </div>
+
+            <div className="px-4">
+                <p className="text-slate-400 font-black uppercase text-sm tracking-[0.2em]">{statusMsg}</p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+                {Array.from({ length: 3 }).map((_, idx) => (
+                    <div key={idx} className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm space-y-6">
+                        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div className="flex items-center gap-4 w-full md:w-auto">
+                                <SkeletonBlock className="h-14 w-14 rounded-[1.5rem]" />
+                                <div className="space-y-2 w-full">
+                                    <SkeletonBlock className="h-6 w-56" />
+                                    <SkeletonBlock className="h-4 w-64" />
+                                </div>
+                            </div>
+                            <SkeletonBlock className="h-10 w-10 rounded-full" />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <SkeletonBlock className="h-20 w-full" />
+                            <SkeletonBlock className="h-20 w-full" />
+                            <SkeletonBlock className="h-20 w-full" />
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 
@@ -477,7 +512,7 @@ const ScanResultsTab = () => {
                         className={`flex items-center gap-2 px-6 py-4 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-widest transition-all shadow-sm shrink-0 whitespace-nowrap bg-white/10 text-slate-100 hover:bg-orange-500 active:scale-95 `}
                     >
                         {downloading ? (
-                            <Loader2 size={18} className="animate-spin" />
+                            <SkeletonBlock className="h-4 w-16 bg-white/40 rounded-md" />
                         ) : (
                             <Database size={18} />
                         )}

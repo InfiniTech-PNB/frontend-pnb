@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Database, Globe, Clock, Loader2, Search,
+    Database, Globe, Clock, Search,
     Cpu, Key, Shield, Globe2, ChevronDown, ChevronUp, Lock as LockIcon
 } from 'lucide-react';
 import API from "../../../services/api";
 import SecurityChatbot from '../../../components/Dashboard/SecurityChatbot';
+import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const CBOMHistoryTab = () => {
     // Selection States
@@ -188,9 +189,26 @@ const CBOMHistoryTab = () => {
                     <p className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">Awaiting Selection Parameters</p>
                 </div>
             ) : loading ? (
-                <div className="flex flex-col items-center justify-center py-40">
-                    <Loader2 className="animate-spin mb-4" style={{ color: 'var(--primary)' }} size={48} />
-                    <p className="text-slate-400 font-black uppercase text-sm tracking-[0.2em] animate-pulse">Decrypting CBOM Archive...</p>
+                <div className="space-y-6">
+                    <div className="rounded-[4rem] border border-slate-100 shadow-xl overflow-hidden bg-white">
+                        <div className="p-5 border-b border-slate-100 flex items-center justify-between gap-3">
+                            <div className="flex gap-3">
+                                <SkeletonBlock className="h-12 w-36" />
+                                <SkeletonBlock className="h-12 w-28" />
+                                <SkeletonBlock className="h-12 w-32" />
+                            </div>
+                            <SkeletonBlock className="h-12 w-36" />
+                        </div>
+                        <div className="p-8 space-y-4">
+                            <SkeletonBlock className="h-6 w-1/2" />
+                            <div className="space-y-3">
+                                {Array.from({ length: 5 }).map((_, idx) => (
+                                    <SkeletonBlock key={idx} className="h-14 w-full" />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    <p className="text-slate-400 font-black uppercase text-sm tracking-[0.2em] px-2">Decrypting CBOM Archive...</p>
                 </div>
             ) : (
                 <div className="bg-white rounded-[4rem] border border-slate-100 shadow-xl overflow-hidden">
@@ -218,7 +236,7 @@ const CBOMHistoryTab = () => {
                                 }`}
                         >
                             {downloading ? (
-                                <Loader2 size={18} className="animate-spin" />
+                                <SkeletonBlock className="h-4 w-16 bg-white/40 rounded-md" />
                             ) : (
                                 <Database size={18} />
                             )}
