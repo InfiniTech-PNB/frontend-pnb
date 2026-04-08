@@ -25,18 +25,18 @@
   }
 
   .dark {
-    --app-bg: #151618;
-    --surface: #1b1d20;
-    --surface-soft: #22262b;
-    --surface-muted: #2b2f34;
-    --outline: #42474b;
-    --outline-strong: #5f6771;
-    --on-bg: #f2f0f1;
-    --muted: #c2c7cc;
-    --primary: #b1c5ff;
-    --primary-soft: #d9e2ff;
-    --tertiary: #dcc661;
-    --danger: #ffb4ab;
+    --app-bg: #12151b;
+    --surface: #1a1f27;
+    --surface-soft: #232a35;
+    --surface-muted: #2d3644;
+    --outline: #4c5768;
+    --outline-strong: #6a778b;
+    --on-bg: #f2f6fb;
+    --muted: #bac5d4;
+    --primary: #2f63c9;
+    --primary-soft: #4b7adf;
+    --tertiary: #e7c973;
+    --danger: #ff9a91;
   }
 
   html,
@@ -52,6 +52,12 @@
     color: var(--on-bg);
     font-family: var(--font-body);
     transition: background-color 240ms ease, color 240ms ease;
+  }
+
+  .dark body {
+    background: radial-gradient(circle at 0% 0%, rgba(75, 122, 223, 0.2), transparent 30%),
+      radial-gradient(circle at 100% 100%, rgba(35, 42, 53, 0.5), transparent 34%),
+      var(--app-bg);
   }
 
   h1,
@@ -163,10 +169,12 @@
 }
 
 .editorial-dashboard .border-slate-800,
+.editorial-dashboard .border-slate-900,
 .editorial-dashboard .border-slate-700,
 .editorial-dashboard .border-slate-200,
 .editorial-dashboard .border-slate-100,
 .editorial-dashboard .border-slate-50,
+.editorial-dashboard .border-slate-300,
 .editorial-dashboard .border-slate-800\/50,
 .editorial-dashboard .border-slate-200\/50,
 .editorial-dashboard .border-slate-700\/50 {
@@ -208,4 +216,114 @@
 .editorial-dashboard .shadow-xl,
 .editorial-dashboard .shadow-sm {
   box-shadow: 0 20px 36px -28px rgba(27, 28, 29, 0.22) !important;
+}
+
+/* Dark-mode refinements for utility-heavy dashboard views. */
+.dark .editorial-dashboard .bg-white,
+.dark .editorial-dashboard .bg-white\/95,
+.dark .editorial-dashboard .bg-white\/90,
+.dark .editorial-dashboard .bg-white\/80,
+.dark .editorial-dashboard .bg-white\/70 {
+  background-color: var(--surface) !important;
+}
+
+.dark .editorial-dashboard .hover\:bg-white\/80:hover,
+.dark .editorial-dashboard .hover\:bg-white\/70:hover,
+.dark .editorial-dashboard .hover\:bg-white:hover {
+  background-color: color-mix(in srgb, var(--surface-muted) 70%, var(--surface)) !important;
+}
+
+.dark .editorial-dashboard .bg-slate-50,
+.dark .editorial-dashboard .bg-slate-50\/30,
+.dark .editorial-dashboard .bg-slate-50\/50,
+.dark .editorial-dashboard .bg-slate-50\/70,
+.dark .editorial-dashboard .bg-slate-50\/80,
+.dark .editorial-dashboard .bg-slate-100,
+.dark .editorial-dashboard .bg-slate-100\/50,
+.dark .editorial-dashboard .bg-slate-200,
+.dark .editorial-dashboard .bg-slate-300 {
+  background-color: var(--surface-muted) !important;
+}
+
+.dark .editorial-dashboard .hover\:bg-slate-50:hover,
+.dark .editorial-dashboard .hover\:bg-slate-100:hover,
+.dark .editorial-dashboard .hover\:bg-slate-200:hover,
+.dark .editorial-dashboard .hover\:bg-slate-300:hover {
+  background-color: color-mix(in srgb, var(--surface-muted) 82%, var(--surface-soft)) !important;
+}
+
+.dark .editorial-dashboard .text-black,
+.dark .editorial-dashboard .hover\:text-slate-900:hover,
+.dark .editorial-dashboard .hover\:text-slate-800:hover,
+.dark .editorial-dashboard .hover\:text-slate-700:hover {
+  color: var(--on-bg) !important;
+}
+
+.dark .editorial-dashboard .border-white,
+.dark .editorial-dashboard .border-white\/10,
+.dark .editorial-dashboard .border-white\/15,
+.dark .editorial-dashboard .border-white\/20,
+.dark .editorial-dashboard .border-white\/25,
+.dark .editorial-dashboard .border-white\/30 {
+  border-color: color-mix(in srgb, white 22%, var(--outline)) !important;
+}
+
+.dark .editorial-dashboard .bg-blue-50,
+.dark .editorial-dashboard .bg-blue-50\/50,
+.dark .editorial-dashboard .bg-blue-50\/60,
+.dark .editorial-dashboard .bg-blue-50\/70,
+.dark .editorial-dashboard .bg-blue-500\/10 {
+  background-color: color-mix(in srgb, var(--primary-soft) 20%, var(--surface)) !important;
+}
+
+.dark .editorial-dashboard .text-blue-400,
+.dark .editorial-dashboard .text-blue-500,
+.dark .editorial-dashboard .text-blue-600,
+.dark .editorial-dashboard .text-blue-700 {
+  color: color-mix(in srgb, var(--primary-soft) 78%, white) !important;
+}
+
+.dark .editorial-dashboard .border-blue-100,
+.dark .editorial-dashboard .border-blue-200 {
+  border-color: color-mix(in srgb, var(--primary-soft) 34%, var(--outline)) !important;
+}
+
+.dark .editorial-dashboard .bg-orange-50,
+.dark .editorial-dashboard .bg-orange-50\/30,
+.dark .editorial-dashboard .bg-orange-50\/50,
+.dark .editorial-dashboard .bg-orange-500\/5,
+.dark .editorial-dashboard .bg-orange-500\/10,
+.dark .editorial-dashboard .bg-orange-500\/20 {
+  background-color: color-mix(in srgb, var(--tertiary) 18%, var(--surface)) !important;
+}
+
+.dark .editorial-dashboard .border-orange-100,
+.dark .editorial-dashboard .border-orange-100\/50,
+.dark .editorial-dashboard .border-orange-200,
+.dark .editorial-dashboard .border-orange-400,
+.dark .editorial-dashboard .border-orange-500,
+.dark .editorial-dashboard .border-orange-500\/20,
+.dark .editorial-dashboard .border-orange-500\/30 {
+  border-color: color-mix(in srgb, var(--tertiary) 38%, var(--outline)) !important;
+}
+
+.dark .editorial-dashboard .text-orange-500,
+.dark .editorial-dashboard .text-orange-600 {
+  color: color-mix(in srgb, var(--tertiary) 76%, #f59e0b) !important;
+}
+
+.dark .editorial-dashboard .bg-cyan-50 {
+  background-color: color-mix(in srgb, #06b6d4 18%, var(--surface)) !important;
+}
+
+.dark .editorial-dashboard .border-cyan-100 {
+  border-color: color-mix(in srgb, #06b6d4 34%, var(--outline)) !important;
+}
+
+.dark .editorial-dashboard .text-cyan-500 {
+  color: color-mix(in srgb, #22d3ee 82%, white) !important;
+}
+
+.dark .editorial-dashboard .border-emerald-100 {
+  border-color: color-mix(in srgb, #34d399 34%, var(--outline)) !important;
 }

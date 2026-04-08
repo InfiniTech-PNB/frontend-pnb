@@ -6,7 +6,7 @@ import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const ChartContainer = ({ title, children, className = "" }) => (
     <div className={`editorial-shell relative overflow-hidden p-6 rounded-2xl flex flex-col h-80 ${className}`}>
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-blue-50/70 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-20" />
         <h4 className="relative z-10 editorial-label mb-4 text-xs sm:text-sm text-slate-500">{title}</h4>
         <div className="relative z-10 flex-1 w-full h-full">
             {children}
@@ -182,7 +182,7 @@ const HomeTab = () => {
 
                 {/* Expiry Timeline (Horizontal Progress) */}
                 <div className="editorial-shell relative overflow-hidden p-6 rounded-2xl h-80">
-                    <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-amber-50/70 to-transparent" />
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-20" />
                     <h4 className="relative z-10 editorial-label mb-8 text-slate-500">Cert Expiry Timeline</h4>
                     <div className="relative z-10 space-y-6">
                         {certExpiry.map((item, i) => {

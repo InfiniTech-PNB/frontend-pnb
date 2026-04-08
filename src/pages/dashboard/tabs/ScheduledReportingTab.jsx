@@ -410,11 +410,11 @@ const ScheduledReportingTab = () => {
                         </div>
 
                         <div
-                            className="p-10 rounded-[2.5rem] text-white space-y-6 relative overflow-hidden shadow-xl"
-                            style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-soft) 20%)' }}
+                            className="p-10 rounded-[2.5rem] text-black space-y-6 relative border border-slate-900 overflow-hidden shadow-xl"
+                            // style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-soft) 20%)' }}
                         >
                             <div className="relative z-10">
-                                <div className="flex items-center gap-3 text-white mb-6">
+                                <div className="flex items-center gap-3  mb-6">
                                     <Mail size={20} />
                                     <h4 className="font-black uppercase text-sm italic">Email Delivery</h4>
                                 </div>
@@ -424,13 +424,13 @@ const ScheduledReportingTab = () => {
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     placeholder="recipient@org.com"
-                                    className="w-full bg-white/15 placeholder:text-white/70 border border-white/30 p-4 rounded-xl text-sm font-bold text-white outline-none focus:border-white mb-6"
+                                    className="w-full bg-white/15 placeholder:text-white/70 border border-slate-900 p-4 rounded-xl text-sm font-bold outline-none focus:border-white mb-6"
                                 />
 
                                 <button
                                     onClick={handleSave}
                                     disabled={loading}
-                                    className="w-full bg-white hover:bg-orange-50 text-[var(--primary)] py-5 rounded-2xl font-black uppercase text-sm tracking-widest flex items-center justify-center gap-3 transition-all"
+                                    className="w-full bg-white hover:bg-orange-50 text-[var(--primary)] py-5 rounded-2xl not-hover:border not-hover:border-[var(--primary)] font-black uppercase text-sm tracking-widest flex items-center justify-center gap-3 transition-all"
                                 >
                                     {loading ? "Scheduling..." : "Save Report Schedule"} <ArrowRight size={18} />
                                 </button>
