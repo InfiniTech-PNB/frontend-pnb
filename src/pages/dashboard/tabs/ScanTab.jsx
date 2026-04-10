@@ -89,17 +89,28 @@ const ScanTab = () => {
     const handleStartScan = async () => {
         setLoading(true);
         try {
+            const uniqueSelectedAssetIds = [...new Set(selectedAssets)];
+            const selectedAssetPayload = uniqueSelectedAssetIds.map((id) => ({
+                assetId: id,
+                businessContext: assetContexts[id] || {}
+            }));
+
             const payload = {
                 domainId: assets[0]?.domainId,
                 scanType,
-                assets: selectedAssets.map(id => ({
-                    assetId: id,
-                    businessContext: assetContexts[id]
-                }))
+                assets: selectedAssetPayload
             };
+
             const res = await API.post("/scan", payload);
+
             // Navigate to results page with the scan ID
-            navigate('/dashboard/results', { state: { activeScanId: res.data.scanId } });
+            navigate('/dashboard/results', {
+                state: {
+                    activeScanId: res.data.scanId,
+                    expectedAssetCount: uniqueSelectedAssetIds.length,
+                    scanType
+                }
+            });
         } catch (err) {
             console.error("Scan trigger failed", err);
         } finally {
@@ -256,7 +267,7 @@ const ScanTab = () => {
                                                 value={assetContexts[asset._id][item.key]}
                                                 onChange={(e) => updateAssetContext(asset._id, item.key, Number(e.target.value))}
                                                 className={`w-full h-1.5 rounded-lg appearance-none cursor-pointer transition-all ${selectedAssets.includes(asset._id)
-                                                            ? 'accent-blue-600 bg-slate-200'
+                                                            ? 'accent-blue-600 bg-slate-800'
                                                     : 'accent-slate-300 bg-slate-100 opacity-30'
                                                     }`}
                                             />

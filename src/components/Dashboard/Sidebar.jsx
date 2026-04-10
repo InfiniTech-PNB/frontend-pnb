@@ -46,7 +46,7 @@ const Sidebar = ({ menuItems, open, onClose }) => {
                                 onClose();
                             }}
                         >
-                            <p className="editorial-title text-3xl leading-none">PNB Secure</p>
+                            <p className="editorial-title text-3xl leading-none">KavachAI</p>
                             <p className="editorial-label mt-2">Digital Curator</p>
                         </button>
 

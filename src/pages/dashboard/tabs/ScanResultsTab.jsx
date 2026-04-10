@@ -12,6 +12,7 @@ import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 const ScanResultsTab = () => {
     const location = useLocation();
     const [scanId, setScanId] = useState(location.state?.activeScanId || null);
+    const expectedAssetCount = Number(location.state?.expectedAssetCount || 0);
 
     // Data States
     const [scanResults, setScanResults] = useState([]);
@@ -70,14 +71,48 @@ const ScanResultsTab = () => {
         runFullOrchestration();
     }, [scanId]);
 
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    const fetchAggregatedResults = async (currentScanId, expectedCount = 0) => {
+        const maxAttempts = expectedCount > 1 ? 8 : 3;
+        let lastResults = [];
+
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            const resultRes = await API.get(`/scan/${currentScanId}/results`);
+            lastResults = Array.isArray(resultRes.data) ? resultRes.data : [];
+
+            if (!expectedCount || expectedCount <= 1 || lastResults.length >= expectedCount) {
+                return lastResults;
+            }
+
+            try {
+                const statusRes = await API.get(`/scan/${currentScanId}/status`);
+                const status = statusRes.data?.status;
+
+                if (status === "completed" && lastResults.length > 0) {
+                    return lastResults;
+                }
+            } catch (statusErr) {
+                console.warn("Scan status check failed during aggregation retry", statusErr);
+            }
+
+            if (attempt < maxAttempts) {
+                setStatusMsg(`Collecting scan results (${lastResults.length}/${expectedCount})...`);
+                await sleep(1000);
+            }
+        }
+
+        return lastResults;
+    };
+
     const runFullOrchestration = async () => {
         setLoading(true);
         try {
             setStatusMsg("Fetching cryptographic scan results...");
-            const res = await API.get(`/scan/${scanId}/results`);
-            setScanResults(res.data);
+            const aggregatedResults = await fetchAggregatedResults(scanId, expectedAssetCount);
+            setScanResults(aggregatedResults);
 
-            if (res.data.length === 0) {
+            if (aggregatedResults.length === 0) {
                 throw new Error("SCAN_EMPTY");
             }
 
@@ -92,7 +127,7 @@ const ScanResultsTab = () => {
                     currentCbom = genRes.data.cbom;
                 }
             }
-            setCbomData(currentCbom);
+            setCbomData(currentCbom || null);
 
             setStatusMsg("AI Engine generating mitigation roadmap...");
             let finalRecommendations;
@@ -118,7 +153,7 @@ const ScanResultsTab = () => {
                 }
             }
 
-            setAssetPlans(finalRecommendations);
+            setAssetPlans(Array.isArray(finalRecommendations) ? finalRecommendations : []);
             setStatusMsg("Analysis Complete.");
 
         } catch (err) {

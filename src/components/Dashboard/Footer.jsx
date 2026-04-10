@@ -26,7 +26,7 @@ const Footer = () => {
         >
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <p className="editorial-title text-xl italic">PNB Secure</p>
+                    <p className="editorial-title text-xl italic">KavachAI</p>
                     <p className="mt-2 editorial-label text-slate-500">
                         {currentYear} archival-grade security monitoring
                     </p>
