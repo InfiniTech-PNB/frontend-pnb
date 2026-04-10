@@ -28,7 +28,7 @@ const HistoryTab = () => {
         setExpandedField(expandedField === field ? null : field);
     };
 
-    const ExpandableRow = ({ label, data, colorClass = "text-white" }) => {
+    const ExpandableRow = ({ label, data, colorClass = "text-slate-700" }) => {
         const count = data?.length || 0;
         const isExpanded = expandedField === label;
 
@@ -237,7 +237,7 @@ const HistoryTab = () => {
                                         </div>
                                     </div>
 
-                                    <h3 className="text-6xl font-black italic uppercase leading-none tracking-tighter mb-6">
+                                    <h3 className="text-6xl font-black text-slate-900 italic uppercase leading-none tracking-tighter mb-6">
                                         Grade: <span className="text-emerald-400">{Math.round(domainSummary.pqcReadiness?.averageScore * 1000)}</span>
                                     </h3>
 
@@ -379,13 +379,13 @@ const HistoryTab = () => {
                                                                 </div>
                                                                 <div className="bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
                                                                     <p className="text-slate-500 uppercase text-[10px] mb-1">KEX / Size</p>
-                                                                    <p className="text-white font-black text-[13px]">
+                                                                    <p className="text-slate-800 font-black text-[13px]">
                                                                         {res.negotiated?.keyExchange || 'N/A'} <span className="text-slate-500 text-[11px]">({res.negotiated?.serverTempKeySize || 0}b)</span>
                                                                     </p>
                                                                 </div>
                                                                 <div className="col-span-2 bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
                                                                     <p className="text-slate-500 uppercase text-[10px] mb-1">Negotiated Cipher</p>
-                                                                    <p className="text-white font-mono text-[12px] truncate">{res.negotiated?.cipher || 'N/A'}</p>
+                                                                    <p className="text-slate-800 font-mono text-[12px] truncate">{res.negotiated?.cipher || 'N/A'}</p>
                                                                 </div>
                                                             </div>
 

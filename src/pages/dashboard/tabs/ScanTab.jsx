@@ -129,7 +129,7 @@ const ScanTab = () => {
                         <input
                             type="text" required value={domainInput} onChange={(e) => setDomainInput(e.target.value)}
                             placeholder="Enter target domain, CIDR range, or IP address"
-                            className="w-full bg-transparent border-0 rounded-2xl py-4 pl-16 pr-44 text-md md:text-lg font-semibold focus:outline-none"
+                            className="w-full bg-transparent placeholder:text-slate-500 text-slate-800 border-0 rounded-2xl py-4 pl-16 pr-44 text-md md:text-lg font-semibold focus:outline-none"
                         />
                         <button type="submit" disabled={loading} className="absolute right-3 top-1/2 -translate-y-1/2 editorial-button editorial-button-primary px-6 py-3.5 text-xs md:text-sm">
                             {loading ? <SkeletonBlock className="h-4 w-16 bg-white/40 rounded-md" /> : "Discover"}

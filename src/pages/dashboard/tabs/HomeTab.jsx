@@ -146,7 +146,7 @@ const HomeTab = () => {
                                     <Cell key={i} fill={entry.color || COLORS[i % COLORS.length]} />
                                 ))}
                             </Pie>
-                            <Tooltip content={<DashboardTooltip />} />
+                            <Tooltip content={<DashboardTooltip />} isAnimationActive={false} />
                             <Legend
                                 verticalAlign="bottom"
                                 align="center"
@@ -170,8 +170,8 @@ const HomeTab = () => {
                             <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="#dbe2ea" />
                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 700 }} />
                             <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 700 }} />
-                            <Tooltip content={<DashboardTooltip />} cursor={{ fill: 'rgba(148, 163, 184, 0.1)' }} />
-                            <Bar dataKey="value" radius={[10, 10, 0, 0]} barSize={34}>
+                            <Tooltip content={<DashboardTooltip />} cursor={{ fill: 'rgba(148, 163, 184, 0.1)' }} isAnimationActive={false} />
+                            <Bar dataKey="value" radius={[10, 10, 0, 0]} barSize={34} isAnimationActive={false}>
                                 {riskDistribution.map((entry, index) => (
                                     <Cell key={index} fill={entry.name === 'High' ? '#ef4444' : entry.name === 'Medium' ? '#f59e0b' : '#10b981'} />
                                 ))}
@@ -241,7 +241,7 @@ const HomeTab = () => {
                                     <Cell key={i} fill={entry.color} />
                                 ))}
                             </Pie>
-                            <Tooltip content={<DashboardTooltip />} />
+                            <Tooltip content={<DashboardTooltip />} isAnimationActive={false} />
                             <Legend
                                 verticalAlign="bottom"
                                 iconType="circle"
@@ -295,7 +295,7 @@ const HomeTab = () => {
                                             <Cell key={i} fill={entry.color} />
                                         ))}
                                     </Pie>
-                                    <Tooltip content={<DashboardTooltip />} />
+                                    <Tooltip content={<DashboardTooltip />} isAnimationActive={false} />
                                     <Legend
                                         verticalAlign="bottom"
                                         iconType="circle"
@@ -316,7 +316,6 @@ const HomeTab = () => {
                                 className="absolute inset-x-0 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none z-10"
                                 style={{ top: CIRCULAR_CHART_CENTER_Y }}
                             >
-                                <ShieldCheck size={24} className="text-emerald-500 mb-1" />
                                 <span className="text-2xl font-black text-slate-900">{stats.pqcReadyAssets || 0}</span>
                                 <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest">Safe Nodes</span>
                             </div>
@@ -343,10 +342,10 @@ const HomeTab = () => {
                                             <Cell key={`cell-${i}`} fill={entry.color} />
                                         ))}
                                     </Pie>
-                                    <Tooltip content={<DashboardTooltip />} />
+                                    <Tooltip content={<DashboardTooltip />} isAnimationActive={false} />
                                     <Legend
                                         verticalAlign="bottom"
-                                        height={34}
+                                        height={15}
                                         iconType="circle"
                                         wrapperStyle={{ fontSize: '12px', fontWeight: 700, paddingTop: '10px' }}
                                     />
