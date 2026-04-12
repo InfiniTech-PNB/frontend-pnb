@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Mail, ArrowRight, ArrowLeft, ShieldCheck, Database, FileCode, Activity, Trash2, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, Mail, ArrowRight, ArrowLeft, ShieldCheck, Database, FileCode, Activity, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import API from "../../../services/api";
+import { useFeedback } from '../../../context/FeedbackContext';
 
 const DEFAULT_FORM_STATE = {
     scheduleName: "",
@@ -24,6 +25,7 @@ const ScheduledReportingTab = () => {
     const [loading, setLoading] = useState(false);
     const [activeSchedules, setActiveSchedules] = useState([]);
     const [formData, setFormData] = useState(DEFAULT_FORM_STATE);
+    const { showToast, showConfirm } = useFeedback();
 
     const [availableAssets, setAvailableAssets] = useState([]); // Assets for selected domain
     const [selectedAssets, setSelectedAssets] = useState([]);
@@ -54,7 +56,8 @@ const ScheduledReportingTab = () => {
     // 2. Delete Handler
     // 2. Updated Delete Handler
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to stop this automated report?")) {
+        const confirmed = await showConfirm("Are you sure you want to stop this automated report?");
+        if (confirmed) {
             try {
                 // 1. Send the delete request to the backend
                 await API.delete(`/reports/schedule/${id}`);
@@ -65,10 +68,10 @@ const ScheduledReportingTab = () => {
                     prevSchedules.filter(schedule => schedule._id !== id)
                 );
 
-                alert("Automation halted and removed from registry.");
+                showToast("Automation halted and removed from registry.", "success");
             } catch (err) {
                 console.error("Delete failed:", err);
-                alert("Could not delete the schedule. Please try again.");
+                showToast("Could not delete the schedule. Please try again.", "error");
             }
         }
     };
@@ -98,7 +101,7 @@ const ScheduledReportingTab = () => {
             const exists = prev.find(a => a.assetId === assetId);
             if (exists) return prev.filter(a => a.assetId !== assetId);
 
-            // 🔥 INITIALIZE WITH DEFAULT SLIDER VALUES (5/10)
+            // INITIALIZE WITH DEFAULT SLIDER VALUES (5/10)
             return [...prev, {
                 assetId,
                 businessContext: {
@@ -129,7 +132,7 @@ const ScheduledReportingTab = () => {
     const handleSave = async () => {
         // 1. Validation
         if (!formData.scheduleName.trim() || !formData.targetDomainId || selectedAssets.length === 0) {
-            alert("Please provide an Audit Name, select a Domain, and choose at least one Asset.");
+            showToast("Please provide an Audit Name, select a Domain, and choose at least one Asset.", "error");
             return;
         }
 
@@ -146,7 +149,7 @@ const ScheduledReportingTab = () => {
                 isEnabled: enabled
             });
 
-            // 3. 🔥 THE RESET LOGIC: Go back to default mode
+            // 3. THE RESET LOGIC: Go back to default mode
             setFormData(DEFAULT_FORM_STATE); // Reset name, email, time, etc.
             setSelectedAssets([]);           // Clear selected assets & their sliders
             setAvailableAssets([]);          // Clear the scrollable topography list
@@ -156,10 +159,10 @@ const ScheduledReportingTab = () => {
             // 4. Refresh the registry below the form
             fetchCurrentSchedule();
 
-            alert("🚀 Audit Schedule registered successfully. Form reset to defaults.");
+            showToast("🚀 Audit Schedule registered successfully. Form reset to defaults.", "success");
         } catch (err) {
             console.error("Save failed:", err);
-            alert("Error saving schedule. Please check your connection.");
+            showToast("Error saving schedule. Please check your connection.", "error");
         } finally {
             setLoading(false);
         }
@@ -174,7 +177,7 @@ const ScheduledReportingTab = () => {
     return (
         <div className="space-y-6 pb-20 animate-in fade-in duration-500">
             <div className="px-4">
-                <Link to="/dashboard/reporting" className="flex items-center gap-2 text-slate-400 hover:text-orange-500 transition-colors text-xs font-black uppercase tracking-widest">
+                <Link to="/dashboard/reporting" className="flex items-center gap-2 text-slate-400 hover:text-orange-500 transition-colors text-sm font-black uppercase tracking-widest">
                     <ArrowLeft size={16} /> Back to Registry
                 </Link>
             </div>
@@ -183,27 +186,21 @@ const ScheduledReportingTab = () => {
                 {/* Header */}
                 <div className="p-10 bg-white border-b border-slate-50 flex justify-between items-center">
                     <div className="flex items-center gap-4">
-                        <div className="p-4 bg-slate-900 rounded-2xl text-orange-500">
+                        <div className="p-4 bg-[var(--primary)] rounded-2xl text-white">
                             <Calendar size={24} />
                         </div>
                         <div>
                             <h2 className="text-2xl font-black text-slate-900 uppercase italic leading-none tracking-tighter">Report Scheduler</h2>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Automate extraction from Assets & Scan Results</p>
+                            <p className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest mt-2">Automate extraction from Assets & Scan Results</p>
                         </div>
-                    </div>
-                    <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl">
-                        <span className="text-[10px] font-black uppercase text-slate-500">Enable Automation</span>
-                        <button onClick={() => setEnabled(!enabled)} className={`w-12 h-6 rounded-full transition-all relative ${enabled ? 'bg-orange-500' : 'bg-slate-300'}`}>
-                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${enabled ? 'left-7' : 'left-1'}`} />
-                        </button>
                     </div>
                 </div>
 
-                <div className="p-12 grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div className="p-12 grid grid-cols-1 lg:grid-cols-1 gap-16">
                     {/* Module Selection */}
                     <div className="space-y-8">
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">
+                            <label className="text-xs font-black uppercase text-slate-400 tracking-[0.2em] ml-1">
                                 Schedule Identifier / Audit Name
                             </label>
                             <input
@@ -211,17 +208,17 @@ const ScheduledReportingTab = () => {
                                 placeholder="e.g. Q2 COMPLIANCE SUMMARY"
                                 value={formData.scheduleName}
                                 onChange={(e) => setFormData({ ...formData, scheduleName: e.target.value.toUpperCase() })}
-                                className="w-full p-4 bg-orange-50/30 border-2 border-orange-100 rounded-2xl font-black text-xs placeholder:text-slate-300 focus:border-orange-500 outline-none transition-all"
+                                className="w-full p-4 bg-orange-50/30 border-2 border-orange-100 rounded-2xl font-black text-sm placeholder:text-slate-300 focus:border-orange-500 outline-none transition-all"
                             />
                         </div>
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Integrated Project Modules</label>
+                            <label className="text-xs font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Integrated Project Modules</label>
                             <div className="space-y-3">
                                 {modules.map(mod => (
                                     <div key={mod.id} className="flex items-center justify-between bg-white border-2 border-slate-100 p-5 rounded-[2rem] hover:border-orange-200 transition-all">
                                         <div className="flex items-center gap-4">
                                             <div className="p-2 bg-orange-50 text-orange-500 rounded-xl">{mod.icon}</div>
-                                            <span className="text-[11px] font-black uppercase text-slate-700 tracking-tight">{mod.label}</span>
+                                            <span className="text-sm font-black uppercase text-slate-700 tracking-tight">{mod.label}</span>
                                         </div>
                                         <input
                                             type="checkbox"
@@ -237,14 +234,17 @@ const ScheduledReportingTab = () => {
                             </div>
                         </div>
 
-                        <div className="p-12">
+                        <div className="editorial-shell p-6 lg:p-8 rounded-[2rem] space-y-8">
                             {/* 1. Domain Selection */}
-                            <div className="space-y-3 mb-8">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Target Domain Scope</label>
+                            <div className="space-y-3">
+                                <label className="text-xs font-black uppercase text-slate-400 ml-1 tracking-widest">Target Domain Scope</label>
+                                <p className="text-sm text-slate-500 font-semibold leading-relaxed">
+                                    Select a domain to discover assets, then choose nodes and tune their risk parameters for scheduled intelligence reports.
+                                </p>
                                 <select
                                     value={formData.targetDomainId}
                                     onChange={(e) => handleDomainChange(e.target.value)}
-                                    className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-xs uppercase outline-none focus:border-orange-500 transition-all"
+                                    className="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl font-black text-sm uppercase outline-none focus:border-orange-500 transition-all"
                                 >
                                     <option value="">Select a Domain to Discover Assets</option>
                                     {domains.map(d => <option key={d._id} value={d._id}>{d.domainName}</option>)}
@@ -255,9 +255,12 @@ const ScheduledReportingTab = () => {
                             {availableAssets.length > 0 && (
                                 <div className="space-y-6 animate-in slide-in-from-bottom-4">
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                        <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">
+                                        <h4 className="text-xs sm:text-sm font-black uppercase text-slate-400 tracking-[0.2em] ml-1">
                                             Network Topography ({availableAssets.length} Nodes Found)
                                         </h4>
+                                        <span className="text-xs sm:text-sm font-black uppercase tracking-widest text-orange-500">
+                                            {selectedAssets.length} Selected
+                                        </span>
 
                                         {/* 🔍 Search Input */}
                                         <div className="relative group">
@@ -269,13 +272,13 @@ const ScheduledReportingTab = () => {
                                                 placeholder="SEARCH HOST OR IP..."
                                                 value={searchTerm}
                                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                                className="pl-10 pr-4 py-2 bg-slate-50 border-2 border-slate-100 rounded-xl text-[10px] font-black uppercase outline-none focus:border-orange-500 w-full md:w-64 transition-all"
+                                                className="pl-10 pr-4 py-2 bg-white border-2 border-slate-200 rounded-xl text-xs sm:text-sm font-black uppercase outline-none focus:border-orange-500 w-full md:w-64 transition-all"
                                             />
                                         </div>
                                     </div>
 
                                     {/* 📦 SCROLLABLE ASSET GRID */}
-                                    <div className="flex flex-col gap-2 max-h-[450px] overflow-y-auto p-4 bg-slate-50 dark:bg-slate-900/50 rounded-[2.5rem] border-2 border-slate-100 dark:border-slate-800 shadow-inner custom-scrollbar">
+                                    <div className="flex flex-col gap-2 max-h-[450px] overflow-y-auto p-4 bg-white rounded-[2.5rem] border-2 border-slate-200 shadow-inner custom-scrollbar">
                                         {filteredAssets.map(asset => {
                                             const selection = selectedAssets.find(s => s.assetId === asset._id);
                                             return (
@@ -283,8 +286,8 @@ const ScheduledReportingTab = () => {
                                                     key={asset._id}
                                                     onClick={() => handleToggleAsset(asset._id)}
                                                     className={`group flex items-center justify-between p-5 rounded-2xl border-2 transition-all cursor-pointer ${selection
-                                                        ? 'border-orange-500 bg-white dark:bg-slate-800 shadow-md translate-x-1'
-                                                        : 'border-white dark:border-transparent bg-white dark:bg-slate-800 hover:border-slate-200'
+                                                        ? 'border-orange-400 bg-orange-50/50 shadow-md translate-x-1'
+                                                        : 'border-slate-200 bg-white hover:border-orange-200'
                                                         }`}
                                                 >
                                                     {/* Left Side: Checkbox & Identity */}
@@ -296,11 +299,11 @@ const ScheduledReportingTab = () => {
 
                                                         <div className="flex flex-col">
                                                             {/* Full Hostname - No Truncation */}
-                                                            <span className="text-xs font-black text-slate-800 dark:text-slate-100 uppercase italic tracking-tight">
+                                                            <span className="text-sm font-black text-slate-800 uppercase italic tracking-tight">
                                                                 {asset.host}
                                                             </span>
                                                             {/* Full IP Address */}
-                                                            <span className="text-[10px] font-bold text-slate-400 font-mono mt-0.5">
+                                                            <span className="text-xs font-bold text-slate-400 font-mono mt-0.5">
                                                                 {asset.ip}
                                                             </span>
                                                         </div>
@@ -308,7 +311,7 @@ const ScheduledReportingTab = () => {
 
                                                     {/* Right Side: Status/Type Badge */}
                                                     <div className="flex items-center gap-4">
-                                                        <span className="hidden sm:inline-block text-[8px] font-black px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-full uppercase tracking-widest">
+                                                        <span className="hidden sm:inline-block text-[10px] font-black px-3 py-1 bg-slate-100 text-slate-500 rounded-full uppercase tracking-widest">
                                                             {asset.assetType || 'Compute Node'}
                                                         </span>
 
@@ -323,7 +326,7 @@ const ScheduledReportingTab = () => {
 
                                         {filteredAssets.length === 0 && (
                                             <div className="py-20 text-center">
-                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                                <p className="text-sm font-black text-slate-400 uppercase tracking-widest">
                                                     No matching nodes found in the topography
                                                 </p>
                                             </div>
@@ -335,7 +338,7 @@ const ScheduledReportingTab = () => {
                             {/* 3. Slider Configuration (Renders only if assets are selected) */}
                             {selectedAssets.length > 0 && (
                                 <div className="mt-12 space-y-6 animate-in fade-in">
-                                    <h4 className="text-[10px] font-black uppercase text-orange-500 tracking-[0.2em] ml-1">
+                                    <h4 className="text-xs sm:text-sm font-black uppercase text-orange-500 tracking-[0.2em] ml-1">
                                         Adjust Risk Parameters for {selectedAssets.length} Selected Nodes
                                     </h4>
                                     <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
@@ -347,7 +350,7 @@ const ScheduledReportingTab = () => {
                                                     <div className="flex justify-between items-center mb-6">
                                                         <div className="flex items-center gap-3">
                                                             <div className="p-2 bg-orange-50 text-orange-500 rounded-lg"><Database size={14} /></div>
-                                                            <span className="text-[11px] font-black text-slate-800 uppercase italic">{asset.host}</span>
+                                                            <span className="text-sm font-black text-slate-800 uppercase italic">{asset.host}</span>
                                                         </div>
                                                         <button onClick={() => handleToggleAsset(asset._id)} className="text-slate-300 hover:text-red-500"><Trash2 size={16} /></button>
                                                     </div>
@@ -356,14 +359,14 @@ const ScheduledReportingTab = () => {
                                                         {envMetrics.map(metric => (
                                                             <div key={metric.id} className="space-y-2">
                                                                 <div className="flex justify-between">
-                                                                    <label className="text-[8px] font-black uppercase text-slate-400">{metric.label}</label>
-                                                                    <span className="text-[10px] font-black text-orange-500">{selection.businessContext[metric.id]}</span>
+                                                                    <label className="text-xs font-black uppercase text-slate-400">{metric.label}</label>
+                                                                    <span className="text-sm font-black text-orange-500">{selection.businessContext[metric.id]}</span>
                                                                 </div>
                                                                 <input
                                                                     type="range" min="1" max="10"
                                                                     value={selection.businessContext[metric.id]}
                                                                     onChange={(e) => updateMetric(asset._id, metric.id, e.target.value)}
-                                                                    className="w-full h-1 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                                                                    className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-orange-500"
                                                                 />
                                                             </div>
                                                         ))}
@@ -381,11 +384,11 @@ const ScheduledReportingTab = () => {
                     <div className="space-y-10">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Frequency</label>
+                                <label className="text-xs font-black uppercase text-slate-400 ml-1">Frequency</label>
                                 <select
                                     value={formData.frequency}
                                     onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
-                                    className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-xs uppercase"
+                                    className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-sm uppercase"
                                 >
                                     <option>Daily</option>
                                     <option>Weekly</option>
@@ -393,21 +396,24 @@ const ScheduledReportingTab = () => {
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Schedule Time</label>
+                                <label className="text-xs font-black uppercase text-slate-400 ml-1">Schedule Time</label>
                                 <input
                                     type="time"
                                     value={formData.time}
                                     onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                                    className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-xs"
+                                    className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-sm"
                                 />
                             </div>
                         </div>
 
-                        <div className="bg-[#0f172a] p-10 rounded-[2.5rem] text-white space-y-6 relative overflow-hidden">
+                        <div
+                            className="p-10 rounded-[2.5rem] text-black space-y-6 relative border border-slate-900 overflow-hidden shadow-xl"
+                            // style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-soft) 20%)' }}
+                        >
                             <div className="relative z-10">
-                                <div className="flex items-center gap-3 text-orange-500 mb-6">
+                                <div className="flex items-center gap-3  mb-6">
                                     <Mail size={20} />
-                                    <h4 className="font-black uppercase text-xs italic">Email Delivery Delivery</h4>
+                                    <h4 className="font-black uppercase text-sm italic">Email Delivery</h4>
                                 </div>
 
                                 <input
@@ -415,13 +421,13 @@ const ScheduledReportingTab = () => {
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     placeholder="recipient@org.com"
-                                    className="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl text-xs font-bold text-white outline-none focus:border-orange-500 mb-6"
+                                    className="w-full bg-white/15 placeholder:text-white/70 border border-slate-900 p-4 rounded-xl text-sm font-bold outline-none focus:border-white mb-6"
                                 />
 
                                 <button
                                     onClick={handleSave}
                                     disabled={loading}
-                                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-widest flex items-center justify-center gap-3 transition-all"
+                                    className="w-full bg-white hover:bg-orange-50 text-[var(--primary)] py-5 rounded-2xl not-hover:border not-hover:border-[var(--primary)] font-black uppercase text-sm tracking-widest flex items-center justify-center gap-3 transition-all"
                                 >
                                     {loading ? "Scheduling..." : "Save Report Schedule"} <ArrowRight size={18} />
                                 </button>
@@ -434,22 +440,25 @@ const ScheduledReportingTab = () => {
             {/* Change activeSchedule to activeSchedules.length > 0 */}
             {activeSchedules.length > 0 && (
                 <div className="max-w-5xl mx-auto space-y-4">
-                    <h4 className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-4">
+                    <h4 className="text-xs sm:text-sm font-black uppercase text-slate-500 tracking-[0.2em] ml-4">
                         Active Automation Registry ({activeSchedules.length})
                     </h4>
 
                     {activeSchedules.map((schedule) => (
-                        <div key={schedule._id} className="bg-[#0f172a] rounded-[2.5rem] p-8 border border-slate-800 shadow-2xl animate-in fade-in">
+                        <div
+                            key={schedule._id}
+                            className="rounded-[2.5rem] p-8 border border-slate-900 shadow-2xl animate-in fade-in"
+                        >
                             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-4 bg-orange-500/10 rounded-2xl text-orange-500 border border-orange-500/20">
+                                    <div className="p-4 bg-white/15 rounded-2xl text-slate-900 border border-slate-900">
                                         <Activity size={24} />
                                     </div>
                                     <div>
-                                        <h3 className="text-white font-black uppercase text-sm italic">
+                                        <h3 className="text-slate-900 font-black uppercase text-sm italic">
                                             {schedule.scheduleName || "UNNAMED AUDIT"}
                                         </h3>
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+                                        <p className="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-widest mt-1">
                                             {schedule.frequency} — SYNCING {schedule.time} IST
                                         </p>
                                     </div>
@@ -457,7 +466,7 @@ const ScheduledReportingTab = () => {
 
                                 <div className="flex-1 flex flex-wrap gap-2 px-10">
                                     {Object.entries(schedule.includeSections).map(([key, val]) => val && (
-                                        <span key={key} className="bg-slate-800 text-slate-400 text-[8px] font-black uppercase px-3 py-1.5 rounded-lg border border-slate-700">
+                                        <span key={key} className="bg-white/15 text-slate-900 text-[10px] font-black uppercase px-3 py-1.5 rounded-lg border border-slate-900">
                                             {key}
                                         </span>
                                     ))}
@@ -465,7 +474,7 @@ const ScheduledReportingTab = () => {
 
                                 <button
                                     onClick={() => handleDelete(schedule._id)}
-                                    className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase transition-all border border-red-500/20"
+                                    className="flex items-center gap-2 bg-white/10 hover:bg-red-500 text-red-500 border border-red-500 hover:text-white px-6 py-3 rounded-xl text-xs sm:text-sm font-black uppercase transition-all"
                                 >
                                     <Trash2 size={14} /> Terminate
                                 </button>

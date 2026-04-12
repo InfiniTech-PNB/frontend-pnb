@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-    History, Globe, Clock, Loader2, Search, Activity,
+    History, Globe, Clock, Search, Activity,
     ShieldCheck, BarChart3, ClipboardList, ChevronDown, ChevronUp, Lock as LockIcon, AlertTriangle, Cpu, Zap
 } from 'lucide-react';
 import API from "../../../services/api";
 import SecurityChatbot from '../../../components/Dashboard/SecurityChatbot';
+import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const HistoryTab = () => {
     // Selection States
@@ -14,8 +15,6 @@ const HistoryTab = () => {
     const [selectedScan, setSelectedScan] = useState("");
 
     // Data States
-    const [domainSummary, setDomainSummary] = useState(null); // Data from /summary
-    const [cryptoInventory, setCryptoInventory] = useState([]); // Data from /crypto-inventory
     const [scanResults, setScanResults] = useState([]);
     const [assetPlans, setAssetPlans] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -27,7 +26,7 @@ const HistoryTab = () => {
         setExpandedField(expandedField === field ? null : field);
     };
 
-    const ExpandableRow = ({ label, data, colorClass = "text-white" }) => {
+    const ExpandableRow = ({ label, data, colorClass = "text-slate-700" }) => {
         const count = data?.length || 0;
         const isExpanded = expandedField === label;
 
@@ -37,9 +36,9 @@ const HistoryTab = () => {
                     className="flex justify-between items-center cursor-pointer hover:bg-slate-800/30 transition-colors rounded-lg px-2 -mx-2"
                     onClick={() => count > 0 && toggleField(label)}
                 >
-                    <span className="text-slate-500 uppercase text-[9px]">{label}</span>
+                    <span className="text-slate-500 uppercase text-[11px]">{label}</span>
                     <div className="flex items-center gap-2">
-                        <span className={`${count > 0 ? colorClass : 'text-slate-600'} text-[10px]`}>
+                        <span className={`${count > 0 ? colorClass : 'text-slate-600'} text-[12px]`}>
                             {count} {count === 1 ? 'Item' : 'Items'} Found
                         </span>
                         {count > 0 && (
@@ -51,7 +50,7 @@ const HistoryTab = () => {
                 {isExpanded && count > 0 && (
                     <div className="mt-3 space-y-2 pl-2 border-l border-slate-700 animate-in fade-in slide-in-from-top-1">
                         {data.map((item, i) => (
-                            <div key={i} className="text-[10px] font-mono text-slate-400 break-all leading-tight">
+                            <div key={i} className="text-[12px] font-mono text-slate-400 break-all leading-tight">
                                 • {item}
                             </div>
                         ))}
@@ -81,7 +80,6 @@ const HistoryTab = () => {
                 setScans(Array.isArray(res.data) ? res.data : (res.data.scans || []));
                 setSelectedScan("");
                 setScanResults([]);
-                setDomainSummary(null);
             } catch (err) { console.error("Error:", err); }
         };
         fetchScans();
@@ -93,15 +91,7 @@ const HistoryTab = () => {
         setSelectedScan(scanId);
         setLoading(true);
         try {
-            // 1. Fetch Strategic Summary (Aggregated Stats + LLM Recommendation)
-            const summaryRes = await API.get(`/domains/${selectedDomain}/summary`);
-            setDomainSummary(summaryRes.data);
-
-            // 2. Fetch Domain-wide Crypto Inventory
-            const inventoryRes = await API.get(`/domains/${selectedDomain}/crypto-inventory`);
-            setCryptoInventory(inventoryRes.data.algorithms || []);
-
-            // 3. Fetch Tactical Scan Results for Asset Cards
+            // 1. Fetch Tactical Scan Results for Asset Cards
             const resultsRes = await API.get(`/scan/${scanId}/results`);
             setScanResults(resultsRes.data);
 
@@ -154,23 +144,23 @@ const HistoryTab = () => {
             }} />
 
             {/* --- SELECTION HUD --- */}
-            <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
+            <div className="editorial-shell p-8">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
-                        <div className="p-5 bg-orange-50 rounded-[2rem] text-orange-600 shadow-inner">
+                        <div className="p-5 bg-blue-50 rounded-[2rem] text-blue-700 shadow-inner">
                             <History size={32} />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase italic leading-none">Audit History</h2>
+                            <h2 className="editorial-title text-2xl tracking-tight uppercase italic leading-none">Audit History</h2>
                         </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-center gap-4">
-                        <select value={selectedDomain} onChange={(e) => setSelectedDomain(e.target.value)} className="w-full sm:w-64 pl-6 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-orange-500 appearance-none shadow-inner">
+                        <select value={selectedDomain} onChange={(e) => setSelectedDomain(e.target.value)} className="w-full sm:w-64 pl-6 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[12px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none">
                             <option value="">Select Domain</option>
                             {domains.map(d => <option key={d._id} value={d._id}>{d.domainName}</option>)}
                         </select>
-                        <select value={selectedScan} disabled={!selectedDomain} onChange={(e) => handleFetchHistory(e.target.value)} className="w-full sm:w-64 pl-6 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-orange-500 appearance-none shadow-inner disabled:opacity-30">
+                        <select value={selectedScan} disabled={!selectedDomain} onChange={(e) => handleFetchHistory(e.target.value)} className="w-full sm:w-64 pl-6 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[12px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-30">
                             <option value="">Select Audit Entry</option>
                             {scans.map(s => <option key={s._id} value={s._id}>{new Date(s.createdAt).toLocaleString()}</option>)}
                         </select>
@@ -179,119 +169,27 @@ const HistoryTab = () => {
             </div>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-40">
-                    <Loader2 className="animate-spin text-orange-500 mb-4" size={48} />
-                    <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em] animate-pulse">Reconstructing Audit Environment...</p>
-                </div>
-            ) : domainSummary ? (
-                <div className="space-y-10">
-                    {/* --- SECTION 1: STRATEGIC DOMAIN HUD --- */}
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-                            {/* Main Strategic Overview Card */}
-                            <div className="xl:col-span-2 bg-[#0f172a] rounded-[3rem] p-10 text-white relative overflow-hidden shadow-2xl border border-slate-800">
-                                <ShieldCheck className="absolute -right-10 -bottom-10 w-64 h-64 text-emerald-500/5" />
-
-                                <div className="relative z-10">
-                                    <div className="flex flex-wrap items-center gap-3 mb-8">
-                                        <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${domainSummary?.recommendation?.riskLevel === 'HIGH'
-                                            ? 'bg-red-500/20 text-red-400 border-red-500/30'
-                                            : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                                            }`}>
-                                            Threat Level: {domainSummary?.recommendation?.riskLevel}
-                                        </div>
-                                        <div className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-[9px] font-black text-slate-300 uppercase tracking-widest">
-                                            Node Coverage: {domainSummary.assets?.scannedAssets} / {domainSummary.assets?.totalAssets}
-                                        </div>
-                                    </div>
-
-                                    <h3 className="text-6xl font-black italic uppercase leading-none tracking-tighter mb-6">
-                                        Grade: <span className="text-emerald-400">{Math.round(domainSummary.pqcReadiness?.averageScore * 1000)}</span>
-                                    </h3>
-
-                                    <p className="text-slate-300 text-sm font-bold leading-relaxed max-w-3xl mb-10 border-l-2 border-orange-500 pl-6 py-2 bg-orange-500/5 rounded-r-xl">
-                                        {domainSummary.recommendation?.summary}
-                                    </p>
-
-                                    {/* Technical Recommendation Grid */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-800 pt-10">
-                                        <div className="space-y-4">
-                                            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                                                <Cpu size={14} className="text-orange-500" /> Recommended PQC Stack
-                                            </h4>
-                                            <div className="flex flex-col gap-2">
-                                                <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                                                    <span className="text-[9px] font-bold text-slate-400 uppercase">Key Exchange</span>
-                                                    <span className="text-xs font-black text-white font-mono">{domainSummary.recommendation?.recommendedPqcKex}</span>
-                                                </div>
-                                                <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                                                    <span className="text-[9px] font-bold text-slate-400 uppercase">Digital Signature</span>
-                                                    <span className="text-xs font-black text-white font-mono">{domainSummary.recommendation?.recommendedPqcSignature}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-4">
-                                            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                                                <ClipboardList size={14} className="text-orange-500" /> Migration Strategy
-                                            </h4>
-                                            <div className="space-y-3">
-                                                {domainSummary.recommendation?.migrationStrategy?.map((step, idx) => (
-                                                    <div key={idx} className="flex gap-3 items-start group">
-                                                        <div className="mt-1 text-orange-500 font-black text-[10px] bg-orange-500/10 w-5 h-5 flex items-center justify-center rounded-lg border border-orange-500/20 group-hover:bg-orange-500 group-hover:text-white transition-all">
-                                                            {idx + 1}
-                                                        </div>
-                                                        <p className="text-[10px] font-bold text-slate-400 leading-tight uppercase group-hover:text-slate-200 transition-colors">
-                                                            {step}
-                                                        </p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Global Crypto Inventory Badge Wall */}
-                            <div className="bg-white border border-slate-100 rounded-[3rem] p-8 shadow-sm flex flex-col">
-                                <div className="flex items-center justify-between mb-8">
-                                    <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
-                                        <Activity size={16} className="text-orange-500" /> Cipher footprint
-                                    </h4>
-                                </div>
-
-                                <div className="flex flex-wrap gap-2 overflow-y-auto max-h-[400px] scrollbar-hide pr-2">
-                                    {cryptoInventory.map((alg, idx) => (
-                                        <div key={idx} className="group relative">
-                                            <div className="absolute inset-0 bg-orange-500 rounded-xl blur opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                                            <div className="relative px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[9px] font-black text-slate-600 uppercase tracking-tighter flex items-center gap-2 hover:border-orange-200 hover:text-slate-900 transition-all">
-                                                <div className="w-1 h-1 rounded-full bg-orange-400 group-hover:animate-ping" />
-                                                {alg}
-                                            </div>
-                                        </div>
-                                    ))}
-                                    {cryptoInventory.length === 0 && (
-                                        <div className="flex flex-col items-center justify-center w-full py-20 opacity-20">
-                                            <Search size={32} />
-                                            <p className="text-[8px] font-black uppercase mt-2">No unique primitives</p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="mt-auto pt-6 border-t border-slate-50">
-                                    <p className="text-[9px] font-bold text-slate-400 leading-relaxed uppercase tracking-tighter italic">
-                                        The detection engine identified {cryptoInventory.length} unique cryptographic primitives across the scanned infrastructure.
-                                    </p>
-                                </div>
+                <div className="space-y-4">
+                    {Array.from({ length: 3 }).map((_, idx) => (
+                        <div key={idx} className="rounded-[2.5rem] p-8 border border-slate-200 bg-white shadow-sm space-y-4">
+                            <SkeletonBlock className="h-6 w-72" />
+                            <SkeletonBlock className="h-5 w-56" />
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <SkeletonBlock className="h-20 w-full" />
+                                <SkeletonBlock className="h-20 w-full" />
+                                <SkeletonBlock className="h-20 w-full" />
                             </div>
                         </div>
-                    </div>
+                    ))}
+                </div>
+            ) : scanResults.length > 0 ? (
+                <div className="space-y-10">
+
                     {/* --- TACTICAL ASSET BREAKDOWN (Results Tab Design) --- */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-3 px-4">
-                            <Activity className="text-orange-500" size={20} />
-                            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight italic">Historical Node Breakdown</h3>
+                            <Activity className="text-blue-700" size={20} />
+                            <h3 className="editorial-title text-lg uppercase tracking-tight italic">Historical Node Breakdown</h3>
                         </div>
 
                         <div className="grid grid-cols-1 gap-4">
@@ -308,26 +206,79 @@ const HistoryTab = () => {
                                                 <div>
                                                     <div className="flex items-center gap-2">
                                                         <h4 className="text-lg font-black text-slate-900 uppercase italic leading-none">{res.assetId?.host}</h4>
-                                                        <span className="bg-slate-100 text-slate-500 text-[8px] px-1.5 py-0.5 rounded font-black">{res.assetId?.assetType}</span>
+                                                        <span className="bg-slate-100 text-slate-500 text-[10px] px-1.5 py-0.5 rounded font-black">{res.assetId?.assetType}</span>
+                                                        
+                                                        {/* STATUS BADGE */}
+                                                        {res.status && (
+                                                            (() => {
+                                                                const status = res.status.toLowerCase();
+                                                                const isSuccess = status === 'completed' || status === 'success';
+                                                                const isBlocked = status === 'blocked';
+
+                                                                const style = isSuccess
+                                                                    ? 'bg-green-100 text-green-600'
+                                                                    : isBlocked
+                                                                        ? 'bg-amber-100 text-amber-500'
+                                                                        : 'bg-rose-100 text-rose-600';
+
+                                                                return (
+                                                                    <span className={`text-[10px] px-2 py-0.5 rounded font-black uppercase ${style}`}>
+                                                                        {status}
+                                                                    </span>
+                                                                );
+                                                            })()
+                                                        )}
                                                     </div>
-                                                    <p className="text-[10px] font-mono text-slate-400 mt-2 font-bold">{res.assetId?.ip} • PORT {res.port}</p>
+                                                    <p className="text-[12px] font-mono text-slate-400 mt-2 font-bold">{res.assetId?.ip} • PORT {res.port}</p>
+                                                    
+                                                    {/* FAILURE REASON */}
+                                                    {(res.status === 'failed' || res.status === 'blocked') && (
+                                                        <p className="text-[11px] font-bold text-rose-500 mt-1 uppercase tracking-tight">
+                                                            Reason: {res.failureReason || 'Connection failed or blocked'}
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
 
                                             <div className="flex items-center gap-12">
-                                                <div className="text-center">
-                                                    <p className={`text-[20px] font-black uppercase ${config.color}`}>{config.label}</p>
-                                                </div>
-                                                <div className="text-right">
-                                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">PQC Score</p>
-                                                    <p className="text-3xl font-black text-slate-900">{Math.round(res.pqcReadyScore * 1000)}</p>
-                                                </div>
-                                                <button
-                                                    onClick={() => setExpandedAssetId(isExpanded ? null : res._id)}
-                                                    className={`p-3 rounded-full transition-all ${isExpanded ? 'bg-orange-500 text-white shadow-lg' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
-                                                >
-                                                    {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-                                                </button>
+                                                {(() => {
+                                                    const status = (res.status || '').toLowerCase();
+                                                    const isSuccess = !status || status === 'completed' || status === 'success';
+                                                    const isBlocked = status === 'blocked';
+
+                                                    if (isSuccess) {
+                                                        return (
+                                                            <>
+                                                                <div className="text-center">
+                                                                    <p className={`text-[20px] font-black uppercase ${config.color}`}>{config.label}</p>
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">PQC Score</p>
+                                                                    <p className="text-3xl font-black text-slate-900">{Math.round(res.pqcReadyScore * 1000)}</p>
+                                                                </div>
+                                                                <button
+                                                                    onClick={() => setExpandedAssetId(isExpanded ? null : res._id)}
+                                                                    className={`p-3 rounded-full transition-all ${isExpanded ? 'bg-orange-500 text-white shadow-lg' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                                                                >
+                                                                    {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                                                                </button>
+                                                            </>
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <div className="text-right pr-4">
+                                                            <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                                                                Status
+                                                            </p>
+                                                            <p
+                                                                className={`text-[20px] font-black uppercase ${isBlocked ? 'text-amber-500' : 'text-rose-600'}`}
+                                                            >
+                                                                {status}
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                })()}
                                             </div>
                                         </div>
 
@@ -335,7 +286,7 @@ const HistoryTab = () => {
                                             <div className="px-10 pb-10 animate-in slide-in-from-top-4 duration-300">
                                                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-10 border-t border-slate-50 pt-10">
                                                     <div className="space-y-4">
-                                                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                        <h4 className="text-[12px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                                             <LockIcon size={14} /> Node Crypto Analysis
                                                         </h4>
                                                         <div className="bg-slate-900 rounded-[2.5rem] p-7 text-slate-300 shadow-2xl">
@@ -343,18 +294,18 @@ const HistoryTab = () => {
                                                             {/* --- 1. NEGOTIATED SUMMARY (Non-Expandable) --- */}
                                                             <div className="grid grid-cols-2 gap-4 mb-6">
                                                                 <div className="bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
-                                                                    <p className="text-slate-500 uppercase text-[8px] mb-1">Active TLS</p>
-                                                                    <p className="text-orange-400 font-black text-[11px]">{res.negotiated?.tlsVersion || 'N/A'}</p>
+                                                                    <p className="text-slate-500 uppercase text-[10px] mb-1">Active TLS</p>
+                                                                    <p className="text-orange-400 font-black text-[13px]">{res.negotiated?.tlsVersion || 'N/A'}</p>
                                                                 </div>
                                                                 <div className="bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
-                                                                    <p className="text-slate-500 uppercase text-[8px] mb-1">KEX / Size</p>
-                                                                    <p className="text-white font-black text-[11px]">
-                                                                        {res.negotiated?.keyExchange || 'N/A'} <span className="text-slate-500 text-[9px]">({res.negotiated?.serverTempKeySize || 0}b)</span>
+                                                                    <p className="text-slate-500 uppercase text-[10px] mb-1">KEX / Size</p>
+                                                                    <p className="text-slate-800 font-black text-[13px]">
+                                                                        {res.negotiated?.keyExchange || 'N/A'} <span className="text-slate-500 text-[11px]">({res.negotiated?.serverTempKeySize || 0}b)</span>
                                                                     </p>
                                                                 </div>
                                                                 <div className="col-span-2 bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
-                                                                    <p className="text-slate-500 uppercase text-[8px] mb-1">Negotiated Cipher</p>
-                                                                    <p className="text-white font-mono text-[10px] truncate">{res.negotiated?.cipher || 'N/A'}</p>
+                                                                    <p className="text-slate-500 uppercase text-[10px] mb-1">Negotiated Cipher</p>
+                                                                    <p className="text-slate-800 font-mono text-[12px] truncate">{res.negotiated?.cipher || 'N/A'}</p>
                                                                 </div>
                                                             </div>
 
@@ -403,53 +354,53 @@ const HistoryTab = () => {
                                                             </div>
 
                                                             {/* --- 3. SYSTEM FLAGS --- */}
-                                                            <div className="mt-6 pt-4 border-t border-slate-800 grid grid-cols-2 gap-4 text-[10px]">
+                                                            <div className="mt-6 pt-4 border-t border-slate-800 grid grid-cols-2 gap-4 text-[12px]">
                                                                 <div className="flex justify-between">
-                                                                    <span className="text-slate-500 uppercase text-[8px]">PFS Support</span>
+                                                                    <span className="text-slate-500 uppercase text-[10px]">PFS Support</span>
                                                                     <span className={res.pfsSupported ? 'text-emerald-400' : 'text-red-400'}>
                                                                         {res.pfsSupported ? 'YES' : 'NO'}
                                                                     </span>
                                                                 </div>
                                                                 <div className="flex justify-between">
-                                                                    <span className="text-slate-500 uppercase text-[8px]">OCSP Stapled</span>
+                                                                    <span className="text-slate-500 uppercase text-[10px]">OCSP Stapled</span>
                                                                     <span className="text-slate-300">{res.negotiated?.ocsp?.stapled ? 'YES' : 'NO'}</span>
                                                                 </div>
                                                                 <div className="flex justify-between">
-                                                                    <span className="text-slate-500 uppercase text-[8px]">Session Reused</span>
+                                                                    <span className="text-slate-500 uppercase text-[10px]">Session Reused</span>
                                                                     <span className="text-slate-300">{res.negotiated?.sessionReused ? 'YES' : 'NO'}</span>
                                                                 </div>
                                                                 <div className="flex justify-between">
-                                                                    <span className="text-slate-500 uppercase text-[8px]">PQC Confidence</span>
+                                                                    <span className="text-slate-500 uppercase text-[10px]">PQC Confidence</span>
                                                                     <span className="text-emerald-500 italic">{res.pqc?.confidence || 'N/A'}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div className="space-y-10">
-                                                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><BarChart3 size={14} /> ML Weight Distribution</h4>
+                                                        <h4 className="text-[12px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><BarChart3 size={14} /> ML Weight Distribution</h4>
                                                         <div className="grid grid-cols-2 gap-4">
                                                             <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-[2.5rem] text-center shadow-sm">
-                                                                <p className="text-[9px] font-black text-emerald-600 uppercase mb-2">ML Score</p>
+                                                                <p className="text-[11px] font-black text-emerald-600 uppercase mb-2">ML Score</p>
                                                                 <p className="text-2xl font-black text-emerald-700">{Math.round(res.mlScore * 1000)}</p>
                                                             </div>
                                                             <div className="bg-blue-50 border border-blue-100 p-6 rounded-[2.5rem] text-center shadow-sm">
-                                                                <p className="text-[9px] font-black text-blue-600 uppercase mb-2">Env Score</p>
+                                                                <p className="text-[11px] font-black text-blue-600 uppercase mb-2">Env Score</p>
                                                                 <p className="text-2xl font-black text-blue-700">{Math.round(res.envScore * 1000)}</p>
                                                             </div>
                                                         </div>
                                                         <div className="p-5 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-3">
-                                                            <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">Criticality</span> <span className="text-slate-900">LV: {res.businessContext?.assetCriticality}</span></div>
-                                                            <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">Dependent Services</span> <span className="text-slate-900">{res.businessContext?.dependentServices} Nodes</span></div>
-                                                            <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">Confidentiality Weight</span> <span className="text-slate-900">{res.businessContext?.confidentialityWeight}</span></div>
-                                                            <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">Integrity Weight</span> <span className="text-slate-900">{res.businessContext?.integrityWeight}</span></div>
-                                                            <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">Availability Weight</span> <span className="text-slate-900">{res.businessContext?.availabilityWeight}</span></div>
-                                                            <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">SLA Requirement</span> <span className="text-slate-900">{res.businessContext?.slaRequirement}</span></div>
-                                                            <div className="flex justify-between text-[10px] font-black"><span className="text-slate-400">Remediation Difficulty</span> <span className="text-slate-900">{res.businessContext?.remediationDifficulty}</span></div>
+                                                            <div className="flex justify-between text-[12px] font-black"><span className="text-slate-400">Criticality</span> <span className="text-slate-900">LV: {res.businessContext?.assetCriticality}</span></div>
+                                                            <div className="flex justify-between text-[12px] font-black"><span className="text-slate-400">Dependent Services</span> <span className="text-slate-900">{res.businessContext?.dependentServices} Nodes</span></div>
+                                                            <div className="flex justify-between text-[12px] font-black"><span className="text-slate-400">Confidentiality Weight</span> <span className="text-slate-900">{res.businessContext?.confidentialityWeight}</span></div>
+                                                            <div className="flex justify-between text-[12px] font-black"><span className="text-slate-400">Integrity Weight</span> <span className="text-slate-900">{res.businessContext?.integrityWeight}</span></div>
+                                                            <div className="flex justify-between text-[12px] font-black"><span className="text-slate-400">Availability Weight</span> <span className="text-slate-900">{res.businessContext?.availabilityWeight}</span></div>
+                                                            <div className="flex justify-between text-[12px] font-black"><span className="text-slate-400">SLA Requirement</span> <span className="text-slate-900">{res.businessContext?.slaRequirement}</span></div>
+                                                            <div className="flex justify-between text-[12px] font-black"><span className="text-slate-400">Remediation Difficulty</span> <span className="text-slate-900">{res.businessContext?.remediationDifficulty}</span></div>
                                                         </div>
                                                     </div>
 
                                                     <div className="space-y-4">
-                                                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                        <h4 className="text-[12px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                                             <ClipboardList size={14} /> AI Migration Advisor
                                                         </h4>
                                                         <div className="bg-orange-50/50 border border-orange-100 rounded-[2.5rem] p-7 h-full flex flex-col justify-evenly shadow-sm">
@@ -457,7 +408,7 @@ const HistoryTab = () => {
                                                             {/* 1. AI Recommendation Text */}
                                                             <div>
                                                                 <h4 className="text-[15px] font-black text-slate-400 tracking-widest flex items-center mb-1">AI Recommendation</h4>
-                                                                <p className="text-[11px] font-bold text-slate-700 leading-relaxed italic">
+                                                                <p className="text-[13px] font-bold text-slate-700 leading-relaxed italic">
                                                                     "{matchingPlan?.recommendations || 'Aggregating per-asset neural analysis...'}"
                                                                 </p>
                                                             </div>
@@ -465,14 +416,14 @@ const HistoryTab = () => {
                                                             {/* 2. NEW: PQC Technical Targets Section */}
                                                             <div className="mt-4 py-4 border-y border-orange-100/50 grid grid-cols-2 gap-4">
                                                                 <div>
-                                                                    <h5 className="text-[9px] font-black text-orange-500 uppercase tracking-tighter mb-1">Recommended PQC KEX</h5>
-                                                                    <div className="bg-white border border-orange-100 px-3 py-2 rounded-2xl text-[11px] font-mono font-black text-slate-800 shadow-sm">
+                                                                    <h5 className="text-[11px] font-black text-orange-500 uppercase tracking-tighter mb-1">Recommended PQC KEX</h5>
+                                                                    <div className="bg-white border border-orange-100 px-3 py-2 rounded-2xl text-[13px] font-mono font-black text-slate-800 shadow-sm">
                                                                         {matchingPlan?.recommendedPqcKex || "ML-KEM-768"}
                                                                     </div>
                                                                 </div>
                                                                 <div>
-                                                                    <h5 className="text-[9px] font-black text-orange-500 uppercase tracking-tighter mb-1">Recommended PQC Signature</h5>
-                                                                    <div className="bg-white border border-orange-100 px-3 py-2 rounded-2xl text-[11px] font-mono font-black text-slate-800 shadow-sm">
+                                                                    <h5 className="text-[11px] font-black text-orange-500 uppercase tracking-tighter mb-1">Recommended PQC Signature</h5>
+                                                                    <div className="bg-white border border-orange-100 px-3 py-2 rounded-2xl text-[13px] font-mono font-black text-slate-800 shadow-sm">
                                                                         {matchingPlan?.recommendedPqcSignature || "CRYSTALS-Dilithium"}
                                                                     </div>
                                                                 </div>
@@ -483,11 +434,11 @@ const HistoryTab = () => {
                                                                 <h4 className="text-[15px] font-black text-slate-400 tracking-widest flex items-center">AI Migration Steps</h4>
                                                                 <div className="space-y-2">
                                                                     {matchingPlan?.migrationSteps?.slice(0, 3).map((step, idx) => (
-                                                                        <div key={idx} className="flex gap-3 items-start text-[10px] font-bold text-slate-600 leading-tight">
+                                                                        <div key={idx} className="flex gap-3 items-start text-[12px] font-bold text-slate-600 leading-tight">
                                                                             <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0" />
                                                                             {step}
                                                                         </div>
-                                                                    )) || <p className="text-[10px] italic text-slate-400">Analysis in progress...</p>}
+                                                                    )) || <p className="text-[12px] italic text-slate-400">Analysis in progress...</p>}
                                                                 </div>
                                                             </div>
 
@@ -505,7 +456,7 @@ const HistoryTab = () => {
             ) : (
                 <div className="flex flex-col items-center justify-center py-40 opacity-30 text-center">
                     <Search size={64} className="text-slate-300 mb-6" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em]">Query parameters required for neural reconstruction</p>
+                    <p className="text-[12px] font-black uppercase tracking-[0.4em]">Query parameters required for neural reconstruction</p>
                 </div>
             )}
 
@@ -515,7 +466,7 @@ const HistoryTab = () => {
                 {/* 1. Speech Bubble - Pre-rendered & Static */}
                 <div className="mb-2 mr-2 pointer-events-none">
                     <div className="bg-white border border-slate-100 shadow-2xl rounded-2xl px-4 py-3 relative max-w-[180px] border-b-2 border-r-2">
-                        <p className="text-[10px] font-black text-slate-700 uppercase tracking-tighter leading-tight">
+                        <p className="text-[12px] font-black text-slate-700 uppercase tracking-tighter leading-tight">
                             Need help with your <span className="text-orange-500">PQC Strategy?</span>
                         </p>
                         {/* Bubble Tail */}

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&amp;family=Inter:wght@400;500;600&amp;family=Public+Sans:wght@300;400;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#2259bf",
+                    "surface-container-highest": "#e3e2e3",
+                    "secondary-container": "#dfe3e8",
+                    "on-tertiary-fixed": "#211b00",
+                    "on-primary": "#ffffff",
+                    "on-primary-container": "#e7ebff",
+                    "primary-fixed-dim": "#b1c5ff",
+                    "on-surface": "#1b1c1d",
+                    "surface": "#faf9fa",
+                    "surface-variant": "#e3e2e3",
+                    "on-surface-variant": "#434653",
+                    "tertiary-container": "#bfab49",
+                    "tertiary": "#6d5e00",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed": "#dfe3e8",
+                    "primary-fixed": "#d9e2ff",
+                    "on-background": "#1b1c1d",
+                    "surface-container-low": "#f5f3f4",
+                    "tertiary-fixed": "#f9e37a",
+                    "surface-dim": "#dbdadb",
+                    "surface-bright": "#faf9fa",
+                    "surface-container": "#efedee",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#b1c5ff",
+                    "secondary": "#5a5f63",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#f2f0f1",
+                    "inverse-surface": "#303031",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#c2c7cc",
+                    "primary": "#094cb2",
+                    "on-secondary-fixed-variant": "#42474b",
+                    "background": "#faf9fa",
+                    "tertiary-fixed-dim": "#dcc661",
+                    "outline-variant": "#c3c6d5",
+                    "on-tertiary-fixed-variant": "#524600",
+                    "on-tertiary-container": "#4a3f00",
+                    "on-secondary-fixed": "#171c20",
+                    "on-error": "#ffffff",
+                    "primary-container": "#3366cc",
+                    "on-secondary-container": "#606569",
+                    "on-primary-fixed": "#001946",
+                    "outline": "#737784",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#00419d",
+                    "surface-container-high": "#e9e8e9",
+                    "surface-container-lowest": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif"],
+                    "body": ["Inter"],
+                    "label": ["Public Sans"]
+            }
+          },
+        }
+      }
+    </script>
+<style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Noto Serif', serif; }
+        .label-text { font-family: 'Public Sans', sans-serif; }
+        .sidebar-link {
+            @apply flex items-center gap-3 px-6 py-3.5 text-stone-500 hover:text-stone-900 transition-all duration-200 font-serif text-lg leading-relaxed tracking-tight border-r-4 border-transparent hover:bg-stone-100/50;
+        }
+        .sidebar-link.active {
+            @apply text-blue-700 border-blue-700 bg-blue-50/30 font-bold;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<aside class="w-72 bg-stone-50 border-r border-stone-200 fixed h-screen overflow-y-auto z-50 flex flex-col">
+<div class="px-8 py-10">
+<div class="font-serif text-2xl font-bold text-stone-900 tracking-tighter">
+                PNB Secure
+            </div>
+<div class="text-[10px] uppercase tracking-widest text-stone-400 mt-1 label-text">Digital Curator</div>
+</div>
+<nav class="flex-grow flex flex-col py-4">
+<a class="sidebar-link active" href="#">
+<span class="material-symbols-outlined text-xl">home</span>
+                Home
+            </a>
+<a class="sidebar-link" href="#">
+<span class="material-symbols-outlined text-xl">radar</span>
+                Scan
+            </a>
+<a class="sidebar-link" href="#">
+<span class="material-symbols-outlined text-xl">assessment</span>
+                Scan Results
+            </a>
+<a class="sidebar-link" href="#">
+<span class="material-symbols-outlined text-xl">inventory_2</span>
+                Asset Inventory
+            </a>
+<a class="sidebar-link" href="#">
+<span class="material-symbols-outlined text-xl">history</span>
+                History
+            </a>
+<a class="sidebar-link" href="#">
+<span class="material-symbols-outlined text-xl">account_tree</span>
+                CBOM History
+            </a>
+<a class="sidebar-link" href="#">
+<span class="material-symbols-outlined text-xl">monitoring</span>
+                Reporting
+            </a>
+</nav>
+<div class="p-8 border-t border-stone-200">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-10 h-10 rounded-full bg-stone-200 flex items-center justify-center">
+<span class="material-symbols-outlined text-stone-600">account_circle</span>
+</div>
+<div>
+<p class="text-sm font-bold text-stone-900">Administrator</p>
+<p class="text-xs text-stone-500">System Level Access</p>
+</div>
+</div>
+<button class="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors">
+<span class="material-symbols-outlined text-sm">settings</span>
+<span class="label-text text-xs font-bold uppercase tracking-widest">Settings</span>
+</button>
+</div>
+</aside>
+<div class="flex-1 ml-72 flex flex-col min-h-screen">
+<header class="h-20 border-b border-stone-100 flex items-center justify-between px-12 bg-white/50 backdrop-blur-md sticky top-0 z-40">
+<div class="flex items-center gap-2 text-stone-400">
+<span class="label-text text-xs font-bold uppercase tracking-widest">Dashboard</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="label-text text-xs font-bold uppercase tracking-widest text-stone-900">Infrastructure Overview</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm">search</span>
+<input class="pl-10 pr-4 py-2 bg-stone-100 border-none rounded-full text-xs label-text w-64 focus:ring-1 focus:ring-primary/20" placeholder="Search archive..." type="text"/>
+</div>
+<button class="relative p-2 text-stone-500 hover:text-stone-900">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-1.5 h-1.5 bg-error rounded-full"></span>
+</button>
+</div>
+</header>
+<main class="flex-grow p-12 max-w-6xl mx-auto w-full">
+<section class="mb-16">
+<span class="label-text text-xs uppercase tracking-widest text-tertiary mb-4 block font-semibold">System Audit Phase 01</span>
+<h1 class="text-5xl md:text-6xl font-bold text-on-surface mb-6 leading-tight">Security Hygiene &amp; Audit Coverage</h1>
+<p class="text-xl text-on-surface-variant font-body leading-relaxed max-w-3xl">
+                    An archival-grade analysis of infrastructure integrity. Comprehensive monitoring of asset distribution, cryptographic readiness, and vulnerability exposure across the secure perimeter.
+                </p>
+</section>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-16">
+<div class="bg-white border-b-2 border-primary p-6 shadow-sm">
+<span class="label-text text-[10px] text-secondary font-bold uppercase tracking-wider block mb-2">Total Assets</span>
+<div class="text-4xl font-headline font-bold text-primary">53</div>
+</div>
+<div class="bg-white border-b-2 border-stone-100 p-6 shadow-sm">
+<span class="label-text text-[10px] text-secondary font-bold uppercase tracking-wider block mb-2">Public Web Apps</span>
+<div class="text-4xl font-headline font-bold text-on-surface">43</div>
+</div>
+<div class="bg-white border-b-2 border-stone-100 p-6 shadow-sm">
+<span class="label-text text-[10px] text-secondary font-bold uppercase tracking-wider block mb-2">APIs</span>
+<div class="text-4xl font-headline font-bold text-stone-300">0</div>
+</div>
+<div class="bg-white border-b-2 border-stone-100 p-6 shadow-sm">
+<span class="label-text text-[10px] text-secondary font-bold uppercase tracking-wider block mb-2">Servers</span>
+<div class="text-4xl font-headline font-bold text-stone-300">0</div>
+</div>
+<div class="bg-white border-b-2 border-stone-100 p-6 shadow-sm">
+<span class="label-text text-[10px] text-secondary font-bold uppercase tracking-wider block mb-2">Expiring Certs</span>
+<div class="text-4xl font-headline font-bold text-stone-300">0</div>
+</div>
+<div class="bg-white border-b-2 border-stone-100 p-6 shadow-sm">
+<span class="label-text text-[10px] text-secondary font-bold uppercase tracking-wider block mb-2">High Risk</span>
+<div class="text-4xl font-headline font-bold text-stone-300">0</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+<div class="bg-white border border-stone-100 rounded-lg p-10 shadow-sm relative overflow-hidden">
+<div class="flex justify-between items-start mb-12">
+<div>
+<h2 class="text-2xl font-bold mb-2">Inventory Audit Status</h2>
+<p class="text-sm font-body text-stone-500">Metric of active scanned nodes</p>
+</div>
+<div class="w-10 h-10 bg-primary/5 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">analytics</span>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center py-4">
+<div class="relative w-40 h-40 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-stone-100" cx="80" cy="80" fill="transparent" r="76" stroke="currentColor" stroke-width="2"></circle>
+<circle class="text-primary" cx="80" cy="80" fill="transparent" r="76" stroke="currentColor" stroke-dasharray="477.5" stroke-dashoffset="477.5" stroke-width="3"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-5xl font-headline font-bold">0%</span>
+<span class="label-text text-[10px] uppercase tracking-widest text-stone-400 mt-1">Coverage</span>
+</div>
+</div>
+<div class="mt-10 flex gap-8">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="text-xs label-text text-stone-500">Audited</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-stone-100"></div>
+<span class="text-xs label-text text-stone-500">Pending</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white border border-stone-100 rounded-lg p-10 shadow-sm">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h2 class="text-2xl font-bold mb-2">PQC Adoption</h2>
+<p class="text-sm font-body text-stone-500">Quantum Cryptography Readiness</p>
+</div>
+<div class="w-10 h-10 bg-tertiary/5 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-xl">shield_lock</span>
+</div>
+</div>
+<div class="flex flex-col h-full">
+<div class="mb-8 text-center bg-stone-50 py-6 rounded-lg border border-stone-100">
+<div class="text-6xl font-headline font-bold text-stone-300 leading-none">0</div>
+<p class="label-text text-[10px] uppercase tracking-widest text-stone-500 mt-3 font-bold">Safe Nodes Identified</p>
+</div>
+<div class="space-y-5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-6 bg-tertiary-container rounded-full"></div>
+<span class="text-sm font-bold">PQC Ready</span>
+</div>
+<span class="font-headline font-bold text-stone-400">0</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-6 bg-primary rounded-full"></div>
+<span class="text-sm font-bold">PQC Safe</span>
+</div>
+<span class="font-headline font-bold text-stone-400">0</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-6 bg-error rounded-full"></div>
+<span class="text-sm font-bold">Vulnerable</span>
+</div>
+<span class="font-headline font-bold text-stone-900">53</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+<div class="lg:col-span-2 bg-white rounded-lg p-10 border border-stone-100 shadow-sm">
+<div class="flex items-baseline justify-between mb-8">
+<h2 class="text-xl font-bold">Crypto &amp; Security Overview</h2>
+<span class="label-text text-[10px] text-stone-400 uppercase tracking-widest">Global Telemetry</span>
+</div>
+<div class="relative h-64 w-full bg-stone-50 overflow-hidden rounded-lg flex flex-col items-center justify-center border border-dashed border-stone-200">
+<span class="material-symbols-outlined text-5xl text-stone-200 mb-4">hub</span>
+<p class="text-stone-400 italic font-serif text-sm px-12 text-center leading-relaxed">
+                            Awaiting further node telemetry to generate cryptographic distribution map. 
+                            <br/><span class="not-italic text-[10px] label-text uppercase tracking-widest mt-2 block opacity-60">Status: Listening...</span>
+</p>
+</div>
+</div>
+<div class="bg-white border border-stone-100 rounded-lg p-10 shadow-sm flex flex-col">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h2 class="text-2xl font-bold mb-2">Risk Distribution</h2>
+<p class="text-sm font-body text-stone-500">Infrastructure vulnerability tiers</p>
+</div>
+<div class="w-10 h-10 bg-error/5 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-xl">warning</span>
+</div>
+</div>
+<div class="flex-grow flex flex-col justify-center space-y-6">
+<div>
+<div class="flex justify-between mb-2 items-baseline">
+<span class="text-[10px] label-text font-bold tracking-widest text-stone-500">CRITICAL</span>
+<span class="text-sm font-headline font-bold text-stone-400">0%</span>
+</div>
+<div class="h-1.5 w-full bg-stone-100 rounded-full overflow-hidden">
+<div class="h-full bg-error w-0"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2 items-baseline">
+<span class="text-[10px] label-text font-bold tracking-widest text-stone-500">HIGH</span>
+<span class="text-sm font-headline font-bold text-stone-400">0%</span>
+</div>
+<div class="h-1.5 w-full bg-stone-100 rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container w-0"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2 items-baseline">
+<span class="text-[10px] label-text font-bold tracking-widest text-stone-500">MEDIUM</span>
+<span class="text-sm font-headline font-bold text-on-surface">12%</span>
+</div>
+<div class="h-1.5 w-full bg-stone-100 rounded-full overflow-hidden">
+<div class="h-full bg-primary/40 w-[12%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2 items-baseline">
+<span class="text-[10px] label-text font-bold tracking-widest text-stone-500">LOW</span>
+<span class="text-sm font-headline font-bold text-primary">88%</span>
+</div>
+<div class="h-1.5 w-full bg-stone-100 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[88%]"></div>
+</div>
+</div>
+</div>
+<p class="text-[10px] text-stone-400 font-body leading-tight mt-10 italic">
+                        * Calculations based on protocol longevity.
+                    </p>
+</div>
+</div>
+<section class="bg-white border border-stone-100 rounded-lg overflow-hidden shadow-sm">
+<div class="px-10 py-8 border-b border-stone-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div>
+<h2 class="text-2xl font-bold">Asset Inventory</h2>
+<p class="text-sm font-body text-stone-500 mt-1">Detailed list of discovered infrastructure nodes</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 bg-stone-100 text-stone-600 text-[10px] label-text font-bold rounded hover:bg-stone-200 transition-colors uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">filter_list</span> Filter Assets
+                        </button>
+<button class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-[10px] label-text font-bold rounded hover:opacity-90 transition-opacity uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">download</span> Export
+                        </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body">
+<thead class="bg-stone-50/50">
+<tr>
+<th class="px-10 py-5 label-text text-[10px] font-bold text-stone-400 uppercase tracking-widest">Identification</th>
+<th class="px-10 py-5 label-text text-[10px] font-bold text-stone-400 uppercase tracking-widest">Classification</th>
+<th class="px-10 py-5 label-text text-[10px] font-bold text-stone-400 uppercase tracking-widest">Audit Status</th>
+<th class="px-10 py-5 label-text text-[10px] font-bold text-stone-400 uppercase tracking-widest text-center">Protocol</th>
+<th class="px-10 py-5 label-text text-[10px] font-bold text-stone-400 uppercase tracking-widest text-right">Observation</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-stone-100">
+<tr class="hover:bg-stone-50/80 transition-colors">
+<td class="px-10 py-6">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded bg-stone-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container text-lg">language</span>
+</div>
+<span class="font-medium text-on-surface">pnb-gateway-01.secure.net</span>
+</div>
+</td>
+<td class="px-10 py-6 text-xs font-medium text-stone-500">Public Web App</td>
+<td class="px-10 py-6">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-50 text-green-700 border border-green-100 uppercase tracking-wider">
+                                        MONITORED
+                                    </span>
+</td>
+<td class="px-10 py-6 text-xs text-center font-mono">TLS 1.3</td>
+<td class="px-10 py-6 text-xs text-stone-400 text-right">2h ago</td>
+</tr>
+<tr class="hover:bg-stone-50/80 transition-colors">
+<td class="px-10 py-6">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded bg-stone-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container text-lg">api</span>
+</div>
+<span class="font-medium text-on-surface">api-auth.pnb-infrastructure.com</span>
+</div>
+</td>
+<td class="px-10 py-6 text-xs font-medium text-stone-500">API Interface</td>
+<td class="px-10 py-6">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-50 text-green-700 border border-green-100 uppercase tracking-wider">
+                                        MONITORED
+                                    </span>
+</td>
+<td class="px-10 py-6 text-xs text-center font-mono">TLS 1.2</td>
+<td class="px-10 py-6 text-xs text-stone-400 text-right">5h ago</td>
+</tr>
+<tr class="hover:bg-stone-50/80 transition-colors">
+<td class="px-10 py-6">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded bg-stone-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-stone-400 text-lg">dns</span>
+</div>
+<span class="font-medium text-on-surface">dashboard.pnb-secure.internal</span>
+</div>
+</td>
+<td class="px-10 py-6 text-xs font-medium text-stone-500">Internal UI</td>
+<td class="px-10 py-6">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-stone-100 text-stone-500 border border-stone-200 uppercase tracking-wider">
+                                        PENDING
+                                    </span>
+</td>
+<td class="px-10 py-6 text-xs text-center font-mono">—</td>
+<td class="px-10 py-6 text-xs text-stone-400 text-right">Scheduled</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-10 py-6 bg-stone-50 text-center border-t border-stone-100">
+<button class="text-primary text-[10px] label-text font-bold uppercase tracking-widest hover:underline transition-all">
+                        View Full Archive (53 Total Assets)
+                    </button>
+</div>
+</section>
+</main>
+<footer class="bg-stone-50 border-t border-stone-200 py-12 px-12 mt-12">
+<div class="flex flex-col lg:flex-row justify-between items-center gap-10">
+<div class="flex flex-col items-center lg:items-start gap-3">
+<div class="font-serif italic text-stone-400 text-xl">PNB Secure</div>
+<div class="font-sans text-[10px] uppercase tracking-widest text-stone-400">© 2024 PNB Secure — Archival Grade Security Monitoring.</div>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="label-text text-[10px] uppercase tracking-widest text-stone-400 hover:text-blue-600 transition-colors" href="#">Privacy Protocol</a>
+<a class="label-text text-[10px] uppercase tracking-widest text-stone-400 hover:text-blue-600 transition-colors" href="#">Standard Terms</a>
+<a class="label-text text-[10px] uppercase tracking-widest text-stone-400 hover:text-blue-600 transition-colors" href="#">Documentation</a>
+<a class="label-text text-[10px] uppercase tracking-widest text-stone-400 hover:text-blue-600 transition-colors" href="#">Support Desk</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

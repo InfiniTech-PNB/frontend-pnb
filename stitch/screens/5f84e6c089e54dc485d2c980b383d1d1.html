@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&amp;family=Inter:wght@400;500;600&amp;family=Public_Sans:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#b1c5ff",
+                    "on-secondary": "#ffffff",
+                    "surface-container": "#efedee",
+                    "tertiary-fixed-dim": "#dcc661",
+                    "primary": "#094cb2",
+                    "on-secondary-container": "#606569",
+                    "on-error": "#ffffff",
+                    "surface-tint": "#2259bf",
+                    "secondary": "#5a5f63",
+                    "primary-fixed": "#d9e2ff",
+                    "on-primary-container": "#e7ebff",
+                    "on-tertiary-container": "#4a3f00",
+                    "surface-container-low": "#f5f3f4",
+                    "secondary-fixed": "#dfe3e8",
+                    "error-container": "#ffdad6",
+                    "inverse-surface": "#303031",
+                    "tertiary-fixed": "#f9e37a",
+                    "secondary-container": "#dfe3e8",
+                    "on-background": "#1b1c1d",
+                    "surface-variant": "#e3e2e3",
+                    "on-secondary-fixed": "#171c20",
+                    "primary-fixed-dim": "#b1c5ff",
+                    "surface": "#faf9fa",
+                    "on-surface-variant": "#434653",
+                    "surface-bright": "#faf9fa",
+                    "inverse-on-surface": "#f2f0f1",
+                    "on-secondary-fixed-variant": "#42474b",
+                    "outline-variant": "#c3c6d5",
+                    "on-tertiary-fixed-variant": "#524600",
+                    "on-surface": "#1b1c1d",
+                    "on-primary-fixed": "#001946",
+                    "primary-container": "#3366cc",
+                    "background": "#faf9fa",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#bfab49",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#e3e2e3",
+                    "on-primary-fixed-variant": "#00419d",
+                    "outline": "#737784",
+                    "on-tertiary-fixed": "#211b00",
+                    "surface-container-high": "#e9e8e9",
+                    "surface-dim": "#dbdadb",
+                    "tertiary": "#6d5e00",
+                    "secondary-fixed-dim": "#c2c7cc",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif"],
+                    "body": ["Inter"],
+                    "label": ["Public Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-shadow {
+            box-shadow: 0 24px 40px -10px rgba(27, 28, 29, 0.04);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-fixed">
+<main class="min-h-screen max-w-[1440px] mx-auto px-8 md:px-12 py-16">
+<!-- Header Section -->
+<header class="mb-20 text-center">
+<h1 class="font-headline text-5xl md:text-7xl font-bold tracking-tighter text-on-background mb-4">
+                CBOM REGISTRY
+            </h1>
+<p class="font-label text-sm tracking-[0.3em] text-tertiary uppercase opacity-80">
+                ARCHIVE · DISCOVERY · ENGINE
+            </p>
+</header>
+<!-- Controls Section: Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-16">
+<!-- Target Domain Card -->
+<div class="md:col-span-5 bg-surface-container-lowest p-8 rounded-xl editorial-shadow group transition-all duration-300 hover:bg-white">
+<label class="font-label text-[10px] uppercase tracking-widest text-outline mb-4 block">Select Target Domain</label>
+<div class="relative">
+<select class="w-full bg-transparent border-none font-headline text-xl p-0 focus:ring-0 appearance-none cursor-pointer">
+<option>Global Infrastructure — Cluster A</option>
+<option>Internal Services — Legacy</option>
+<option>Secure Gateway — Node 04</option>
+</select>
+<span class="material-symbols-outlined absolute right-0 top-1 text-outline pointer-events-none">expand_more</span>
+</div>
+<div class="h-[1px] w-full bg-surface-container-high mt-4"></div>
+</div>
+<!-- Audit Entry Card -->
+<div class="md:col-span-5 bg-surface-container-lowest p-8 rounded-xl editorial-shadow group transition-all duration-300 hover:bg-white">
+<label class="font-label text-[10px] uppercase tracking-widest text-outline mb-4 block">Select Audit Entry</label>
+<div class="relative">
+<select class="w-full bg-transparent border-none font-headline text-xl p-0 focus:ring-0 appearance-none cursor-pointer">
+<option>2024-Q3-Security-Compliance-Final</option>
+<option>2024-Q2-Network-Inventory</option>
+<option>2024-Initial-Baseline</option>
+</select>
+<span class="material-symbols-outlined absolute right-0 top-1 text-outline pointer-events-none">expand_more</span>
+</div>
+<div class="h-[1px] w-full bg-surface-container-high mt-4"></div>
+</div>
+<!-- Export Action -->
+<div class="md:col-span-2 flex items-end">
+<button class="w-full h-full min-h-[100px] flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-primary to-primary-container text-on-primary font-label text-xs uppercase tracking-widest rounded-xl transition-transform active:scale-95 duration-150 editorial-shadow">
+<span class="material-symbols-outlined text-2xl" data-icon="picture_as_pdf">picture_as_pdf</span>
+<span>EXPORT PDF</span>
+</button>
+</div>
+</section>
+<!-- Navigation Tabs -->
+<nav class="flex flex-wrap items-center gap-4 mb-12 border-b border-surface-container-high pb-4">
+<button class="flex items-center gap-2 px-6 py-3 bg-surface-container-lowest text-primary font-headline text-sm rounded-full editorial-shadow transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="memory">memory</span>
+                ALGORITHMS
+            </button>
+<button class="flex items-center gap-2 px-6 py-3 text-on-surface-variant hover:bg-surface-container-low font-headline text-sm rounded-full transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="vpn_key">vpn_key</span>
+                KEYS
+            </button>
+<button class="flex items-center gap-2 px-6 py-3 text-on-surface-variant hover:bg-surface-container-low font-headline text-sm rounded-full transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="protocol">protocol_handler</span>
+                PROTOCOLS
+            </button>
+<button class="flex items-center gap-2 px-6 py-3 text-on-surface-variant hover:bg-surface-container-low font-headline text-sm rounded-full transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="verified">verified</span>
+                CERTIFICATES
+            </button>
+</nav>
+<!-- Data Table Container -->
+<div class="bg-surface-container-lowest rounded-2xl overflow-hidden editorial-shadow border border-surface-container">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-8 py-5 font-label text-[10px] tracking-widest text-outline uppercase border-none">Name</th>
+<th class="px-8 py-5 font-label text-[10px] tracking-widest text-outline uppercase border-none">Asset Type</th>
+<th class="px-8 py-5 font-label text-[10px] tracking-widest text-outline uppercase border-none">Primitive</th>
+<th class="px-8 py-5 font-label text-[10px] tracking-widest text-outline uppercase border-none">Mode</th>
+<th class="px-8 py-5 font-label text-[10px] tracking-widest text-outline uppercase border-none">Security Level</th>
+<th class="px-8 py-5 font-label text-[10px] tracking-widest text-outline uppercase border-none">OID</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-low">
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="px-8 py-6">
+<span class="font-headline text-on-background font-bold block">AES-256-GCM</span>
+<span class="text-[10px] font-label text-outline uppercase">Standard Block</span>
+</td>
+<td class="px-8 py-6 font-body text-sm text-on-surface-variant">Symmetric Cipher</td>
+<td class="px-8 py-6 font-body text-sm text-on-surface-variant">Block</td>
+<td class="px-8 py-6 font-body text-sm text-on-surface-variant">GCM</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold font-label rounded-full tracking-tighter">HIGH · 256 BIT</span>
+</td>
+<td class="px-8 py-6 font-mono text-[10px] text-outline">2.16.840.1.101.3.4.1.46</td>
+</tr>
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="px-8 py-6">
+<span class="font-headline text-on-background font-bold block">RSA-OAEP-4096</span>
+<span class="text-[10px] font-label text-outline uppercase">Asymmetric</span>
+</td>
+<td class="px-8 py-6 font-body text-sm text-on-surface-variant">Key Transport</td>
+<td class="px-8 py-6 font-body text-sm text-on-surface-variant">Factorization</td>
+<td class="px-8 py-6 font-body text-sm text-on-surface-variant">OAEP</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant text-[10px] font-bold font-label rounded-full tracking-tighter">MODERATE · 4096 BIT</span>
+</td>
+<td class="px-8 py-6 font-mono text-[10px] text-outline">1.2.840.113549.1.1.7</td>
+</tr>
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="px-8 py-6">
+<span class="font-headline text-on-background font-bold block">SHA3-512</span>
+<span class="text-[10px] font-label text-outline uppercase">Hashing</span>
+</td>
+<td class="px-8 py-6 font-body text-sm text-on-surface-variant">Message Digest</td>
+<td class="px-8 py-6 font-body text-sm text-on-surface-variant">Sponge</td>
+<td class="px-8 py-6 font-body text-sm text-on-surface-variant">Native</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold font-label rounded-full tracking-tighter">QUANTUM READY</span>
+</td>
+<td class="px-8 py-6 font-mono text-[10px] text-outline">2.16.840.1.101.3.4.2.10</td>
+</tr>
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="px-8 py-6">
+<span class="font-headline text-on-background font-bold block">ECDSA-P384</span>
+<span class="text-[10px] font-label text-outline uppercase">Elliptic Curve</span>
+</td>
+<td class="px-8 py-6 font-body text-sm text-on-surface-variant">Digital Signature</td>
+<td class="px-8 py-6 font-body text-sm text-on-surface-variant">ECC</td>
+<td class="px-8 py-6 font-body text-sm text-on-surface-variant">ANS X9.62</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold font-label rounded-full tracking-tighter">HIGH · SUITE B</span>
+</td>
+<td class="px-8 py-6 font-mono text-[10px] text-outline">1.2.840.10045.4.3.3</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-8 py-6 bg-surface-container-low flex justify-between items-center">
+<span class="font-label text-[10px] text-outline uppercase">Showing 4 of 128 registered assets</span>
+<div class="flex gap-4">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors"><span class="material-symbols-outlined text-lg">chevron_left</span></button>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors"><span class="material-symbols-outlined text-lg">chevron_right</span></button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-16 px-12 mt-24 flex flex-col md:flex-row justify-between items-center border-t border-stone-200/15 bg-stone-50 dark:bg-stone-950">
+<div class="flex flex-col gap-4 mb-8 md:mb-0">
+<span class="font-['Noto_Serif'] italic text-stone-900 dark:text-stone-100 text-2xl">Alexandria</span>
+<p class="font-['Public_Sans'] text-xs uppercase tracking-widest text-stone-500">
+                © 2024 PNB Secure. Alexandria High-End Editorial System. All rights reserved.
+            </p>
+</div>
+<div class="flex gap-8">
+<a class="font-['Public_Sans'] text-xs uppercase tracking-widest text-stone-400 hover:text-stone-600 hover:underline decoration-[#6d5e00] underline-offset-4 transition-opacity opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-['Public_Sans'] text-xs uppercase tracking-widest text-stone-400 hover:text-stone-600 hover:underline decoration-[#6d5e00] underline-offset-4 transition-opacity opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-['Public_Sans'] text-xs uppercase tracking-widest text-stone-400 hover:text-stone-600 hover:underline decoration-[#6d5e00] underline-offset-4 transition-opacity opacity-80 hover:opacity-100" href="#">Registry Documentation</a>
+<a class="font-['Public_Sans'] text-xs uppercase tracking-widest text-stone-400 hover:text-stone-600 hover:underline decoration-[#6d5e00] underline-offset-4 transition-opacity opacity-80 hover:opacity-100" href="#">Scholarly Guidelines</a>
+</div>
+</footer>
+</body></html>

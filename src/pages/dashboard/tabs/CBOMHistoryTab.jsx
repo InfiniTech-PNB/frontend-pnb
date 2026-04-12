@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Database, Globe, Clock, Loader2, Search,
-    Cpu, Key, Shield, Globe2, ChevronDown, ChevronUp, Lock as LockIcon
+    Database, Globe, Clock, Search,
+    Cpu, Key, Shield, Globe2, ChevronDown, ChevronUp, Lock as LockIcon,
+    AlertTriangle, XCircle, Server
 } from 'lucide-react';
 import API from "../../../services/api";
 import SecurityChatbot from '../../../components/Dashboard/SecurityChatbot';
+import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const CBOMHistoryTab = () => {
     // Selection States
@@ -22,8 +24,8 @@ const CBOMHistoryTab = () => {
     function InfoItem({ label, value, highlight, isRed }) {
         return (
             <div className="flex flex-col">
-                <span className="text-[9px] uppercase font-bold text-slate-400 mb-0.5">{label}</span>
-                <span className={`text-xs break-all ${highlight ? 'font-black text-slate-900' : 'font-medium text-slate-600'} ${isRed ? 'text-rose-500' : ''}`}>
+                <span className="text-xs uppercase font-bold text-slate-400 mb-0.5">{label}</span>
+                <span className={`text-sm break-all ${highlight ? 'font-black text-slate-900' : 'font-medium text-slate-600'} ${isRed ? 'text-rose-500' : ''}`}>
                     {value || "null"}
                 </span>
             </div>
@@ -36,8 +38,9 @@ const CBOMHistoryTab = () => {
         if (!selectedScan) return;
         setDownloading(true);
         try {
+            const mode = cbomData?.mode || "aggregate";
             // Use responseType: 'blob' to handle binary PDF data
-            const response = await API.get(`/cbom/${selectedScan}/cbom/pdf`, {
+            const response = await API.get(`/cbom/${selectedScan}/cbom/pdf?mode=${mode}`, {
                 responseType: 'blob'
             });
 
@@ -47,7 +50,7 @@ const CBOMHistoryTab = () => {
             link.href = url;
 
             // Set filename - you can customize this
-            link.setAttribute('download', `CBOM-Report-${selectedScan.substring(0, 8)}.pdf`);
+            link.setAttribute('download', `CBOM-${mode}-${selectedScan.substring(0, 8)}.pdf`);
             document.body.appendChild(link);
             link.click();
 
@@ -132,17 +135,17 @@ const CBOMHistoryTab = () => {
             }} />
 
             {/* --- FILTER HUD --- */}
-            <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
+            <div className="editorial-shell p-8">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
-                        <div className="p-5 bg-orange-50 rounded-[2rem] text-orange-600 shadow-inner">
+                        <div className="p-5 bg-blue-50 rounded-[2rem] text-blue-700 shadow-inner">
                             <Database size={32} />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase leading-none italic">
+                            <h2 className="editorial-title text-2xl tracking-tight uppercase leading-none italic">
                                 CBOM Registry
                             </h2>
-                            <p className="text-[10px] font-mono text-slate-400 mt-2 uppercase tracking-widest font-bold font-mono">Archive Discovery Engine</p>
+                            <p className="text-xs sm:text-sm font-mono text-slate-400 mt-2 uppercase tracking-widest font-bold">Archive Discovery Engine</p>
                         </div>
                     </div>
 
@@ -152,7 +155,7 @@ const CBOMHistoryTab = () => {
                             <select
                                 value={selectedDomain}
                                 onChange={(e) => setSelectedDomain(e.target.value)}
-                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-orange-500 appearance-none shadow-inner"
+                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none"
                             >
                                 <option value="">Select Target Domain</option>
                                 {domains.map(d => (
@@ -167,7 +170,7 @@ const CBOMHistoryTab = () => {
                                 value={selectedScan}
                                 disabled={!selectedDomain}
                                 onChange={(e) => handleFetchCBOM(e.target.value)}
-                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-orange-500 appearance-none shadow-inner disabled:opacity-30"
+                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-30"
                             >
                                 <option value="">Select Audit Entry</option>
                                 {Array.isArray(scans) && scans.map(s => (
@@ -177,22 +180,6 @@ const CBOMHistoryTab = () => {
                                 ))}
                             </select>
                         </div>
-                        <button
-                            onClick={handleDownloadPDF}
-                            disabled={!selectedScan || downloading}
-                            className={`flex items-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm
-                                    ${!selectedScan
-                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                    : 'bg-slate-900 text-white hover:bg-orange-500 active:scale-95'
-                                }`}
-                        >
-                            {downloading ? (
-                                <Loader2 size={16} className="animate-spin" />
-                            ) : (
-                                <Database size={16} />
-                            )}
-                            {downloading ? "Generating..." : "Export PDF"}
-                        </button>
                     </div>
                 </div>
             </div>
@@ -201,122 +188,221 @@ const CBOMHistoryTab = () => {
             {!cbomData && !loading ? (
                 <div className="flex flex-col items-center justify-center py-40 text-center opacity-30">
                     <Search size={64} className="text-slate-300 mb-6" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Awaiting Selection Parameters</p>
+                    <p className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">Awaiting Selection Parameters</p>
                 </div>
             ) : loading ? (
-                <div className="flex flex-col items-center justify-center py-40">
-                    <Loader2 className="animate-spin text-orange-500 mb-4" size={48} />
-                    <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em] animate-pulse">Decrypting CBOM Archive...</p>
+                <div className="space-y-6">
+                    <div className="rounded-[4rem] border border-slate-100 shadow-xl overflow-hidden bg-white">
+                        <div className="p-5 border-b border-slate-100 flex items-center justify-between gap-3">
+                            <div className="flex gap-3">
+                                <SkeletonBlock className="h-12 w-36" />
+                                <SkeletonBlock className="h-12 w-28" />
+                                <SkeletonBlock className="h-12 w-32" />
+                            </div>
+                            <SkeletonBlock className="h-12 w-36" />
+                        </div>
+                        <div className="p-8 space-y-4">
+                            <SkeletonBlock className="h-6 w-1/2" />
+                            <div className="space-y-3">
+                                {Array.from({ length: 5 }).map((_, idx) => (
+                                    <SkeletonBlock key={idx} className="h-14 w-full" />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    <p className="text-slate-400 font-black uppercase text-sm tracking-[0.2em] px-2">Decrypting CBOM Archive...</p>
                 </div>
             ) : (
-                <div className="bg-white rounded-[4rem] border border-slate-100 shadow-xl overflow-hidden">
-                    <div className="bg-slate-900 p-5 flex gap-3 overflow-x-auto scrollbar-hide">
-                        {[
-                            { id: 'algorithms', label: 'Algorithms', icon: Cpu },
-                            { id: 'keys', label: 'Keys', icon: Key },
-                            { id: 'protocols', label: 'Protocols', icon: Globe },
-                            { id: 'certificates', label: 'Certificates', icon: Shield }
-                        ].map(tab => (
-                            <button key={tab.id} onClick={() => setActiveTechTab(tab.id)} className={`flex items-center gap-3 px-8 py-4 rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest transition-all ${activeTechTab === tab.id ? 'bg-orange-500 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-800'}`}>
-                                <tab.icon size={16} /> {tab.label}
-                            </button>
-                        ))}
+                <>
+                    {/* --- SCAN RESILIENCE / FAILED ASSETS --- */}
+                    {cbomData?.failedAssets?.length > 0 && (
+                        <div className="bg-white border border-slate-100 rounded-[3rem] p-8 shadow-sm overflow-hidden relative mb-10">
+                            <div className="absolute right-0 top-0 p-10 opacity-[0.03] pointer-events-none">
+                                <XCircle size={120} className="text-rose-500" />
+                            </div>
+
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="p-4 bg-rose-50 rounded-[1.5rem] text-rose-600 shadow-inner">
+                                    <AlertTriangle size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="editorial-title text-xl tracking-tight uppercase italic leading-none text-slate-900">Scan Resiliency Issues</h3>
+                                    <p className="text-[10px] font-black uppercase mt-2 tracking-widest text-slate-400">Non-Deterministic Handshake Analysis</p>
+                                </div>
+                            </div>
+
+                            <div className="pl-2 border-l-2 border-rose-500 mb-8 max-w-2xl">
+                                <p className="text-sm font-bold text-slate-500 leading-relaxed uppercase">
+                                    The following nodes were reachable but did not return valid cryptographic responses.
+                                    As a result, a meaningful CBOM could not be generated, and these assets were excluded to preserve the integrity of the analysis.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                {cbomData.failedAssets.map((fail, idx) => (
+                                    <div key={idx} className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:border-rose-200 transition-all group">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                                            <span className="text-sm font-black text-slate-800 uppercase italic truncate">{fail.host}</span>
+                                        </div>
+                                        <div className="text-[10px] font-bold text-rose-500 uppercase tracking-tighter leading-tight bg-white border border-rose-100 px-2 py-1 rounded-lg">
+                                            {fail.reason || 'HANDSHAKE_TIMEOUT'}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="bg-white rounded-[4rem] border border-slate-100 shadow-xl overflow-hidden">
+                    <div className="bg-slate-900 p-5 flex items-center justify-between w-full gap-3">
+                        <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+                            {[
+                                { id: 'algorithms', label: 'Algorithms', icon: Cpu },
+                                { id: 'keys', label: 'Keys', icon: Key },
+                                { id: 'protocols', label: 'Protocols', icon: Globe },
+                                { id: 'certificates', label: 'Certificates', icon: Shield }
+                            ].map(tab => (
+                                <button key={tab.id} onClick={() => setActiveTechTab(tab.id)} className={`flex items-center gap-3 px-8 py-4 rounded-[1.8rem] text-sm font-black uppercase tracking-widest transition-all shrink-0 ${activeTechTab === tab.id ? 'bg-orange-500 text-slate-100 shadow-lg' : 'text-slate-800 hover:bg-slate-300'}`}>
+                                    <tab.icon size={18} /> {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={handleDownloadPDF}
+                            disabled={!selectedScan || downloading}
+                            className={`flex items-center gap-2 px-6 py-4 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-widest transition-all shadow-sm shrink-0 whitespace-nowrap
+                                    ${!selectedScan
+                                    ? 'bg-white/10 text-slate-400 cursor-not-allowed'
+                                    : 'bg-white/10 text-slate-100 hover:bg-orange-500 active:scale-95'
+                                }`}
+                        >
+                            {downloading ? (
+                                <SkeletonBlock className="h-4 w-16 bg-white/40 rounded-md" />
+                            ) : (
+                                <Database size={18} />
+                            )}
+                            {downloading ? "Generating..." : "Export PDF"}
+                        </button>
                     </div>
                     <div className="p-8">
                         {/* 1. RENDER TABLE ONLY FOR NON-CERTIFICATE TABS */}
+                        {/* 1. RENDER TABLE ONLY FOR NON-CERTIFICATE TABS */}
                         {activeTechTab !== 'certificates' && (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left border-separate border-spacing-y-2">
-                                    <thead className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        {activeTechTab === 'algorithms' && (
-                                            <tr>
-                                                <th className="px-6 py-4">Name</th>
-                                                <th className="px-6 py-4">Asset Type</th>
-                                                <th className="px-6 py-4">Primitive</th>
-                                                <th className="px-6 py-4">Mode</th>
-                                                <th className="px-6 py-4">Security Level</th>
-                                                <th className="px-6 py-4">OID</th>
-                                            </tr>
+                            <div className="space-y-12">
+                                {Object.entries(
+                                    cbomData?.mode === 'per_asset' 
+                                        ? (cbomData?.[activeTechTab] || []).reduce((acc, item) => {
+                                            const key = item.asset || "Unknown Asset";
+                                            if (!acc[key]) acc[key] = [];
+                                            acc[key].push(item);
+                                            return acc;
+                                        }, {})
+                                        : { "Aggregate": cbomData?.[activeTechTab] || [] }
+                                ).map(([groupName, items], groupIdx) => (
+                                    <div key={groupIdx} className="w-full">
+                                        {cbomData?.mode === 'per_asset' && (
+                                            <div className="flex items-center gap-3 mb-6 bg-slate-900 px-5 py-3 rounded-2xl w-fit shadow-md">
+                                                <Server className="text-orange-500" size={18} />
+                                                <h3 className="text-sm font-black text-black tracking-widest uppercase">{groupName}</h3>
+                                            </div>
                                         )}
-                                        {activeTechTab === 'keys' && (
-                                            <tr>
-                                                <th className="px-6 py-4">Name</th>
-                                                <th className="px-6 py-4">Asset Type</th>
-                                                <th className="px-6 py-4">Size</th>
-                                                <th className="px-6 py-4">State</th>
-                                                <th className="px-6 py-4">Creation</th>
-                                                <th className="px-6 py-4">Activation</th>
-                                                <th className="px-6 py-4">ID</th>
-                                            </tr>
-                                        )}
-                                        {activeTechTab === 'protocols' && (
-                                            <tr>
-                                                <th className="px-6 py-4">Protocol</th>
-                                                <th className="px-6 py-4">Version</th>
-                                                <th className="px-6 py-4">Cipher Suites</th>
-                                                <th className="px-6 py-4">ALPN</th>
-                                                <th className="px-6 py-4">OID</th>
-                                            </tr>
-                                        )}
-                                    </thead>
-                                    <tbody className="text-xs font-bold">
-                                        {cbomData?.[activeTechTab]?.map((item, idx) => (
-                                            <React.Fragment key={idx}>
-                                                <tr className="bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left border-separate border-spacing-y-2">
+                                                <thead className="text-xs font-black text-slate-400 uppercase tracking-widest">
                                                     {activeTechTab === 'algorithms' && (
-                                                        <>
-                                                            <td className="px-6 py-5 text-orange-600 rounded-l-[1.5rem] font-black uppercase">{item.name || "null"}</td>
-                                                            <td className="px-6 py-5">{item.assetType || "null"}</td>
-                                                            <td className="px-6 py-5">{item.primitive || "null"}</td>
-                                                            <td className="px-6 py-5">{item.mode || "null"}</td>
-                                                            <td className="px-6 py-5">{item.classicalSecurityLevel} Bits</td>
-                                                            <td className="px-6 py-5 text-[10px] text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "null"}</td>
-                                                        </>
+                                                        <tr>
+                                                            <th className="px-6 py-4">Name</th>
+                                                            <th className="px-6 py-4">Asset Type</th>
+                                                            <th className="px-6 py-4">Primitive</th>
+                                                            <th className="px-6 py-4">Mode</th>
+                                                            <th className="px-6 py-4">Security Level</th>
+                                                            <th className="px-6 py-4">OID</th>
+                                                        </tr>
                                                     )}
                                                     {activeTechTab === 'keys' && (
-                                                        <>
-                                                            <td className="px-6 py-5 rounded-l-[1.5rem] font-black uppercase">{item.name || "null"}</td>
-                                                            <td className="px-6 py-5">{item.assetType || "null"}</td>
-                                                            <td className="px-6 py-5 text-blue-500">{item.size} Bits</td>
-                                                            <td className="px-6 py-5"><span className="px-2 py-1 bg-white border rounded-md text-[9px]">{item.state || "null"}</span></td>
-                                                            <td className="px-6 py-5 text-slate-400">{item.creationDate || "null"}</td>
-                                                            <td className="px-6 py-5 text-slate-400">{item.activationDate || "null"}</td>
-                                                            <td className="px-6 py-5 text-[9px] text-slate-400 font-mono rounded-r-[1.5rem]">{item.id || "null"}</td>
-                                                        </>
+                                                        <tr>
+                                                            <th className="px-6 py-4">Name</th>
+                                                            <th className="px-6 py-4">Asset Type</th>
+                                                            <th className="px-6 py-4">Size</th>
+                                                            <th className="px-6 py-4">State</th>
+                                                            <th className="px-6 py-4">Creation</th>
+                                                            <th className="px-6 py-4">Activation</th>
+                                                            <th className="px-6 py-4">ID</th>
+                                                        </tr>
                                                     )}
                                                     {activeTechTab === 'protocols' && (
-                                                        <>
-                                                            <td className="px-6 py-5 rounded-l-[1.5rem] font-black text-slate-900 uppercase">{item.name || "null"}</td>
-                                                            <td className="px-6 py-5">{Array.isArray(item.version) ? item.version.join(', ') : item.version}</td>
-                                                            <td className="px-6 py-5">
-                                                                <button onClick={() => setExpandedProtocolIndex(expandedProtocolIndex === idx ? null : idx)} className="flex items-center gap-2 text-orange-500">
-                                                                    {item.cipherSuites?.length || 0} Suites
-                                                                    {expandedProtocolIndex === idx ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                                                                </button>
-                                                            </td>
-                                                            <td className="px-6 py-5 font-mono">{item.alpn || "N/A"}</td>
-                                                            <td className="px-6 py-5 text-[10px] text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "N/A"}</td>
-                                                        </>
+                                                        <tr>
+                                                            <th className="px-6 py-4">Protocol</th>
+                                                            <th className="px-6 py-4">Version</th>
+                                                            <th className="px-6 py-4">Cipher Suites</th>
+                                                            <th className="px-6 py-4">ALPN</th>
+                                                            <th className="px-6 py-4">OID</th>
+                                                        </tr>
                                                     )}
-                                                </tr>
-                                                {/* Protocol Expansion */}
-                                                {activeTechTab === 'protocols' && expandedProtocolIndex === idx && (
-                                                    <tr>
-                                                        <td colSpan="5" className="px-8 pb-4">
-                                                            <div className="bg-slate-900 rounded-3xl p-6 grid grid-cols-2 md:grid-cols-3 gap-3 animate-in fade-in zoom-in duration-200">
-                                                                {item.cipherSuites?.map((suite, sIdx) => (
-                                                                    <div key={sIdx} className="text-[10px] text-slate-400 font-mono border border-slate-800 p-2 rounded-xl flex items-center gap-2">
-                                                                        <div className="w-1 h-1 bg-orange-500 rounded-full" /> {suite}
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </React.Fragment>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                                </thead>
+                                                <tbody className="text-xs font-bold">
+                                                    {items.map((item, idx) => (
+                                                        <React.Fragment key={idx}>
+                                                            <tr className="bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                                                                {activeTechTab === 'algorithms' && (
+                                                                    <>
+                                                                        <td className="px-6 py-5 text-orange-600 font-black uppercase rounded-l-[1.5rem]">{item.name || "null"}</td>
+                                                                        <td className="px-6 py-5">{item.assetType || "null"}</td>
+                                                                        <td className="px-6 py-5">{item.primitive || "null"}</td>
+                                                                        <td className="px-6 py-5">{item.mode || "null"}</td>
+                                                                        <td className="px-6 py-5">{item.classicalSecurityLevel} Bits</td>
+                                                                        <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "null"}</td>
+                                                                    </>
+                                                                )}
+                                                                {activeTechTab === 'keys' && (
+                                                                    <>
+                                                                        <td className="px-6 py-5 font-black uppercase rounded-l-[1.5rem]">{item.name || "null"}</td>
+                                                                        <td className="px-6 py-5">{item.assetType || "null"}</td>
+                                                                        <td className="px-6 py-5 text-blue-500">{item.size} Bits</td>
+                                                                        <td className="px-6 py-5"><span className="px-2 py-1 bg-white border rounded-md text-xs">{item.state || "null"}</span></td>
+                                                                        <td className="px-6 py-5 text-slate-400">{item.creationDate || "null"}</td>
+                                                                        <td className="px-6 py-5 text-slate-400">{item.activationDate || "null"}</td>
+                                                                        <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.id || "null"}</td>
+                                                                    </>
+                                                                )}
+                                                                {activeTechTab === 'protocols' && (
+                                                                    <>
+                                                                        <td className="px-6 py-5 font-black text-slate-900 uppercase rounded-l-[1.5rem]">{item.name || "null"}</td>
+                                                                        <td className="px-6 py-5">{Array.isArray(item.version) ? item.version.join(', ') : item.version}</td>
+                                                                        <td className="px-6 py-5">
+                                                                            <button onClick={() => setExpandedProtocolIndex(expandedProtocolIndex === idx ? null : idx)} className="flex items-center gap-2 text-orange-500">
+                                                                                {item.cipherSuites?.length || 0} Suites
+                                                                                {expandedProtocolIndex === idx ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                                                            </button>
+                                                                        </td>
+                                                                        <td className="px-6 py-5 font-mono">{item.alpn || "N/A"}</td>
+                                                                        <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "N/A"}</td>
+                                                                    </>
+                                                                )}
+                                                            </tr>
+                                                            {/* Protocol Expansion */}
+                                                            {activeTechTab === 'protocols' && expandedProtocolIndex === idx && (
+                                                                <tr>
+                                                                    <td colSpan="5" className="px-8 pb-4">
+                                                                        <div className="bg-slate-900 rounded-3xl p-6 grid grid-cols-2 md:grid-cols-3 gap-3 animate-in fade-in zoom-in duration-200">
+                                                                            {item.cipherSuites?.map((suite, sIdx) => (
+                                                                                <div key={sIdx} className="text-xs text-slate-400 font-mono border border-slate-800 p-2 rounded-xl flex items-center gap-2">
+                                                                                    <div className="w-1 h-1 bg-orange-500 rounded-full" /> {suite}
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            )}
+                                                        </React.Fragment>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         )}
 
@@ -328,12 +414,12 @@ const CBOMHistoryTab = () => {
                                         {/* Header Strip */}
                                         <div className="bg-slate-900 p-8 flex justify-between items-center">
                                             <div>
-                                                <h2 className="text-2xl font-black text-white tracking-tight">{cert.asset}</h2>
+                                                <h2 className="text-2xl font-black tracking-tight">{cert.asset}</h2>
                                                 <p className="text-orange-500 font-mono text-xs mt-1">Format: {cert.leafCertificate?.certificateFormat}</p>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-[10px] uppercase text-slate-500 font-bold mb-1">Fingerprint (SHA256)</div>
-                                                <div className="text-[9px] font-mono text-slate-300 bg-slate-800 px-3 py-1 rounded-full">{cert.leafCertificate?.fingerprintSha256}</div>
+                                                <div className="text-xs uppercase text-slate-500 font-bold mb-1">Fingerprint (SHA256)</div>
+                                                <div className="text-xs font-mono text-slate-300 bg-slate-800 px-3 py-1 rounded-full">{cert.leafCertificate?.fingerprintSha256}</div>
                                             </div>
                                         </div>
 
@@ -341,7 +427,7 @@ const CBOMHistoryTab = () => {
                                             {/* LEFT: LEAF DATA */}
                                             <div className="space-y-8">
                                                 <div>
-                                                    <h3 className="text-[10px] font-black uppercase text-orange-600 mb-4 tracking-widest">Leaf Identity</h3>
+                                                    <h3 className="text-xs sm:text-sm font-black uppercase text-orange-600 mb-4 tracking-widest">Leaf Identity</h3>
                                                     <div className="space-y-4">
                                                         <InfoItem label="Subject" value={cert.leafCertificate?.subjectName} highlight />
                                                         <InfoItem label="Issuer" value={cert.leafCertificate?.issuerName} />
@@ -352,15 +438,15 @@ const CBOMHistoryTab = () => {
                                                     </div>
                                                 </div>
                                                 <div className="pt-6 border-t border-slate-100">
-                                                    <h3 className="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">Cryptography</h3>
+                                                    <h3 className="text-xs sm:text-sm font-black uppercase text-slate-400 mb-4 tracking-widest">Cryptography</h3>
                                                     <div className="flex gap-4">
                                                         <div className="flex-1 bg-slate-50 p-4 rounded-2xl">
-                                                            <p className="text-[9px] text-slate-400 uppercase">Public Key</p>
-                                                            <p className="text-xs font-bold text-slate-700">{cert.leafCertificate?.subjectPublicKeyReference}</p>
+                                                            <p className="text-xs text-slate-400 uppercase">Public Key</p>
+                                                            <p className="text-sm font-bold text-slate-700">{cert.leafCertificate?.subjectPublicKeyReference}</p>
                                                         </div>
                                                         <div className="flex-1 bg-slate-50 p-4 rounded-2xl">
-                                                            <p className="text-[9px] text-slate-400 uppercase">Signature</p>
-                                                            <p className="text-xs font-bold text-slate-700">{cert.leafCertificate?.signatureAlgorithmReference}</p>
+                                                            <p className="text-xs text-slate-400 uppercase">Signature</p>
+                                                            <p className="text-sm font-bold text-slate-700">{cert.leafCertificate?.signatureAlgorithmReference}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -368,21 +454,21 @@ const CBOMHistoryTab = () => {
 
                                             {/* MIDDLE: EXTENSIONS */}
                                             <div className="bg-slate-50/50 p-8 rounded-[2rem] border border-slate-100">
-                                                <h3 className="text-[10px] font-black uppercase text-slate-400 mb-6 tracking-widest">Cert Extensions</h3>
+                                                <h3 className="text-xs sm:text-sm font-black uppercase text-slate-400 mb-6 tracking-widest">Cert Extensions</h3>
                                                 <div className="space-y-6">
                                                     <div>
-                                                        <label className="text-[10px] font-bold text-slate-400 block mb-2">Key Usage</label>
+                                                        <label className="text-xs font-bold text-slate-400 block mb-2">Key Usage</label>
                                                         <div className="flex flex-wrap gap-2">
                                                             {cert.leafCertificate?.certificateExtension?.keyUsage?.map(u => (
-                                                                <span key={u} className="px-2 py-1 bg-blue-600 text-white text-[9px] font-bold rounded-lg uppercase">{u}</span>
+                                                                <span key={u} className="px-2 py-1 bg-blue-600 text-white text-xs font-bold rounded-lg uppercase">{u}</span>
                                                             ))}
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <label className="text-[10px] font-bold text-slate-400 block mb-2">Extended Key Usage</label>
+                                                        <label className="text-xs font-bold text-slate-400 block mb-2">Extended Key Usage</label>
                                                         <div className="flex flex-wrap gap-2">
                                                             {cert.leafCertificate?.certificateExtension?.extendedKeyUsage?.map(u => (
-                                                                <span key={u} className="px-2 py-1 bg-slate-200 text-slate-600 text-[9px] font-bold rounded-lg">{u}</span>
+                                                                <span key={u} className="px-2 py-1 bg-slate-200 text-slate-600 text-xs font-bold rounded-lg">{u}</span>
                                                             ))}
                                                         </div>
                                                     </div>
@@ -395,17 +481,17 @@ const CBOMHistoryTab = () => {
 
                                             {/* RIGHT: TRUST TREE */}
                                             <div>
-                                                <h3 className="text-[10px] font-black uppercase text-slate-400 mb-6 tracking-widest">Trust Chain Tree</h3>
+                                                <h3 className="text-xs sm:text-sm font-black uppercase text-slate-400 mb-6 tracking-widest">Trust Chain Tree</h3>
                                                 <div className="relative pl-6 space-y-4 border-l-2 border-slate-100">
                                                     {cert.certificateChain?.map((node, nIdx) => (
                                                         <div key={nIdx} className="relative bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
                                                             <div className="absolute -left-[33px] top-6 w-4 h-4 rounded-full bg-orange-500 border-4 border-white shadow-sm" />
-                                                            <p className="text-[10px] font-black text-slate-800 break-all">{node.subject}</p>
-                                                            <p className="text-[9px] text-slate-400 mt-1 italic">Issued by: {node.issuer}</p>
+                                                            <p className="text-xs sm:text-sm font-black text-slate-800 break-all">{node.subject}</p>
+                                                            <p className="text-xs text-slate-400 mt-1 italic">Issued by: {node.issuer}</p>
                                                             {/* Added Fingerprint here */}
                                                             <div className="bg-slate-50 p-2 rounded-lg">
-                                                                <p className="text-[8px] text-slate-400 uppercase mb-1 font-bold">SHA256 Fingerprint</p>
-                                                                <p className="text-[8px] font-mono text-slate-600 break-all uppercase leading-tight">
+                                                                <p className="text-[10px] text-slate-400 uppercase mb-1 font-bold">SHA256 Fingerprint</p>
+                                                                <p className="text-xs font-mono text-slate-600 break-all uppercase leading-tight">
                                                                     {node.fingerprintSha256 || "N/A"}
                                                                 </p>
                                                             </div>
@@ -413,18 +499,18 @@ const CBOMHistoryTab = () => {
                                                     ))}
                                                 </div>
                                                 <div className="mt-8 pt-6 border-t border-slate-100">
-                                                    <h3 className="text-[10px] font-black uppercase text-slate-400 mb-3 tracking-widest">Renewal History</h3>
+                                                    <h3 className="text-xs sm:text-sm font-black uppercase text-slate-400 mb-3 tracking-widest">Renewal History</h3>
                                                     <div className="space-y-3">
                                                         {cert.leafCertificate?.certificateHistory?.map((h, hIdx) => (
                                                             <div key={hIdx} className="bg-slate-50/50 p-3 rounded-xl border border-slate-100">
-                                                                <p className="text-[10px] font-bold text-slate-700 truncate mb-1">{h.issuer}</p>
-                                                                <div className="flex justify-between items-center text-[9px] font-mono text-slate-500">
+                                                                <p className="text-xs sm:text-sm font-bold text-slate-700 truncate mb-1">{h.issuer}</p>
+                                                                <div className="flex justify-between items-center text-xs font-mono text-slate-500">
                                                                     <span>S: {h.notBefore}</span>
                                                                     <span className="text-slate-300">|</span>
                                                                     <span>E: {h.notAfter}</span>
                                                                 </div>
                                                             </div>
-                                                        )) || <p className="text-[10px] italic text-slate-300">No history available</p>}
+                                                        )) || <p className="text-sm italic text-slate-300">No history available</p>}
                                                     </div>
                                                 </div>
                                             </div>
@@ -435,6 +521,7 @@ const CBOMHistoryTab = () => {
                         )}
                     </div>
                 </div>
+                </>
             )}
 
             {/* --- Final Static Wrapper (No Shifting) --- */}
@@ -443,7 +530,7 @@ const CBOMHistoryTab = () => {
                 {/* 1. Speech Bubble - Pre-rendered & Static */}
                 <div className="mb-2 mr-2 pointer-events-none">
                     <div className="bg-white border border-slate-100 shadow-2xl rounded-2xl px-4 py-3 relative max-w-[180px] border-b-2 border-r-2">
-                        <p className="text-[10px] font-black text-slate-700 uppercase tracking-tighter leading-tight">
+                        <p className="text-xs font-black text-slate-700 uppercase tracking-tighter leading-tight">
                             Need help with your <span className="text-orange-500">PQC Strategy?</span>
                         </p>
                         {/* Bubble Tail */}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Send, Bot, Loader2, Minimize2 } from 'lucide-react';
+import { MessageSquare, Send, Bot, Minimize2 } from 'lucide-react';
 import API from "../../services/api";
+import SkeletonBlock from '../ui/SkeletonBlock';
 
 const SecurityChatbot = ({ scanId }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -109,7 +110,7 @@ const SecurityChatbot = ({ scanId }) => {
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500"><Bot size={20} /></div>
                     <div>
-                        <h4 className="text-xs font-black uppercase tracking-widest">PQC Analyst v2</h4>
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">PQC Analyst v2</h4>
                         <p className="text-[9px] text-slate-400 font-bold">Scan: {scanId?.substring(0, 8)}</p>
                     </div>
                 </div>
@@ -128,7 +129,7 @@ const SecurityChatbot = ({ scanId }) => {
                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[92%] p-4 rounded-2xl shadow-sm ${
                             msg.role === 'user' 
-                            ? 'bg-slate-900 text-white rounded-tr-none text-xs font-medium' 
+                            ? 'bg-slate-900  rounded-tr-none text-xs font-medium' 
                             : 'bg-white border border-slate-100 rounded-tl-none'
                         }`}>
                             {msg.role === 'user' ? msg.text : renderBotMessage(msg.text)}
@@ -137,8 +138,9 @@ const SecurityChatbot = ({ scanId }) => {
                 ))}
                 {loading && (
                     <div className="flex justify-start">
-                        <div className="bg-white border border-slate-100 p-3 rounded-2xl rounded-tl-none">
-                            <Loader2 className="animate-spin text-amber-500" size={16} />
+                        <div className="bg-white border border-slate-100 p-3 rounded-2xl rounded-tl-none w-48 space-y-2">
+                            <SkeletonBlock className="h-3 w-36" />
+                            <SkeletonBlock className="h-3 w-28" />
                         </div>
                     </div>
                 )}
@@ -150,9 +152,9 @@ const SecurityChatbot = ({ scanId }) => {
                     type="text" value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask about PQC readiness..."
-                    className="flex-1 bg-slate-50 border-none rounded-xl px-4 py-2 text-xs font-bold outline-none focus:ring-1 ring-amber-500/50"
+                    className="flex-1 bg-slate-200 border-none rounded-xl px-4 py-2 text-xs font-bold text-slate-900 outline-none focus:ring-1 ring-amber-500/50"
                 />
-                <button disabled={loading || !scanId} type="submit" className="bg-slate-900 text-white p-2 rounded-xl hover:bg-amber-500 transition-colors disabled:opacity-30">
+                <button disabled={loading || !scanId} type="submit" className="bg-slate-900 text-slate-500 p-2 rounded-xl hover:bg-amber-500 transition-colors disabled:opacity-30">
                     <Send size={18} />
                 </button>
             </form>

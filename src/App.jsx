@@ -2,6 +2,7 @@ import './App.css';
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { FeedbackProvider } from './context/FeedbackContext';
 
 // Auth Guards
 import ProtectedRoute from './components/ProtectedRoute';
@@ -23,6 +24,7 @@ import ReportingRegistry from './pages/dashboard/tabs/ReportingRegistry';
 import ScheduledReportingTab from './pages/dashboard/tabs/ScheduledReportingTab';
 import OnDemandReportingTab from './pages/dashboard/tabs/OnDemandReportingTab';
 import ExecutivesReportingTab from './pages/dashboard/tabs/ExecutivesReportingTab';
+import DomainSummaryTab from './pages/dashboard/tabs/DomainSummaryTab';
 
 function App() {
   useEffect(() => {
@@ -41,8 +43,9 @@ function App() {
   }, []);
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
+      <FeedbackProvider>
+        <Router>
+          <Routes>
 
           {/* 1. PUBLIC ROUTES */}
           {/* PublicRoute prevents logged-in users from seeing the login page again */}
@@ -66,6 +69,9 @@ function App() {
             <Route index element={<HomeTab />} />
 
             {/* These routes render at '/dashboard/scan', '/dashboard/results', etc. */}
+            <Route path="summary" element={<DomainSummaryTab />} />
+
+            {/* These routes render at '/dashboard/scan', '/dashboard/results', etc. */}
             <Route path="scan" element={<ScanTab />} />
             <Route path="results" element={<ScanResultsTab />} />
             <Route path="assets" element={<AssetInventoryTab />} />
@@ -84,15 +90,16 @@ function App() {
             </Route>
           </Route>
 
-          {/* 3. REDIRECTS & FALLBACKS */}
-          {/* Root redirect: send to dashboard if logged in, ProtectedRoute handles the rest */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            {/* 3. REDIRECTS & FALLBACKS */}
+            {/* Root redirect: send to dashboard if logged in, ProtectedRoute handles the rest */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-          {/* 404 Fallback */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+            {/* 404 Fallback */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
 
-        </Routes>
-      </Router>
+          </Routes>
+        </Router>
+      </FeedbackProvider>
     </AuthProvider>
   );
 }

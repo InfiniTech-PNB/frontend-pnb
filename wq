@@ -1,0 +1,182 @@
+[33mcommit d6b3a6493b4c5ac3ed129ddb4ef1c51425fc07df[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mredesign[m[33m, [m[1;31morigin/redesign[m[33m)[m
+Author: Md Zafar <mz5659875@gmail.com>
+Date:   Fri Apr 10 11:48:11 2026 +0530
+
+    [UPDATED] Aggregate Scanning
+
+[33mcommit ff79b76b45eb354fa59085c2ee707b0487c7c55e[m
+Author: Md Zafar <mz5659875@gmail.com>
+Date:   Fri Apr 10 11:09:21 2026 +0530
+
+    [FIXES] Minor UI
+
+[33mcommit 4bcb0a1784040ebc210de0c9ed895b8273a675c0[m
+Author: Md Zafar <mz5659875@gmail.com>
+Date:   Wed Apr 8 13:21:40 2026 +0530
+
+    [UPDATED] Dark Theme
+
+[33mcommit e4bb2d54ff98c3b82ec6a5d019cc6fa8a6962060[m
+Author: Md Zafar <mz5659875@gmail.com>
+Date:   Wed Apr 8 12:59:28 2026 +0530
+
+    [FIXED] Some More UIs
+
+[33mcommit fc0324549f77f78244be2dcf8f65f1cb815ed13f[m
+Author: Md Zafar <mz5659875@gmail.com>
+Date:   Wed Apr 8 11:48:16 2026 +0530
+
+    [FIXED] Major UI Sections
+
+[33mcommit 054c4bdb6bdb8c3b85db951edd65f5153af33261[m
+Author: Md Zafar <mz5659875@gmail.com>
+Date:   Tue Apr 7 00:49:42 2026 +0530
+
+    [UPDATED] Auth Page
+
+[33mcommit 9ba036742f1f0fb382c0f5082f77d808a9ff471b[m
+Author: Md Zafar <mz5659875@gmail.com>
+Date:   Tue Apr 7 00:25:14 2026 +0530
+
+    [FIXED] Major UI Components
+
+[33mcommit bbfcc1b169526caee034ecb64b1a5ba3f1e55b8c[m
+Author: Md Zafar <mz5659875@gmail.com>
+Date:   Sun Apr 5 20:44:21 2026 +0530
+
+    [REDESIGNED] Whole Frontend Reimagined
+
+[33mcommit 5e3b4ad6c57162bc46d8ea65bc04e09eddfe28cb[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Sat Apr 4 11:04:54 2026 +0530
+
+    changed yml and api url
+
+[33mcommit 2ce7de661f2f3dd03eacb2b57aae036d240fd3bf[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Sat Apr 4 01:16:22 2026 +0530
+
+    api url changed
+
+[33mcommit 6bf0aba6d7cc1142c18153501b926ad14da67472[m
+Merge: 2a6d2f3 c82aa02
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Sat Apr 4 00:45:33 2026 +0530
+
+    Merge branch 'main' of https://github.com/InfiniTech-PNB/frontend-pnb
+
+[33mcommit 2a6d2f3ed9b429f26347b4b968bc31ccf683cf1a[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Sat Apr 4 00:45:10 2026 +0530
+
+    changed url
+
+[33mcommit c82aa0288b2b3878274e08e10199f54e9d5ac994[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Fri Apr 3 23:22:37 2026 +0530
+
+    Refactor Node.js CI to frontend CI/CD workflow
+    
+    Updated the Node.js CI workflow to frontend CI/CD, removed matrix strategy, and added steps for building and deploying to EC2.
+
+[33mcommit 5511a848a13a74baf05754664ef414199f16551c[m[33m ([m[1;32mmain[m[33m)[m
+Author: Tapash Jaiswal <tejashwnijaiswal@gmail.com>
+Date:   Mon Mar 30 14:35:33 2026 +0530
+
+    Update README.md
+
+[33mcommit c0e3f80c1ebac48daa7da150e83c446da4ecbf12[m
+Author: Tapash Jaiswal <tejashwnijaiswal@gmail.com>
+Date:   Mon Mar 30 14:33:57 2026 +0530
+
+    Update README.md
+
+[33mcommit ea2b1e97ebb1b391e8e17f6c9d9e62ad1b942921[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Mon Mar 30 00:26:38 2026 +0530
+
+    added theme and changed scheduled scan/reporting
+
+[33mcommit 1c54b88032998b6e0af6a48427407cba28ee8fa5[m
+Author: bhavyanatani <natanibhavya30@gmail.com>
+Date:   Sun Mar 29 19:25:48 2026 +0530
+
+    Removed Remediation Effect
+
+[33mcommit 5bd8da782d41bf9d0d1f5b2acb32abd0c628107f[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Sun Mar 29 00:15:17 2026 +0530
+
+    added reporting tab
+
+[33mcommit fc8d6ade725148b49691140aff8a2747bd31ee91[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Sat Mar 28 12:48:40 2026 +0530
+
+    Changed home and added asset inventory tab
+
+[33mcommit 6f11e4b2fae7901931aac1eee4d98079bee03372[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Sat Mar 28 01:13:10 2026 +0530
+
+    changed frontend once again for new scan results anf cbom
+
+[33mcommit 3c820ad2a2558c4e2fd3ce604832769a0bfcaf0b[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Wed Mar 25 15:25:38 2026 +0530
+
+    README.md updated
+
+[33mcommit 26acfb8341adcff6f1b1ad8e0ffc569851645d4e[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Wed Mar 25 15:20:20 2026 +0530
+
+    Correction in README.md
+
+[33mcommit 2b48fc5b9ce55e88432cc15405a587be062f11d8[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Wed Mar 25 15:09:35 2026 +0530
+
+    Added README.md
+
+[33mcommit 4c1794f58ffa65566a74ae13705a6be6e7bad4e3[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Tue Mar 24 19:50:27 2026 +0530
+
+    Added new pqc variables and implemented search in assets finding
+
+[33mcommit 18eb6171c3b02713efbd730211502dd4528d5fde[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Tue Mar 17 23:11:50 2026 +0530
+
+    Dashboard created
+
+[33mcommit cae00337740b7e2f458036f903fa6890f6a8a1d3[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Mon Mar 16 15:05:44 2026 +0530
+
+    Until now changes
+
+[33mcommit f465312deccd0dfb732c1eab164854c0b2c6ae53[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Thu Mar 12 20:41:34 2026 +0530
+
+    Dashboard done
+
+[33mcommit 2a8bb274c70a3b80457e2f52356c87a1247effda[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Thu Mar 12 19:34:45 2026 +0530
+
+    login page added logos
+
+[33mcommit 45676ca5ece22774525adf6bba196e358d409fbe[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Wed Mar 11 23:48:12 2026 +0530
+
+    login page completed
+
+[33mcommit b7d846345a35491d6cff6615d33cb37b69596617[m
+Author: akshay060805 <vanama.akshay06@gmail.com>
+Date:   Wed Mar 11 20:26:42 2026 +0530
+
+    first commit
