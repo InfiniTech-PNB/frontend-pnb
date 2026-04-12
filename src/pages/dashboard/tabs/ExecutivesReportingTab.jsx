@@ -6,12 +6,14 @@ import {
 import { Link } from 'react-router-dom';
 import API from "../../../services/api";
 import { useSearchParams } from 'react-router-dom';
+import { useFeedback } from '../../../context/FeedbackContext';
 import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const ExecutivesReportingTab = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isDownloading, setIsDownloading] = useState(false);
+    const { showToast } = useFeedback();
 
     const [searchParams] = useSearchParams();
     const isPrintMode = searchParams.get('print') === 'true';
@@ -21,7 +23,10 @@ const ExecutivesReportingTab = () => {
             try {
                 const res = await API.get("/reports/executive-summary");
                 setData(res.data);
-            } catch (err) { console.error("HUD Fetch Error:", err); }
+            } catch (err) { 
+                console.error("HUD Fetch Error:", err); 
+                showToast("Failed to sync executive summary benchmarks.", "error");
+            }
             finally { setLoading(false); }
         };
         fetchSummary();
@@ -47,7 +52,7 @@ const ExecutivesReportingTab = () => {
             link.remove();
         } catch (err) {
             console.error("Download failed:", err);
-            // Look at your terminal/console for the 500 error details
+            showToast("Report generation failed. Verification required.", "error");
         } finally {
             setIsDownloading(false);
         }

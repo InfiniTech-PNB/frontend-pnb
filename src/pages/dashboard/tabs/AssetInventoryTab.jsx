@@ -225,7 +225,7 @@ const AssetInventoryTab = () => {
                                             <button
                                                 onClick={() => handleStartAssetScan(asset._id)}
                                                 disabled={Boolean(scanningAssetId)}
-                                                className="editorial-button editorial-button-primary px-4 py-2 text-xs sm:text-sm disabled:opacity-50"
+                                                className="editorial-button editorial-button-primary px-4 py-2 text-xs sm:text-sm disabled:opacity-50 cursor-pointer transition-all duration-200 ease-in-out hover:bg-red-600 hover:scale-105 hover:shadow-md"
                                             >
                                                 {scanningAssetId === asset._id ? (
                                                     <SkeletonBlock className="h-4 w-14 bg-white/40 rounded-md" />

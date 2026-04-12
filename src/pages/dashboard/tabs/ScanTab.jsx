@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import API from "../../../services/api";
+import { useFeedback } from '../../../context/FeedbackContext';
 import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const ScanTab = () => {
@@ -14,6 +15,7 @@ const ScanTab = () => {
     const [domainInput, setDomainInput] = useState("");
     const [assets, setAssets] = useState([]);
     const [loading, setLoading] = useState(false);
+    const { showModeSelection } = useFeedback();
 
     const [selectedAssets, setSelectedAssets] = useState([]);
     const [scanType, setScanType] = useState("soft");
@@ -90,6 +92,17 @@ const ScanTab = () => {
         setLoading(true);
         try {
             const uniqueSelectedAssetIds = [...new Set(selectedAssets)];
+            
+            let mode = 'per_asset';
+            if (uniqueSelectedAssetIds.length > 1) {
+                const selectedMode = await showModeSelection("Multiple assets detected. Select the structure for your Cryptographic Bill of Materials (CBOM).");
+                if (!selectedMode) {
+                    setLoading(false);
+                    return; 
+                }
+                mode = selectedMode;
+            }
+
             const selectedAssetPayload = uniqueSelectedAssetIds.map((id) => ({
                 assetId: id,
                 businessContext: assetContexts[id] || {}
@@ -98,7 +111,8 @@ const ScanTab = () => {
             const payload = {
                 domainId: assets[0]?.domainId,
                 scanType,
-                assets: selectedAssetPayload
+                assets: selectedAssetPayload,
+                mode
             };
 
             const res = await API.post("/scan", payload);
@@ -108,7 +122,8 @@ const ScanTab = () => {
                 state: {
                     activeScanId: res.data.scanId,
                     expectedAssetCount: uniqueSelectedAssetIds.length,
-                    scanType
+                    scanType,
+                    mode
                 }
             });
         } catch (err) {

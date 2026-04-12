@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     Zap, ShieldCheck, FileCode, CheckCircle2, AlertTriangle, Database,
@@ -66,8 +66,12 @@ const ScanResultsTab = () => {
         );
     };
 
+    const orchestrationRef = useRef(false);
+
     useEffect(() => {
         if (!scanId) return;
+        if (orchestrationRef.current) return;
+        orchestrationRef.current = true;
         runFullOrchestration();
     }, [scanId]);
 
@@ -117,13 +121,15 @@ const ScanResultsTab = () => {
             }
 
             setStatusMsg("Synchronizing Cryptographic Bill of Materials...");
+            const currentMode = location.state?.mode || "aggregate";
             let currentCbom;
             try {
-                const cbomRes = await API.get(`/cbom/${scanId}/cbom`);
+                // Try to find CBOM with the SPECIFIC mode requested
+                const cbomRes = await API.get(`/cbom/${scanId}/cbom?mode=${currentMode === 'perAsset' ? 'per_asset' : currentMode}`);
                 currentCbom = cbomRes.data;
             } catch (err) {
                 if (err.response?.status === 404) {
-                    const genRes = await API.post(`/cbom/${scanId}`, { mode: "aggregate" });
+                    const genRes = await API.post(`/cbom/${scanId}`, { mode: currentMode === 'perAsset' ? 'per_asset' : currentMode });
                     currentCbom = genRes.data.cbom;
                 }
             }
@@ -183,8 +189,9 @@ const ScanResultsTab = () => {
         if (!scanId) return;
         setDownloading(true);
         try {
+            const mode = cbomData?.mode || "aggregate";
             // Use responseType: 'blob' to handle binary PDF data
-            const response = await API.get(`/cbom/${scanId}/cbom/pdf`, {
+            const response = await API.get(`/cbom/${scanId}/cbom/pdf?mode=${mode}`, {
                 responseType: 'blob'
             });
 
@@ -194,7 +201,7 @@ const ScanResultsTab = () => {
             link.href = url;
 
             // Set filename - you can customize this
-            link.setAttribute('download', `CBOM-Report-${scanId.substring(0, 8)}.pdf`);
+            link.setAttribute('download', `CBOM-${mode}-${scanId.substring(0, 8)}.pdf`);
             document.body.appendChild(link);
             link.click();
 
@@ -321,30 +328,109 @@ const ScanResultsTab = () => {
                             <div key={res._id} className={`bg-white border border-slate-100 rounded-[2.5rem] overflow-hidden transition-all shadow-sm ${isExpanded ? 'border-orange-400' : ''}`}>
                                 <div className="p-8 flex flex-col md:flex-row justify-between items-center gap-6">
                                     <div className="flex items-center gap-4">
-                                        <div className={`p-4 rounded-[1.5rem] ${config.bg} ${config.color}`}><Activity size={24} /></div>
+                                        <div className={`p-4 rounded-[1.5rem] ${config.bg} ${config.color}`}>
+                                            <Activity size={24} />
+                                        </div>
+
                                         <div>
                                             <div className="flex items-center gap-2">
-                                                <h4 className="text-lg font-black text-slate-900 uppercase italic leading-none">{res.assetId?.host}</h4>
-                                                <span className="bg-slate-100 text-slate-500 text-xs px-2 py-1 rounded font-black">{res.assetId?.assetType}</span>
+                                                <h4 className="text-lg font-black text-slate-900 uppercase italic leading-none">
+                                                    {res.assetId?.host}
+                                                </h4>
+
+                                                <span className="bg-slate-100 text-slate-500 text-xs px-2 py-1 rounded font-black">
+                                                    {res.assetId?.assetType}
+                                                </span>
+
+                                                {/* STATUS BADGE */}
+                                                {res.status && (
+                                                    (() => {
+                                                        const status = res.status.toLowerCase();
+                                                        const isSuccess = status === 'completed' || status === 'success';
+                                                        const isBlocked = status === 'blocked';
+
+                                                        const style = isSuccess
+                                                            ? 'bg-green-100 text-green-600'
+                                                            : isBlocked
+                                                                ? 'bg-amber-100 text-amber-500'
+                                                                : 'bg-rose-100 text-rose-600';
+
+                                                        return (
+                                                            <span className={`text-[10px] px-2 py-0.5 rounded font-black uppercase ${style}`}>
+                                                                {status}
+                                                            </span>
+                                                        );
+                                                    })()
+                                                )}
                                             </div>
-                                            <p className="text-sm font-mono text-slate-400 mt-2 font-bold">{res.assetId?.ip} • PORT {res.port}</p>
+
+                                            <p className="text-sm font-mono text-slate-400 mt-2 font-bold">
+                                                {res.assetId?.ip} • PORT {res.port}
+                                            </p>
+
+                                            {/* FAILURE REASON */}
+                                            {(res.status === 'failed' || res.status === 'blocked') && (
+                                                <p className="text-xs font-bold text-rose-500 mt-1 uppercase tracking-tight">
+                                                    Reason: {res.failureReason || 'Connection failed or blocked'}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
+                                    {/* RIGHT SECTION */}
                                     <div className="flex items-center gap-12">
-                                        <div className="text-center">
-                                            <p className={`text-2xl font-black uppercase ${config.color}`}>{config.label}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-xs sm:text-sm font-black text-slate-400 uppercase tracking-widest mb-1">PQC Score</p>
-                                            <p className="text-3xl font-black text-slate-900">{Math.round(res.pqcReadyScore * 1000)}</p>
-                                        </div>
-                                        <button
-                                            onClick={() => setExpandedAssetId(isExpanded ? null : res._id)}
-                                            className={`p-3 rounded-full transition-all ${isExpanded ? 'bg-orange-500 text-white shadow-lg' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
-                                        >
-                                            {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-                                        </button>
+                                        {(() => {
+                                            const status = (res.status || '').toLowerCase();
+                                            const isSuccess = !status || status === 'completed' || status === 'success';
+                                            const isBlocked = status === 'blocked';
+
+                                            if (isSuccess) {
+                                                return (
+                                                    <>
+                                                        <div className="text-center">
+                                                            <p className={`text-2xl font-black uppercase ${config.color}`}>
+                                                                {config.label}
+                                                            </p>
+                                                        </div>
+
+                                                        <div className="text-right">
+                                                            <p className="text-xs sm:text-sm font-black text-slate-400 uppercase tracking-widest mb-1">
+                                                                PQC Score
+                                                            </p>
+                                                            <p className="text-3xl font-black text-slate-900">
+                                                                {Math.round(res.pqcReadyScore * 1000)}
+                                                            </p>
+                                                        </div>
+
+                                                        {/* ✅ DROPDOWN ONLY FOR SUCCESS */}
+                                                        <button
+                                                            onClick={() => setExpandedAssetId(isExpanded ? null : res._id)}
+                                                            className={`p-3 rounded-full transition-all ${isExpanded
+                                                                    ? 'bg-orange-500 text-white shadow-lg'
+                                                                    : 'bg-slate-50 text-slate-400 hover:bg-slate-100'
+                                                                }`}
+                                                        >
+                                                            {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                                                        </button>
+                                                    </>
+                                                );
+                                            }
+
+                                            return (
+                                                <div className="text-right pr-4">
+                                                    <p className="text-xs sm:text-sm font-black text-slate-400 uppercase tracking-widest mb-1">
+                                                        Status
+                                                    </p>
+
+                                                    <p
+                                                        className={`text-2xl font-black uppercase ${isBlocked ? 'text-amber-500' : 'text-rose-600'
+                                                            }`}
+                                                    >
+                                                        {status}
+                                                    </p>
+                                                </div>
+                                            );
+                                        })()}
                                     </div>
                                 </div>
 
@@ -365,13 +451,13 @@ const ScanResultsTab = () => {
                                                         </div>
                                                         <div className="bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
                                                             <p className="text-slate-500 uppercase text-xs mb-1">KEX / Size</p>
-                                                            <p className="text-white font-black text-sm">
+                                                            <p className="text-black font-black text-sm">
                                                                 {res.negotiated?.keyExchange || 'N/A'} <span className="text-slate-500 text-xs">({res.negotiated?.serverTempKeySize || 0}b)</span>
                                                             </p>
                                                         </div>
                                                         <div className="col-span-2 bg-slate-800/30 p-3 rounded-2xl border border-slate-800">
                                                             <p className="text-slate-500 uppercase text-xs mb-1">Negotiated Cipher</p>
-                                                            <p className="text-white font-mono text-xs sm:text-sm truncate">{res.negotiated?.cipher || 'N/A'}</p>
+                                                            <p className="text-black font-mono text-xs sm:text-sm truncate">{res.negotiated?.cipher || 'N/A'}</p>
                                                         </div>
                                                     </div>
 
@@ -381,6 +467,7 @@ const ScanResultsTab = () => {
                                                         <ExpandableRow
                                                             label="ALPN Protocols"
                                                             data={res.negotiated?.alpn ? [res.negotiated.alpn] : []}
+                                                            colorClass='text-black'
                                                         />
 
                                                         <ExpandableRow
@@ -392,6 +479,7 @@ const ScanResultsTab = () => {
                                                         <ExpandableRow
                                                             label="Supported Cipher Suites"
                                                             data={res.supported?.cipherSuites}
+                                                            colorClass='text-black'
                                                         />
 
                                                         <ExpandableRow
@@ -519,6 +607,46 @@ const ScanResultsTab = () => {
                 </div>
             </div>
 
+            {/* --- SCAN RESILIENCE / FAILED ASSETS --- */}
+            {cbomData?.failedAssets?.length > 0 && (
+                <div className="bg-white border border-slate-100 rounded-[3rem] p-8 shadow-sm overflow-hidden relative">
+                    <div className="absolute right-0 top-0 p-10 opacity-[0.03] pointer-events-none">
+                        <XCircle size={120} className="text-rose-500" />
+                    </div>
+
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="p-4 bg-rose-50 rounded-[1.5rem] text-rose-600 shadow-inner">
+                            <AlertTriangle size={24} />
+                        </div>
+                        <div>
+                            <h3 className="editorial-title text-xl tracking-tight uppercase italic leading-none text-slate-900">Scan Resiliency Issues</h3>
+                            <p className="text-[10px] font-black uppercase mt-2 tracking-widest text-slate-400">Non-Deterministic Handshake Analysis</p>
+                        </div>
+                    </div>
+
+                    <div className="pl-2 border-l-2 border-rose-500 mb-8 max-w-2xl">
+                        <p className="text-sm font-bold text-slate-500 leading-relaxed uppercase">
+                            The following nodes were reachable but did not return valid cryptographic responses. 
+                            As a result, a meaningful CBOM could not be generated, and these assets were excluded to preserve the integrity of the analysis.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {cbomData.failedAssets.map((fail, idx) => (
+                            <div key={idx} className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:border-rose-200 transition-all group">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                                    <span className="text-sm font-black text-slate-800 uppercase italic truncate">{fail.host}</span>
+                                </div>
+                                <div className="text-[10px] font-bold text-rose-500 uppercase tracking-tighter leading-tight bg-white border border-rose-100 px-2 py-1 rounded-lg">
+                                    {fail.reason || 'HANDSHAKE_TIMEOUT'}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* --- SECTION 4: GLOBAL TECHNICAL CBOM --- */}
             <div className="bg-white rounded-[4rem] border border-slate-100 shadow-xl overflow-hidden">
                 <div className="bg-slate-900 p-5 flex items-center justify-between w-full gap-3">
@@ -544,7 +672,7 @@ const ScanResultsTab = () => {
                     <button
                         onClick={handleDownloadPDF}
                         disabled={downloading}
-                        className={`flex items-center gap-2 px-6 py-4 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-widest transition-all shadow-sm shrink-0 whitespace-nowrap bg-white/10 text-slate-100 hover:bg-orange-500 active:scale-95 `}
+                        className={`flex items-center gap-2 px-6 py-4 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-widest transition-all shadow-sm shrink-0 whitespace-nowrap bg-slate-500/10 text-slate-900 hover:bg-orange-500 active:scale-95 `}
                     >
                         {downloading ? (
                             <SkeletonBlock className="h-4 w-16 bg-white/40 rounded-md" />
@@ -557,98 +685,119 @@ const ScanResultsTab = () => {
                 <div className="p-8">
                     {/* 1. RENDER TABLE ONLY FOR NON-CERTIFICATE TABS */}
                     {activeTechTab !== 'certificates' && (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left border-separate border-spacing-y-2">
-                                <thead className="text-xs font-black text-slate-400 uppercase tracking-widest">
-                                    {activeTechTab === 'algorithms' && (
-                                        <tr>
-                                            <th className="px-6 py-4">Name</th>
-                                            <th className="px-6 py-4">Asset Type</th>
-                                            <th className="px-6 py-4">Primitive</th>
-                                            <th className="px-6 py-4">Mode</th>
-                                            <th className="px-6 py-4">Security Level</th>
-                                            <th className="px-6 py-4">OID</th>
-                                        </tr>
+                        <div className="space-y-12">
+                            {Object.entries(
+                                cbomData?.mode === 'per_asset' 
+                                    ? (cbomData?.[activeTechTab] || []).reduce((acc, item) => {
+                                        const key = item.asset || "Unknown Asset";
+                                        if (!acc[key]) acc[key] = [];
+                                        acc[key].push(item);
+                                        return acc;
+                                    }, {})
+                                    : { "Aggregate": cbomData?.[activeTechTab] || [] }
+                            ).map(([groupName, items], groupIdx) => (
+                                <div key={groupIdx} className="w-full">
+                                    {cbomData?.mode === 'per_asset' && (
+                                        <div className="flex items-center gap-3 mb-6 bg-slate-900 px-5 py-3 rounded-2xl w-fit shadow-md">
+                                            <Server className="text-orange-500" size={18} />
+                                            <h3 className="text-sm font-black text-black tracking-widest uppercase">{groupName}</h3>
+                                        </div>
                                     )}
-                                    {activeTechTab === 'keys' && (
-                                        <tr>
-                                            <th className="px-6 py-4">Name</th>
-                                            <th className="px-6 py-4">Asset Type</th>
-                                            <th className="px-6 py-4">Size</th>
-                                            <th className="px-6 py-4">State</th>
-                                            <th className="px-6 py-4">Creation</th>
-                                            <th className="px-6 py-4">Activation</th>
-                                            <th className="px-6 py-4">ID</th>
-                                        </tr>
-                                    )}
-                                    {activeTechTab === 'protocols' && (
-                                        <tr>
-                                            <th className="px-6 py-4">Protocol</th>
-                                            <th className="px-6 py-4">Version</th>
-                                            <th className="px-6 py-4">Cipher Suites</th>
-                                            <th className="px-6 py-4">ALPN</th>
-                                            <th className="px-6 py-4">OID</th>
-                                        </tr>
-                                    )}
-                                </thead>
-                                <tbody className="text-xs font-bold">
-                                    {cbomData?.[activeTechTab]?.map((item, idx) => (
-                                        <React.Fragment key={idx}>
-                                            <tr className="bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left border-separate border-spacing-y-2">
+                                            <thead className="text-xs font-black text-slate-400 uppercase tracking-widest">
                                                 {activeTechTab === 'algorithms' && (
-                                                    <>
-                                                        <td className="px-6 py-5 text-orange-600 rounded-l-[1.5rem] font-black uppercase">{item.name || "null"}</td>
-                                                        <td className="px-6 py-5">{item.assetType || "null"}</td>
-                                                        <td className="px-6 py-5">{item.primitive || "null"}</td>
-                                                        <td className="px-6 py-5">{item.mode || "null"}</td>
-                                                        <td className="px-6 py-5">{item.classicalSecurityLevel} Bits</td>
-                                                        <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "null"}</td>
-                                                    </>
+                                                    <tr>
+                                                        <th className="px-6 py-4">Name</th>
+                                                        <th className="px-6 py-4">Asset Type</th>
+                                                        <th className="px-6 py-4">Primitive</th>
+                                                        <th className="px-6 py-4">Mode</th>
+                                                        <th className="px-6 py-4">Security Level</th>
+                                                        <th className="px-6 py-4">OID</th>
+                                                    </tr>
                                                 )}
                                                 {activeTechTab === 'keys' && (
-                                                    <>
-                                                        <td className="px-6 py-5 rounded-l-[1.5rem] font-black uppercase">{item.name || "null"}</td>
-                                                        <td className="px-6 py-5">{item.assetType || "null"}</td>
-                                                        <td className="px-6 py-5 text-blue-500">{item.size} Bits</td>
-                                                        <td className="px-6 py-5"><span className="px-2 py-1 bg-white border rounded-md text-xs">{item.state || "null"}</span></td>
-                                                        <td className="px-6 py-5 text-slate-400">{item.creationDate || "null"}</td>
-                                                        <td className="px-6 py-5 text-slate-400">{item.activationDate || "null"}</td>
-                                                        <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.id || "null"}</td>
-                                                    </>
+                                                    <tr>
+                                                        <th className="px-6 py-4">Name</th>
+                                                        <th className="px-6 py-4">Asset Type</th>
+                                                        <th className="px-6 py-4">Size</th>
+                                                        <th className="px-6 py-4">State</th>
+                                                        <th className="px-6 py-4">Creation</th>
+                                                        <th className="px-6 py-4">Activation</th>
+                                                        <th className="px-6 py-4">ID</th>
+                                                    </tr>
                                                 )}
                                                 {activeTechTab === 'protocols' && (
-                                                    <>
-                                                        <td className="px-6 py-5 rounded-l-[1.5rem] font-black text-slate-900 uppercase">{item.name || "null"}</td>
-                                                        <td className="px-6 py-5">{Array.isArray(item.version) ? item.version.join(', ') : item.version}</td>
-                                                        <td className="px-6 py-5">
-                                                            <button onClick={() => setExpandedProtocolIndex(expandedProtocolIndex === idx ? null : idx)} className="flex items-center gap-2 text-orange-500">
-                                                                {item.cipherSuites?.length || 0} Suites
-                                                                {expandedProtocolIndex === idx ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                                                            </button>
-                                                        </td>
-                                                        <td className="px-6 py-5 font-mono">{item.alpn || "N/A"}</td>
-                                                        <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "N/A"}</td>
-                                                    </>
+                                                    <tr>
+                                                        <th className="px-6 py-4">Protocol</th>
+                                                        <th className="px-6 py-4">Version</th>
+                                                        <th className="px-6 py-4">Cipher Suites</th>
+                                                        <th className="px-6 py-4">ALPN</th>
+                                                        <th className="px-6 py-4">OID</th>
+                                                    </tr>
                                                 )}
-                                            </tr>
-                                            {/* Protocol Expansion */}
-                                            {activeTechTab === 'protocols' && expandedProtocolIndex === idx && (
-                                                <tr>
-                                                    <td colSpan="5" className="px-8 pb-4">
-                                                        <div className="bg-slate-900 rounded-3xl p-6 grid grid-cols-2 md:grid-cols-3 gap-3 animate-in fade-in zoom-in duration-200">
-                                                            {item.cipherSuites?.map((suite, sIdx) => (
-                                                                <div key={sIdx} className="text-xs text-slate-400 font-mono border border-slate-800 p-2 rounded-xl flex items-center gap-2">
-                                                                    <div className="w-1 h-1 bg-orange-500 rounded-full" /> {suite}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </React.Fragment>
-                                    ))}
-                                </tbody>
-                            </table>
+                                            </thead>
+                                            <tbody className="text-xs font-bold">
+                                                {items.map((item, idx) => (
+                                                    <React.Fragment key={idx}>
+                                                        <tr className="bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                                                            {activeTechTab === 'algorithms' && (
+                                                                <>
+                                                                    <td className="px-6 py-5 text-orange-600 font-black uppercase rounded-l-[1.5rem]">{item.name || "null"}</td>
+                                                                    <td className="px-6 py-5">{item.assetType || "null"}</td>
+                                                                    <td className="px-6 py-5">{item.primitive || "null"}</td>
+                                                                    <td className="px-6 py-5">{item.mode || "null"}</td>
+                                                                    <td className="px-6 py-5">{item.classicalSecurityLevel} Bits</td>
+                                                                    <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "null"}</td>
+                                                                </>
+                                                            )}
+                                                            {activeTechTab === 'keys' && (
+                                                                <>
+                                                                    <td className="px-6 py-5 font-black uppercase rounded-l-[1.5rem]">{item.name || "null"}</td>
+                                                                    <td className="px-6 py-5">{item.assetType || "null"}</td>
+                                                                    <td className="px-6 py-5 text-blue-500">{item.size} Bits</td>
+                                                                    <td className="px-6 py-5"><span className="px-2 py-1 bg-white border rounded-md text-xs">{item.state || "null"}</span></td>
+                                                                    <td className="px-6 py-5 text-slate-400">{item.creationDate || "null"}</td>
+                                                                    <td className="px-6 py-5 text-slate-400">{item.activationDate || "null"}</td>
+                                                                    <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.id || "null"}</td>
+                                                                </>
+                                                            )}
+                                                            {activeTechTab === 'protocols' && (
+                                                                <>
+                                                                    <td className="px-6 py-5 font-black text-slate-900 uppercase rounded-l-[1.5rem]">{item.name || "null"}</td>
+                                                                    <td className="px-6 py-5">{Array.isArray(item.version) ? item.version.join(', ') : item.version}</td>
+                                                                    <td className="px-6 py-5">
+                                                                        <button onClick={() => setExpandedProtocolIndex(expandedProtocolIndex === idx ? null : idx)} className="flex items-center gap-2 text-orange-500">
+                                                                            {item.cipherSuites?.length || 0} Suites
+                                                                            {expandedProtocolIndex === idx ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                                                        </button>
+                                                                    </td>
+                                                                    <td className="px-6 py-5 font-mono">{item.alpn || "N/A"}</td>
+                                                                    <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "N/A"}</td>
+                                                                </>
+                                                            )}
+                                                        </tr>
+                                                        {/* Protocol Expansion */}
+                                                        {activeTechTab === 'protocols' && expandedProtocolIndex === idx && (
+                                                            <tr>
+                                                                <td colSpan="5" className="px-8 pb-4">
+                                                                    <div className="bg-slate-900 rounded-3xl p-6 grid grid-cols-2 md:grid-cols-3 gap-3 animate-in fade-in zoom-in duration-200">
+                                                                        {item.cipherSuites?.map((suite, sIdx) => (
+                                                                            <div key={sIdx} className="text-xs text-slate-400 font-mono border border-slate-800 p-2 rounded-xl flex items-center gap-2">
+                                                                                <div className="w-1 h-1 bg-orange-500 rounded-full" /> {suite}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        )}
+                                                    </React.Fragment>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     )}
 

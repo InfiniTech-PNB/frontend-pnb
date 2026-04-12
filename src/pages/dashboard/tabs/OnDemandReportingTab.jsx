@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Mail, ArrowRight, ArrowLeft, ShieldCheck, Database, FileCode, Activity, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import API from "../../../services/api";
+import { useFeedback } from '../../../context/FeedbackContext';
 import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const INITIAL_STATE = {
@@ -19,6 +20,7 @@ const OnDemandReportingTab = () => {
     const [domains, setDomains] = useState([]);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState(INITIAL_STATE);
+    const { showToast } = useFeedback();
 
     // Load domains for the dropdown
     useEffect(() => {
@@ -33,7 +35,7 @@ const OnDemandReportingTab = () => {
 
     const handleInstantTrigger = async () => {
         if (!formData.reportName.trim()) {
-            alert("Please provide a name for this audit extraction.");
+            showToast("Please provide a name for this audit extraction.", "error");
             return;
         }
 
@@ -47,12 +49,12 @@ const OnDemandReportingTab = () => {
                 email: formData.email
             });
 
-            alert(`🚀 Strategic Audit dispatched successfully to ${formData.email}`);
+            showToast(`🚀 Strategic Audit dispatched successfully to ${formData.email}`, "success");
             // Optional: Reset form after success
             setFormData(INITIAL_STATE);
         } catch (err) {
             console.error("Extraction failed:", err);
-            alert("Audit extraction failed. Ensure scan data exists for the selected domain.");
+            showToast("Audit extraction failed. Ensure scan data exists for the selected domain.", "error");
         } finally {
             setLoading(false);
         }

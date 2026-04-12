@@ -15,8 +15,6 @@ const HistoryTab = () => {
     const [selectedScan, setSelectedScan] = useState("");
 
     // Data States
-    const [domainSummary, setDomainSummary] = useState(null); // Data from /summary
-    const [cryptoInventory, setCryptoInventory] = useState([]); // Data from /crypto-inventory
     const [scanResults, setScanResults] = useState([]);
     const [assetPlans, setAssetPlans] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -82,7 +80,6 @@ const HistoryTab = () => {
                 setScans(Array.isArray(res.data) ? res.data : (res.data.scans || []));
                 setSelectedScan("");
                 setScanResults([]);
-                setDomainSummary(null);
             } catch (err) { console.error("Error:", err); }
         };
         fetchScans();
@@ -94,15 +91,7 @@ const HistoryTab = () => {
         setSelectedScan(scanId);
         setLoading(true);
         try {
-            // 1. Fetch Strategic Summary (Aggregated Stats + LLM Recommendation)
-            const summaryRes = await API.get(`/domains/${selectedDomain}/summary`);
-            setDomainSummary(summaryRes.data);
-
-            // 2. Fetch Domain-wide Crypto Inventory
-            const inventoryRes = await API.get(`/domains/${selectedDomain}/crypto-inventory`);
-            setCryptoInventory(inventoryRes.data.algorithms || []);
-
-            // 3. Fetch Tactical Scan Results for Asset Cards
+            // 1. Fetch Tactical Scan Results for Asset Cards
             const resultsRes = await API.get(`/scan/${scanId}/results`);
             setScanResults(resultsRes.data);
 
@@ -180,144 +169,22 @@ const HistoryTab = () => {
             </div>
 
             {loading ? (
-                <div className="space-y-10">
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                            <div className="xl:col-span-2 rounded-[3rem] p-10 border border-slate-200 bg-white shadow-sm space-y-6">
-                                <SkeletonBlock className="h-8 w-52" />
-                                <SkeletonBlock className="h-14 w-2/3" />
+                <div className="space-y-4">
+                    {Array.from({ length: 3 }).map((_, idx) => (
+                        <div key={idx} className="rounded-[2.5rem] p-8 border border-slate-200 bg-white shadow-sm space-y-4">
+                            <SkeletonBlock className="h-6 w-72" />
+                            <SkeletonBlock className="h-5 w-56" />
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <SkeletonBlock className="h-20 w-full" />
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <SkeletonBlock className="h-28 w-full" />
-                                    <SkeletonBlock className="h-28 w-full" />
-                                </div>
-                            </div>
-                            <div className="rounded-[3rem] p-8 border border-slate-200 bg-white shadow-sm space-y-4">
-                                {Array.from({ length: 5 }).map((_, idx) => (
-                                    <SkeletonBlock key={idx} className="h-14 w-full" />
-                                ))}
+                                <SkeletonBlock className="h-20 w-full" />
+                                <SkeletonBlock className="h-20 w-full" />
                             </div>
                         </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        {Array.from({ length: 2 }).map((_, idx) => (
-                            <div key={idx} className="rounded-[2.5rem] p-8 border border-slate-200 bg-white shadow-sm space-y-4">
-                                <SkeletonBlock className="h-6 w-72" />
-                                <SkeletonBlock className="h-5 w-56" />
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <SkeletonBlock className="h-20 w-full" />
-                                    <SkeletonBlock className="h-20 w-full" />
-                                    <SkeletonBlock className="h-20 w-full" />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    ))}
                 </div>
-            ) : domainSummary ? (
+            ) : scanResults.length > 0 ? (
                 <div className="space-y-10">
-                    {/* --- SECTION 1: STRATEGIC DOMAIN HUD --- */}
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
-                            {/* Main Strategic Overview Card */}
-                            <div className="xl:col-span-2 rounded-[3rem] p-10 text-white relative overflow-hidden shadow-2xl border border-slate-800 bg-white">
-                                <ShieldCheck className="absolute -right-10 -bottom-10 w-64 h-64 text-emerald-500/5" />
-
-                                <div className="relative z-10">
-                                    <div className="flex flex-wrap items-center gap-3 mb-8">
-                                        <div className={`px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest border ${domainSummary?.recommendation?.riskLevel === 'HIGH'
-                                            ? 'bg-red-500/20 text-red-400 border-red-500/30'
-                                            : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                                            }`}>
-                                            Threat Level: {domainSummary?.recommendation?.riskLevel}
-                                        </div>
-                                        <div className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-[11px] font-black text-slate-300 uppercase tracking-widest">
-                                            Node Coverage: {domainSummary.assets?.scannedAssets} / {domainSummary.assets?.totalAssets}
-                                        </div>
-                                    </div>
-
-                                    <h3 className="text-6xl font-black text-slate-900 italic uppercase leading-none tracking-tighter mb-6">
-                                        Grade: <span className="text-emerald-400">{Math.round(domainSummary.pqcReadiness?.averageScore * 1000)}</span>
-                                    </h3>
-
-                                    <p className="text-slate-300 text-sm font-bold leading-relaxed max-w-3xl mb-10 border-l-2 border-orange-500 pl-6 py-2 bg-orange-500/5 rounded-r-xl">
-                                        {domainSummary.recommendation?.summary}
-                                    </p>
-
-                                    {/* Technical Recommendation Grid */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-800 pt-10">
-                                        <div className="space-y-4">
-                                            <h4 className="text-[12px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                                                <Cpu size={14} className="text-orange-500" /> Recommended PQC Stack
-                                            </h4>
-                                            <div className="flex flex-col gap-2">
-                                                <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                                                    <span className="text-[11px] font-bold text-slate-400 uppercase">Key Exchange</span>
-                                                    <span className="text-xs font-black text-white font-mono">{domainSummary.recommendation?.recommendedPqcKex}</span>
-                                                </div>
-                                                <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                                                    <span className="text-[11px] font-bold text-slate-400 uppercase">Digital Signature</span>
-                                                    <span className="text-xs font-black text-white font-mono">{domainSummary.recommendation?.recommendedPqcSignature}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-4">
-                                            <h4 className="text-[12px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                                                <ClipboardList size={14} className="text-orange-500" /> Migration Strategy
-                                            </h4>
-                                            <div className="space-y-3">
-                                                {domainSummary.recommendation?.migrationStrategy?.map((step, idx) => (
-                                                    <div key={idx} className="flex gap-3 items-start group">
-                                                        <div className="mt-1 text-orange-500 font-black text-[12px] bg-orange-500/10 w-5 h-5 flex items-center justify-center rounded-lg border border-orange-500/20 group-hover:bg-orange-500 group-hover:text-white transition-all">
-                                                            {idx + 1}
-                                                        </div>
-                                                        <p className="text-[12px] font-bold text-slate-400 leading-tight uppercase group-hover:text-slate-200 transition-colors">
-                                                            {step}
-                                                        </p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Global Crypto Inventory Badge Wall */}
-                            <div className="bg-white border border-slate-100 rounded-[3rem] p-8 shadow-sm flex flex-col">
-                                <div className="flex items-center justify-between mb-8">
-                                    <h4 className="text-[12px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
-                                        <Activity size={16} className="text-orange-500" /> Cipher footprint
-                                    </h4>
-                                </div>
-
-                                <div className="flex flex-wrap gap-2 overflow-y-auto max-h-[400px] scrollbar-hide pr-2">
-                                    {cryptoInventory.map((alg, idx) => (
-                                        <div key={idx} className="group relative">
-                                            <div className="absolute inset-0 bg-orange-500 rounded-xl blur opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                                            <div className="relative px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-black text-slate-600 uppercase tracking-tighter flex items-center gap-2 hover:border-orange-200 hover:text-slate-900 transition-all">
-                                                <div className="w-1 h-1 rounded-full bg-orange-400 group-hover:animate-ping" />
-                                                {alg}
-                                            </div>
-                                        </div>
-                                    ))}
-                                    {cryptoInventory.length === 0 && (
-                                        <div className="flex flex-col items-center justify-center w-full py-20 opacity-20">
-                                            <Search size={32} />
-                                            <p className="text-[10px] font-black uppercase mt-2">No unique primitives</p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="mt-auto pt-6 border-t border-slate-50">
-                                    <p className="text-[11px] font-bold text-slate-400 leading-relaxed uppercase tracking-tighter italic">
-                                        The detection engine identified {cryptoInventory.length} unique cryptographic primitives across the scanned infrastructure.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     {/* --- TACTICAL ASSET BREAKDOWN (Results Tab Design) --- */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-3 px-4">
@@ -340,25 +207,78 @@ const HistoryTab = () => {
                                                     <div className="flex items-center gap-2">
                                                         <h4 className="text-lg font-black text-slate-900 uppercase italic leading-none">{res.assetId?.host}</h4>
                                                         <span className="bg-slate-100 text-slate-500 text-[10px] px-1.5 py-0.5 rounded font-black">{res.assetId?.assetType}</span>
+                                                        
+                                                        {/* STATUS BADGE */}
+                                                        {res.status && (
+                                                            (() => {
+                                                                const status = res.status.toLowerCase();
+                                                                const isSuccess = status === 'completed' || status === 'success';
+                                                                const isBlocked = status === 'blocked';
+
+                                                                const style = isSuccess
+                                                                    ? 'bg-green-100 text-green-600'
+                                                                    : isBlocked
+                                                                        ? 'bg-amber-100 text-amber-500'
+                                                                        : 'bg-rose-100 text-rose-600';
+
+                                                                return (
+                                                                    <span className={`text-[10px] px-2 py-0.5 rounded font-black uppercase ${style}`}>
+                                                                        {status}
+                                                                    </span>
+                                                                );
+                                                            })()
+                                                        )}
                                                     </div>
                                                     <p className="text-[12px] font-mono text-slate-400 mt-2 font-bold">{res.assetId?.ip} • PORT {res.port}</p>
+                                                    
+                                                    {/* FAILURE REASON */}
+                                                    {(res.status === 'failed' || res.status === 'blocked') && (
+                                                        <p className="text-[11px] font-bold text-rose-500 mt-1 uppercase tracking-tight">
+                                                            Reason: {res.failureReason || 'Connection failed or blocked'}
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
 
                                             <div className="flex items-center gap-12">
-                                                <div className="text-center">
-                                                    <p className={`text-[20px] font-black uppercase ${config.color}`}>{config.label}</p>
-                                                </div>
-                                                <div className="text-right">
-                                                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">PQC Score</p>
-                                                    <p className="text-3xl font-black text-slate-900">{Math.round(res.pqcReadyScore * 1000)}</p>
-                                                </div>
-                                                <button
-                                                    onClick={() => setExpandedAssetId(isExpanded ? null : res._id)}
-                                                    className={`p-3 rounded-full transition-all ${isExpanded ? 'bg-orange-500 text-white shadow-lg' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
-                                                >
-                                                    {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-                                                </button>
+                                                {(() => {
+                                                    const status = (res.status || '').toLowerCase();
+                                                    const isSuccess = !status || status === 'completed' || status === 'success';
+                                                    const isBlocked = status === 'blocked';
+
+                                                    if (isSuccess) {
+                                                        return (
+                                                            <>
+                                                                <div className="text-center">
+                                                                    <p className={`text-[20px] font-black uppercase ${config.color}`}>{config.label}</p>
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">PQC Score</p>
+                                                                    <p className="text-3xl font-black text-slate-900">{Math.round(res.pqcReadyScore * 1000)}</p>
+                                                                </div>
+                                                                <button
+                                                                    onClick={() => setExpandedAssetId(isExpanded ? null : res._id)}
+                                                                    className={`p-3 rounded-full transition-all ${isExpanded ? 'bg-orange-500 text-white shadow-lg' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                                                                >
+                                                                    {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                                                                </button>
+                                                            </>
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <div className="text-right pr-4">
+                                                            <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                                                                Status
+                                                            </p>
+                                                            <p
+                                                                className={`text-[20px] font-black uppercase ${isBlocked ? 'text-amber-500' : 'text-rose-600'}`}
+                                                            >
+                                                                {status}
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                })()}
                                             </div>
                                         </div>
 

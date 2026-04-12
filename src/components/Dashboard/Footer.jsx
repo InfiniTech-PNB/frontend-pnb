@@ -8,6 +8,7 @@ const Footer = () => {
 
     const menuItems = [
         { label: 'Home', path: '/dashboard' },
+        { label: 'Summary', path: '/dashboard/summary' },
         { label: 'Scan', path: '/dashboard/scan' },
         { label: 'Scan results', path: '/dashboard/results' },
         { label: 'Asset Inventory', path: '/dashboard/assets' },

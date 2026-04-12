@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Mail, ArrowRight, ArrowLeft, ShieldCheck, Database, FileCode, Activity, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import API from "../../../services/api";
+import { useFeedback } from '../../../context/FeedbackContext';
 
 const DEFAULT_FORM_STATE = {
     scheduleName: "",
@@ -24,6 +25,7 @@ const ScheduledReportingTab = () => {
     const [loading, setLoading] = useState(false);
     const [activeSchedules, setActiveSchedules] = useState([]);
     const [formData, setFormData] = useState(DEFAULT_FORM_STATE);
+    const { showToast, showConfirm } = useFeedback();
 
     const [availableAssets, setAvailableAssets] = useState([]); // Assets for selected domain
     const [selectedAssets, setSelectedAssets] = useState([]);
@@ -54,7 +56,8 @@ const ScheduledReportingTab = () => {
     // 2. Delete Handler
     // 2. Updated Delete Handler
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to stop this automated report?")) {
+        const confirmed = await showConfirm("Are you sure you want to stop this automated report?");
+        if (confirmed) {
             try {
                 // 1. Send the delete request to the backend
                 await API.delete(`/reports/schedule/${id}`);
@@ -65,10 +68,10 @@ const ScheduledReportingTab = () => {
                     prevSchedules.filter(schedule => schedule._id !== id)
                 );
 
-                alert("Automation halted and removed from registry.");
+                showToast("Automation halted and removed from registry.", "success");
             } catch (err) {
                 console.error("Delete failed:", err);
-                alert("Could not delete the schedule. Please try again.");
+                showToast("Could not delete the schedule. Please try again.", "error");
             }
         }
     };
@@ -98,7 +101,7 @@ const ScheduledReportingTab = () => {
             const exists = prev.find(a => a.assetId === assetId);
             if (exists) return prev.filter(a => a.assetId !== assetId);
 
-            // 🔥 INITIALIZE WITH DEFAULT SLIDER VALUES (5/10)
+            // INITIALIZE WITH DEFAULT SLIDER VALUES (5/10)
             return [...prev, {
                 assetId,
                 businessContext: {
@@ -129,7 +132,7 @@ const ScheduledReportingTab = () => {
     const handleSave = async () => {
         // 1. Validation
         if (!formData.scheduleName.trim() || !formData.targetDomainId || selectedAssets.length === 0) {
-            alert("Please provide an Audit Name, select a Domain, and choose at least one Asset.");
+            showToast("Please provide an Audit Name, select a Domain, and choose at least one Asset.", "error");
             return;
         }
 
@@ -146,7 +149,7 @@ const ScheduledReportingTab = () => {
                 isEnabled: enabled
             });
 
-            // 3. 🔥 THE RESET LOGIC: Go back to default mode
+            // 3. THE RESET LOGIC: Go back to default mode
             setFormData(DEFAULT_FORM_STATE); // Reset name, email, time, etc.
             setSelectedAssets([]);           // Clear selected assets & their sliders
             setAvailableAssets([]);          // Clear the scrollable topography list
@@ -156,10 +159,10 @@ const ScheduledReportingTab = () => {
             // 4. Refresh the registry below the form
             fetchCurrentSchedule();
 
-            alert("🚀 Audit Schedule registered successfully. Form reset to defaults.");
+            showToast("🚀 Audit Schedule registered successfully. Form reset to defaults.", "success");
         } catch (err) {
             console.error("Save failed:", err);
-            alert("Error saving schedule. Please check your connection.");
+            showToast("Error saving schedule. Please check your connection.", "error");
         } finally {
             setLoading(false);
         }
@@ -190,12 +193,6 @@ const ScheduledReportingTab = () => {
                             <h2 className="text-2xl font-black text-slate-900 uppercase italic leading-none tracking-tighter">Report Scheduler</h2>
                             <p className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest mt-2">Automate extraction from Assets & Scan Results</p>
                         </div>
-                    </div>
-                    <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl">
-                        <span className="text-xs sm:text-sm font-black uppercase text-slate-500">Enable Automation</span>
-                        <button onClick={() => setEnabled(!enabled)} className={`w-12 h-6 rounded-full transition-all relative ${enabled ? 'bg-orange-500' : 'bg-slate-300'}`}>
-                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${enabled ? 'left-7' : 'left-1'}`} />
-                        </button>
                     </div>
                 </div>
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
     Database, Globe, Clock, Search,
-    Cpu, Key, Shield, Globe2, ChevronDown, ChevronUp, Lock as LockIcon
+    Cpu, Key, Shield, Globe2, ChevronDown, ChevronUp, Lock as LockIcon,
+    AlertTriangle, XCircle, Server
 } from 'lucide-react';
 import API from "../../../services/api";
 import SecurityChatbot from '../../../components/Dashboard/SecurityChatbot';
@@ -37,8 +38,9 @@ const CBOMHistoryTab = () => {
         if (!selectedScan) return;
         setDownloading(true);
         try {
+            const mode = cbomData?.mode || "aggregate";
             // Use responseType: 'blob' to handle binary PDF data
-            const response = await API.get(`/cbom/${selectedScan}/cbom/pdf`, {
+            const response = await API.get(`/cbom/${selectedScan}/cbom/pdf?mode=${mode}`, {
                 responseType: 'blob'
             });
 
@@ -48,7 +50,7 @@ const CBOMHistoryTab = () => {
             link.href = url;
 
             // Set filename - you can customize this
-            link.setAttribute('download', `CBOM-Report-${selectedScan.substring(0, 8)}.pdf`);
+            link.setAttribute('download', `CBOM-${mode}-${selectedScan.substring(0, 8)}.pdf`);
             document.body.appendChild(link);
             link.click();
 
@@ -211,7 +213,48 @@ const CBOMHistoryTab = () => {
                     <p className="text-slate-400 font-black uppercase text-sm tracking-[0.2em] px-2">Decrypting CBOM Archive...</p>
                 </div>
             ) : (
-                <div className="bg-white rounded-[4rem] border border-slate-100 shadow-xl overflow-hidden">
+                <>
+                    {/* --- SCAN RESILIENCE / FAILED ASSETS --- */}
+                    {cbomData?.failedAssets?.length > 0 && (
+                        <div className="bg-white border border-slate-100 rounded-[3rem] p-8 shadow-sm overflow-hidden relative mb-10">
+                            <div className="absolute right-0 top-0 p-10 opacity-[0.03] pointer-events-none">
+                                <XCircle size={120} className="text-rose-500" />
+                            </div>
+
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="p-4 bg-rose-50 rounded-[1.5rem] text-rose-600 shadow-inner">
+                                    <AlertTriangle size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="editorial-title text-xl tracking-tight uppercase italic leading-none text-slate-900">Scan Resiliency Issues</h3>
+                                    <p className="text-[10px] font-black uppercase mt-2 tracking-widest text-slate-400">Non-Deterministic Handshake Analysis</p>
+                                </div>
+                            </div>
+
+                            <div className="pl-2 border-l-2 border-rose-500 mb-8 max-w-2xl">
+                                <p className="text-sm font-bold text-slate-500 leading-relaxed uppercase">
+                                    The following nodes were reachable but did not return valid cryptographic responses.
+                                    As a result, a meaningful CBOM could not be generated, and these assets were excluded to preserve the integrity of the analysis.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                {cbomData.failedAssets.map((fail, idx) => (
+                                    <div key={idx} className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:border-rose-200 transition-all group">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                                            <span className="text-sm font-black text-slate-800 uppercase italic truncate">{fail.host}</span>
+                                        </div>
+                                        <div className="text-[10px] font-bold text-rose-500 uppercase tracking-tighter leading-tight bg-white border border-rose-100 px-2 py-1 rounded-lg">
+                                            {fail.reason || 'HANDSHAKE_TIMEOUT'}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="bg-white rounded-[4rem] border border-slate-100 shadow-xl overflow-hidden">
                     <div className="bg-slate-900 p-5 flex items-center justify-between w-full gap-3">
                         <div className="flex gap-3 overflow-x-auto scrollbar-hide">
                             {[
@@ -245,99 +288,121 @@ const CBOMHistoryTab = () => {
                     </div>
                     <div className="p-8">
                         {/* 1. RENDER TABLE ONLY FOR NON-CERTIFICATE TABS */}
+                        {/* 1. RENDER TABLE ONLY FOR NON-CERTIFICATE TABS */}
                         {activeTechTab !== 'certificates' && (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left border-separate border-spacing-y-2">
-                                    <thead className="text-xs font-black text-slate-400 uppercase tracking-widest">
-                                        {activeTechTab === 'algorithms' && (
-                                            <tr>
-                                                <th className="px-6 py-4">Name</th>
-                                                <th className="px-6 py-4">Asset Type</th>
-                                                <th className="px-6 py-4">Primitive</th>
-                                                <th className="px-6 py-4">Mode</th>
-                                                <th className="px-6 py-4">Security Level</th>
-                                                <th className="px-6 py-4">OID</th>
-                                            </tr>
+                            <div className="space-y-12">
+                                {Object.entries(
+                                    cbomData?.mode === 'per_asset' 
+                                        ? (cbomData?.[activeTechTab] || []).reduce((acc, item) => {
+                                            const key = item.asset || "Unknown Asset";
+                                            if (!acc[key]) acc[key] = [];
+                                            acc[key].push(item);
+                                            return acc;
+                                        }, {})
+                                        : { "Aggregate": cbomData?.[activeTechTab] || [] }
+                                ).map(([groupName, items], groupIdx) => (
+                                    <div key={groupIdx} className="w-full">
+                                        {cbomData?.mode === 'per_asset' && (
+                                            <div className="flex items-center gap-3 mb-6 bg-slate-900 px-5 py-3 rounded-2xl w-fit shadow-md">
+                                                <Server className="text-orange-500" size={18} />
+                                                <h3 className="text-sm font-black text-black tracking-widest uppercase">{groupName}</h3>
+                                            </div>
                                         )}
-                                        {activeTechTab === 'keys' && (
-                                            <tr>
-                                                <th className="px-6 py-4">Name</th>
-                                                <th className="px-6 py-4">Asset Type</th>
-                                                <th className="px-6 py-4">Size</th>
-                                                <th className="px-6 py-4">State</th>
-                                                <th className="px-6 py-4">Creation</th>
-                                                <th className="px-6 py-4">Activation</th>
-                                                <th className="px-6 py-4">ID</th>
-                                            </tr>
-                                        )}
-                                        {activeTechTab === 'protocols' && (
-                                            <tr>
-                                                <th className="px-6 py-4">Protocol</th>
-                                                <th className="px-6 py-4">Version</th>
-                                                <th className="px-6 py-4">Cipher Suites</th>
-                                                <th className="px-6 py-4">ALPN</th>
-                                                <th className="px-6 py-4">OID</th>
-                                            </tr>
-                                        )}
-                                    </thead>
-                                    <tbody className="text-xs font-bold">
-                                        {cbomData?.[activeTechTab]?.map((item, idx) => (
-                                            <React.Fragment key={idx}>
-                                                <tr className="bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left border-separate border-spacing-y-2">
+                                                <thead className="text-xs font-black text-slate-400 uppercase tracking-widest">
                                                     {activeTechTab === 'algorithms' && (
-                                                        <>
-                                                            <td className="px-6 py-5 text-orange-600 rounded-l-[1.5rem] font-black uppercase">{item.name || "null"}</td>
-                                                            <td className="px-6 py-5">{item.assetType || "null"}</td>
-                                                            <td className="px-6 py-5">{item.primitive || "null"}</td>
-                                                            <td className="px-6 py-5">{item.mode || "null"}</td>
-                                                            <td className="px-6 py-5">{item.classicalSecurityLevel} Bits</td>
-                                                            <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "null"}</td>
-                                                        </>
+                                                        <tr>
+                                                            <th className="px-6 py-4">Name</th>
+                                                            <th className="px-6 py-4">Asset Type</th>
+                                                            <th className="px-6 py-4">Primitive</th>
+                                                            <th className="px-6 py-4">Mode</th>
+                                                            <th className="px-6 py-4">Security Level</th>
+                                                            <th className="px-6 py-4">OID</th>
+                                                        </tr>
                                                     )}
                                                     {activeTechTab === 'keys' && (
-                                                        <>
-                                                            <td className="px-6 py-5 rounded-l-[1.5rem] font-black uppercase">{item.name || "null"}</td>
-                                                            <td className="px-6 py-5">{item.assetType || "null"}</td>
-                                                            <td className="px-6 py-5 text-blue-500">{item.size} Bits</td>
-                                                            <td className="px-6 py-5"><span className="px-2 py-1 bg-white border rounded-md text-xs">{item.state || "null"}</span></td>
-                                                            <td className="px-6 py-5 text-slate-400">{item.creationDate || "null"}</td>
-                                                            <td className="px-6 py-5 text-slate-400">{item.activationDate || "null"}</td>
-                                                            <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.id || "null"}</td>
-                                                        </>
+                                                        <tr>
+                                                            <th className="px-6 py-4">Name</th>
+                                                            <th className="px-6 py-4">Asset Type</th>
+                                                            <th className="px-6 py-4">Size</th>
+                                                            <th className="px-6 py-4">State</th>
+                                                            <th className="px-6 py-4">Creation</th>
+                                                            <th className="px-6 py-4">Activation</th>
+                                                            <th className="px-6 py-4">ID</th>
+                                                        </tr>
                                                     )}
                                                     {activeTechTab === 'protocols' && (
-                                                        <>
-                                                            <td className="px-6 py-5 rounded-l-[1.5rem] font-black text-slate-900 uppercase">{item.name || "null"}</td>
-                                                            <td className="px-6 py-5">{Array.isArray(item.version) ? item.version.join(', ') : item.version}</td>
-                                                            <td className="px-6 py-5">
-                                                                <button onClick={() => setExpandedProtocolIndex(expandedProtocolIndex === idx ? null : idx)} className="flex items-center gap-2 text-orange-500">
-                                                                    {item.cipherSuites?.length || 0} Suites
-                                                                    {expandedProtocolIndex === idx ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                                                                </button>
-                                                            </td>
-                                                            <td className="px-6 py-5 font-mono">{item.alpn || "N/A"}</td>
-                                                            <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "N/A"}</td>
-                                                        </>
+                                                        <tr>
+                                                            <th className="px-6 py-4">Protocol</th>
+                                                            <th className="px-6 py-4">Version</th>
+                                                            <th className="px-6 py-4">Cipher Suites</th>
+                                                            <th className="px-6 py-4">ALPN</th>
+                                                            <th className="px-6 py-4">OID</th>
+                                                        </tr>
                                                     )}
-                                                </tr>
-                                                {/* Protocol Expansion */}
-                                                {activeTechTab === 'protocols' && expandedProtocolIndex === idx && (
-                                                    <tr>
-                                                        <td colSpan="5" className="px-8 pb-4">
-                                                            <div className="bg-slate-900 rounded-3xl p-6 grid grid-cols-2 md:grid-cols-3 gap-3 animate-in fade-in zoom-in duration-200">
-                                                                {item.cipherSuites?.map((suite, sIdx) => (
-                                                                    <div key={sIdx} className="text-xs text-slate-400 font-mono border border-slate-800 p-2 rounded-xl flex items-center gap-2">
-                                                                        <div className="w-1 h-1 bg-orange-500 rounded-full" /> {suite}
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </React.Fragment>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                                </thead>
+                                                <tbody className="text-xs font-bold">
+                                                    {items.map((item, idx) => (
+                                                        <React.Fragment key={idx}>
+                                                            <tr className="bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                                                                {activeTechTab === 'algorithms' && (
+                                                                    <>
+                                                                        <td className="px-6 py-5 text-orange-600 font-black uppercase rounded-l-[1.5rem]">{item.name || "null"}</td>
+                                                                        <td className="px-6 py-5">{item.assetType || "null"}</td>
+                                                                        <td className="px-6 py-5">{item.primitive || "null"}</td>
+                                                                        <td className="px-6 py-5">{item.mode || "null"}</td>
+                                                                        <td className="px-6 py-5">{item.classicalSecurityLevel} Bits</td>
+                                                                        <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "null"}</td>
+                                                                    </>
+                                                                )}
+                                                                {activeTechTab === 'keys' && (
+                                                                    <>
+                                                                        <td className="px-6 py-5 font-black uppercase rounded-l-[1.5rem]">{item.name || "null"}</td>
+                                                                        <td className="px-6 py-5">{item.assetType || "null"}</td>
+                                                                        <td className="px-6 py-5 text-blue-500">{item.size} Bits</td>
+                                                                        <td className="px-6 py-5"><span className="px-2 py-1 bg-white border rounded-md text-xs">{item.state || "null"}</span></td>
+                                                                        <td className="px-6 py-5 text-slate-400">{item.creationDate || "null"}</td>
+                                                                        <td className="px-6 py-5 text-slate-400">{item.activationDate || "null"}</td>
+                                                                        <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.id || "null"}</td>
+                                                                    </>
+                                                                )}
+                                                                {activeTechTab === 'protocols' && (
+                                                                    <>
+                                                                        <td className="px-6 py-5 font-black text-slate-900 uppercase rounded-l-[1.5rem]">{item.name || "null"}</td>
+                                                                        <td className="px-6 py-5">{Array.isArray(item.version) ? item.version.join(', ') : item.version}</td>
+                                                                        <td className="px-6 py-5">
+                                                                            <button onClick={() => setExpandedProtocolIndex(expandedProtocolIndex === idx ? null : idx)} className="flex items-center gap-2 text-orange-500">
+                                                                                {item.cipherSuites?.length || 0} Suites
+                                                                                {expandedProtocolIndex === idx ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                                                            </button>
+                                                                        </td>
+                                                                        <td className="px-6 py-5 font-mono">{item.alpn || "N/A"}</td>
+                                                                        <td className="px-6 py-5 text-xs text-slate-400 font-mono rounded-r-[1.5rem]">{item.oid || "N/A"}</td>
+                                                                    </>
+                                                                )}
+                                                            </tr>
+                                                            {/* Protocol Expansion */}
+                                                            {activeTechTab === 'protocols' && expandedProtocolIndex === idx && (
+                                                                <tr>
+                                                                    <td colSpan="5" className="px-8 pb-4">
+                                                                        <div className="bg-slate-900 rounded-3xl p-6 grid grid-cols-2 md:grid-cols-3 gap-3 animate-in fade-in zoom-in duration-200">
+                                                                            {item.cipherSuites?.map((suite, sIdx) => (
+                                                                                <div key={sIdx} className="text-xs text-slate-400 font-mono border border-slate-800 p-2 rounded-xl flex items-center gap-2">
+                                                                                    <div className="w-1 h-1 bg-orange-500 rounded-full" /> {suite}
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            )}
+                                                        </React.Fragment>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         )}
 
@@ -456,6 +521,7 @@ const CBOMHistoryTab = () => {
                         )}
                     </div>
                 </div>
+                </>
             )}
 
             {/* --- Final Static Wrapper (No Shifting) --- */}

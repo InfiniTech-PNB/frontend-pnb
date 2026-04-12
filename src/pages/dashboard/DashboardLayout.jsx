@@ -3,7 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../../components/Dashboard/Navbar';
 import Footer from '../../components/Dashboard/Footer';
 import Sidebar from '../../components/Dashboard/Sidebar';
-import { LayoutDashboard, ShieldAlert, Activity, History, FileCode, Database, FileText } from 'lucide-react';
+import { LayoutDashboard, ShieldAlert, Activity, History, FileCode, Database, FileText, BarChart3 } from 'lucide-react';
 
 const DashboardLayout = () => {
     const location = useLocation();
@@ -11,6 +11,7 @@ const DashboardLayout = () => {
 
     const menuItems = [
         { name: 'Home', path: '/dashboard', icon: LayoutDashboard },
+        { name: 'Summary', path: '/dashboard/summary', icon: BarChart3 },
         { name: 'Scan', path: '/dashboard/scan', icon: ShieldAlert },
         { name: 'Scan Results', path: '/dashboard/results', icon: Activity },
         { name: 'Asset Inventory', path: '/dashboard/assets', icon: Database },
@@ -37,7 +38,7 @@ const DashboardLayout = () => {
                     onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
                 />
 
-                <main className="w-full px-4 py-6 sm:px-6 lg:px-10">
+                <main className="w-full flex-1 px-4 py-6 sm:px-6 lg:px-10">
                     <Outlet />
                 </main>
 
