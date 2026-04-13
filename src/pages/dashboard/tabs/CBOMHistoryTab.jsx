@@ -274,8 +274,8 @@ const CBOMHistoryTab = () => {
                             disabled={!selectedScan || downloading}
                             className={`flex items-center gap-2 px-6 py-4 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-widest transition-all shadow-sm shrink-0 whitespace-nowrap
                                     ${!selectedScan
-                                    ? 'bg-white/10 text-slate-400 cursor-not-allowed'
-                                    : 'bg-white/10 text-slate-100 hover:bg-orange-500 active:scale-95'
+                                    ? 'bg-white/10 text-slate-900 cursor-not-allowed'
+                                    : 'bg-slate-900/10 text-slate-900 hover:bg-orange-500 active:scale-95'
                                 }`}
                         >
                             {downloading ? (
