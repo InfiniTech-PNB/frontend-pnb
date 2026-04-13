@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import {
     Activity, ShieldCheck, BarChart3, ClipboardList, ChevronDown, ChevronUp, Lock as LockIcon, AlertTriangle, Cpu, Globe, Search
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import API from "../../../services/api";
 import SkeletonBlock from '../../../components/ui/SkeletonBlock';
 
 const DomainSummaryTab = () => {
+    const navigate = useNavigate();
     // Selection States
     const [domains, setDomains] = useState([]);
     const [selectedDomain, setSelectedDomain] = useState("");
@@ -14,6 +16,7 @@ const DomainSummaryTab = () => {
     const [domainSummary, setDomainSummary] = useState(null);
     const [cryptoInventory, setCryptoInventory] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [noScansFound, setNoScansFound] = useState(false);
 
     // Initial Load: Fetch Domains
     useEffect(() => {
@@ -29,16 +32,24 @@ const DomainSummaryTab = () => {
     const fetchDomainData = async (domainId) => {
         if (!domainId) return;
         setLoading(true);
+        setNoScansFound(false);
         try {
             // Fetch Strategic Summary
             const summaryRes = await API.get(`/domains/${domainId}/summary`);
-            setDomainSummary(summaryRes.data);
-
-            // Fetch Domain-wide Crypto Inventory
-            const inventoryRes = await API.get(`/domains/${domainId}/crypto-inventory`);
-            setCryptoInventory(inventoryRes.data.algorithms || []);
+            if (summaryRes.data && summaryRes.data.assets?.scannedAssets > 0) {
+                setDomainSummary(summaryRes.data);
+                
+                // Fetch Domain-wide Crypto Inventory
+                const inventoryRes = await API.get(`/domains/${domainId}/crypto-inventory`);
+                setCryptoInventory(inventoryRes.data.algorithms || []);
+            } else {
+                setNoScansFound(true);
+            }
         } catch (err) {
             console.error("Error fetching domain summary details:", err);
+            if (err.response?.status === 404) {
+                setNoScansFound(true);
+            }
         } finally {
             setLoading(false);
         }
@@ -46,6 +57,7 @@ const DomainSummaryTab = () => {
 
     const handleDomainChange = (domainId) => {
         setSelectedDomain(domainId);
+        setNoScansFound(false);
         if (domainId) {
             fetchDomainData(domainId);
         } else {
@@ -101,6 +113,21 @@ const DomainSummaryTab = () => {
                         </div>
                     </div>
                 </div>
+            ) : noScansFound ? (
+                <div className="flex flex-col items-center justify-center py-40 text-center animate-in fade-in duration-700">
+                    <div className="p-6 bg-slate-50 border border-slate-200 rounded-[2.5rem] shadow-sm mb-8">
+                        <ShieldCheck size={48} className="text-slate-300" />
+                    </div>
+                    <p className="text-slate-500 font-bold uppercase tracking-[0.2em] mb-8 text-sm md:text-base">
+                        You have not scanned any asset for this domain yet.
+                    </p>
+                    <button 
+                        onClick={() => navigate('/dashboard/scan')}
+                        className="px-10 py-5 bg-blue-700 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] hover:bg-blue-800 transition-all shadow-xl hover:shadow-blue-500/20 active:scale-95"
+                    >
+                        Initiate Scan Audit
+                    </button>
+                </div>
             ) : domainSummary ? (
                 <div className="space-y-10">
                   {/* --- TOP GRID --- */}
@@ -125,21 +152,35 @@ const DomainSummaryTab = () => {
                       </div>
 
                       {/* SCORE */}
-                      <div className="mb-8">
-                        <h3 className="text-5xl font-black italic text-slate-900">
-                          PQC Score: <span className="text-emerald-500">
-                            {Math.round((domainSummary.pqcReadiness?.averageScore || 0) * 100)}
-                          </span>
-                        </h3>
+                      {domainSummary.assets?.scannedAssets > 0 ? (
+                        <>
+                          <div className="mb-8">
+                            <h3 className="text-5xl font-black italic text-slate-900">
+                              PQC Score: <span className="text-emerald-500">
+                                {Math.round((domainSummary.pqcReadiness?.averageScore || 0) * 100)}/100
+                              </span>
+                            </h3>
 
-                        {/* Progress Bar */}
-                        <div className="w-full bg-slate-100 rounded-full h-3 mt-4">
-                          <div
-                            className="bg-emerald-500 h-3 rounded-full"
-                            style={{ width: `${(domainSummary.pqcReadiness?.averageScore || 0) * 100}%` }}
-                          />
+                            {/* Progress Bar */}
+                            <div className="w-full bg-slate-100 rounded-full h-3 mt-4">
+                              <div
+                                className="bg-emerald-500 h-3 rounded-full"
+                                style={{ width: `${(domainSummary.pqcReadiness?.averageScore || 0) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="mb-8 p-8 border-2 border-dashed border-slate-200 rounded-[2rem] text-center">
+                          <p className="text-slate-500 font-bold uppercase tracking-widest mb-4">No scans have been performed for this domain yet.</p>
+                          <button 
+                            onClick={() => navigate('/dashboard/scan')}
+                            className="px-6 py-3 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-colors shadow-lg"
+                          >
+                            Go to Scan Page
+                          </button>
                         </div>
-                      </div>
+                      )}
 
                       {/* SUMMARY */}
                       <p className="text-sm text-slate-600 font-semibold border-l-2 border-orange-500 pl-4 py-2 bg-orange-50 rounded-r-xl mb-8">

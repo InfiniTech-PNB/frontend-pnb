@@ -19,6 +19,7 @@ const ScanTab = () => {
 
     const [selectedAssets, setSelectedAssets] = useState([]);
     const [scanType, setScanType] = useState("soft");
+    const [showDeepScanModal, setShowDeepScanModal] = useState(false);
 
     // Technical Discovery State
     const [expandedAssetId, setExpandedAssetId] = useState(null);
@@ -89,6 +90,15 @@ const ScanTab = () => {
     };
 
     const handleStartScan = async () => {
+        if (scanType === 'deep') {
+            setShowDeepScanModal(true);
+            return;
+        }
+        executeScan();
+    };
+
+    const executeScan = async () => {
+        setShowDeepScanModal(false);
         setLoading(true);
         try {
             const uniqueSelectedAssetIds = [...new Set(selectedAssets)];
@@ -161,6 +171,14 @@ const ScanTab = () => {
                             {loading ? <SkeletonBlock className="h-4 w-16 bg-white/40 rounded-md" /> : "Discover"}
                         </button>
                     </form>
+
+                    {loading && (
+                        <div className="mt-6 p-6 bg-blue-50 border border-blue-200 rounded-[2rem] animate-pulse">
+                            <p className="text-blue-700 font-bold text-lg md:text-xl uppercase tracking-tight">
+                                <span className="font-black">Note:</span> Asset discovery may take 1-2 mins as we perform deep network crawling, port mapping, and shadow IT identification to ensure full coverage.
+                            </p>
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="flex flex-col gap-8">
@@ -185,10 +203,19 @@ const ScanTab = () => {
                         <button
                             onClick={handleStartScan}
                             disabled={selectedAssets.length === 0 || loading}
-                            className="editorial-button editorial-button-primary text-sm sm:text-base px-7 py-4 flex items-center gap-3 disabled:opacity-20"
+                            className="editorial-button editorial-button-primary text-sm sm:text-base px-7 py-4 flex items-center gap-3 disabled:opacity-50"
                         >
-                            {loading ? <SkeletonBlock className="h-4 w-4 bg-white/40 rounded-full" /> : <Shield size={18} />}
-                            Finalize & Run Audit
+                            {loading ? (
+                                <>
+                                    <Activity size={18} className="animate-spin" />
+                                    Scan is happening...
+                                </>
+                            ) : (
+                                <>
+                                    <Shield size={18} />
+                                    Finalize & Run Audit
+                                </>
+                            )}
                         </button>
                     </div>
 
@@ -209,8 +236,7 @@ const ScanTab = () => {
                         </p>
                     </div>
 
-                    {/* Assets Inventory */}
-                    <div className="grid grid-cols-1 gap-6">
+                    <div className={`grid grid-cols-1 gap-6 ${loading ? 'opacity-50 pointer-events-none grayscale-[0.5]' : ''}`}>
                         {filteredAssets.map((asset) => (
                             <div key={asset._id} className={`editorial-shell border-2 rounded-[2rem] p-8 transition-all flex flex-col xl:flex-row gap-8 ${selectedAssets.includes(asset._id) ? 'border-blue-600 shadow-xl' : 'border-slate-100 shadow-sm'}`}>
 
@@ -296,6 +322,41 @@ const ScanTab = () => {
                                 <p className="text-slate-400 font-bold uppercase text-sm tracking-widest">No assets match your search</p>
                             </div>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Deep Scan Modal */}
+            {showDeepScanModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white rounded-[2rem] p-10 max-w-lg w-full shadow-2xl border border-slate-200 animate-in slide-in-from-bottom-4 duration-500">
+                        <div className="flex flex-col items-center text-center">
+                            <div className="p-4 bg-amber-50 text-amber-600 rounded-2xl mb-6">
+                                <ShieldAlert size={48} />
+                            </div>
+                            <h3 className="editorial-title text-2xl uppercase mb-4">Confirm Deep Scan</h3>
+                            <p className="text-slate-600 font-semibold mb-8">
+                                Deep Scan performs intensive architectural discovery and cryptographic analysis. 
+                                <span className="block mt-2 text-amber-600 font-black uppercase text-xs tracking-widest">
+                                    This process may take 4-5 minutes.
+                                </span>
+                                Would you like to proceed?
+                            </p>
+                            <div className="flex gap-4 w-full">
+                                <button 
+                                    onClick={() => setShowDeepScanModal(false)}
+                                    className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-slate-200 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={executeScan}
+                                    className="flex-1 py-4 bg-blue-700 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-blue-800 transition-all shadow-lg"
+                                >
+                                    Continue
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
