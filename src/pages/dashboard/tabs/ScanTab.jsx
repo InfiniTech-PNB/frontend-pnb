@@ -80,7 +80,7 @@ const ScanTab = () => {
     const connectWebSocket = (jobId, domainId) => {
         if (wsRef.current) wsRef.current.close();
 
-        const ws = new WebSocket(`ws://localhost:8000/ws/logs?jobId=${jobId}`);
+        const ws = new WebSocket(`wss://crypto.mzdev.in/ws/logs?jobId=${jobId}`);
         wsRef.current = ws;
 
         ws.onopen = () => {
