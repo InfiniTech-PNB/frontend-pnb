@@ -79,8 +79,10 @@ const ScanTab = () => {
 
     const connectWebSocket = (jobId, domainId) => {
         if (wsRef.current) wsRef.current.close();
+        console.log("Connecting to WebSocket for job: ", jobId);
 
         const ws = new WebSocket(`wss://crypto.mzdev.in/ws/logs?jobId=${jobId}`);
+        console.log("WebSocket connected for job: ", jobId);
         wsRef.current = ws;
 
         ws.onopen = () => {
@@ -89,10 +91,12 @@ const ScanTab = () => {
         };
 
         ws.onmessage = (event) => {
+            console.log("WebSocket message for job: ", jobId);
             const message = event.data;
             setLogs(prev => [...prev, message]);
 
             if (message.includes("Discovery Complete") || message.includes("Complete")) {
+                console.log("Discovery Complete for job: ", jobId);
                 setLogs(prev => [...prev, "[SYSTEM] Task finished. Syncing inventory..."]);
                 setTimeout(() => {
                     fetchAssets(domainId);
