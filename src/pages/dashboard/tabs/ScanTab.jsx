@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Globe, Target, ShieldAlert, Zap,
     CheckCircle2, Hash, Settings2, Shield, Server,
@@ -21,6 +21,13 @@ const ScanTab = () => {
     const [scanType, setScanType] = useState("soft");
     const [showDeepScanModal, setShowDeepScanModal] = useState(false);
 
+    // Async Discovery & WebSocket State
+    const [jobId, setJobId] = useState(null);
+    const [logs, setLogs] = useState([]);
+    const [currentDomainId, setCurrentDomainId] = useState(null);
+    const scrollRef = useRef(null);
+    const wsRef = useRef(null);
+
     // Technical Discovery State
     const [expandedAssetId, setExpandedAssetId] = useState(null);
     const [assetServices, setAssetServices] = useState({});
@@ -30,15 +37,23 @@ const ScanTab = () => {
     const [assetContexts, setAssetContexts] = useState({});
     const [searchTerm, setSearchTerm] = useState("");
 
-    const handleDiscover = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const domainRes = await API.post("/domains", { domainName: domainInput });
-            const domainId = domainRes.data._id;
-            await API.post(`/asset-discovery/${domainId}/discover`);
-            const assetsRes = await API.get(`/asset-discovery/${domainId}/assets`);
+    // Auto-scroll logs
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [logs]);
 
+    // WebSocket Cleanup
+    useEffect(() => {
+        return () => {
+            if (wsRef.current) wsRef.current.close();
+        };
+    }, []);
+
+    const fetchAssets = async (domainId) => {
+        try {
+            const assetsRes = await API.get(`/asset-discovery/${domainId}/assets`);
             const fetchedAssets = assetsRes.data.assets;
             setAssets(fetchedAssets);
 
@@ -56,8 +71,62 @@ const ScanTab = () => {
             setAssetContexts(initialContexts);
             setStep(2);
         } catch (err) {
-            console.error("Discovery failed", err);
+            console.error("Failed to fetch assets", err);
         } finally {
+            setLoading(false);
+        }
+    };
+
+    const connectWebSocket = (jobId, domainId) => {
+        if (wsRef.current) wsRef.current.close();
+
+        const ws = new WebSocket(`ws://localhost:8000/ws/logs?jobId=${jobId}`);
+        wsRef.current = ws;
+
+        ws.onopen = () => {
+            console.log("WebSocket Connected");
+            setLogs(prev => [...prev, "[SYSTEM] Establishing secure link to discovery engine..."]);
+        };
+
+        ws.onmessage = (event) => {
+            const message = event.data;
+            setLogs(prev => [...prev, message]);
+
+            if (message.includes("Discovery Complete") || message.includes("Complete")) {
+                setLogs(prev => [...prev, "[SYSTEM] Task finished. Syncing inventory..."]);
+                setTimeout(() => {
+                    fetchAssets(domainId);
+                    ws.close();
+                }, 1500);
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error("WebSocket Error:", error);
+            setLogs(prev => [...prev, "[ERROR] Connection interrupted. Retrying..."]);
+        };
+
+        ws.onclose = () => {
+            console.log("WebSocket Disconnected");
+        };
+    };
+
+    const handleDiscover = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setLogs([]);
+        try {
+            const domainRes = await API.post("/domains", { domainName: domainInput });
+            const domainId = domainRes.data._id;
+            setCurrentDomainId(domainId);
+
+            const discoveryRes = await API.post(`/asset-discovery/${domainId}/discover`);
+            const jId = discoveryRes.data.jobId;
+            setJobId(jId);
+
+            connectWebSocket(jId, domainId);
+        } catch (err) {
+            console.error("Discovery failed", err);
             setLoading(false);
         }
     };
@@ -173,9 +242,90 @@ const ScanTab = () => {
                     </form>
 
                     {loading && (
-                        <div className="mt-6 p-6 bg-blue-50 border border-blue-200 rounded-[2rem] animate-pulse">
-                            <p className="text-blue-700 font-bold text-lg md:text-xl uppercase tracking-tight">
-                                <span className="font-black">Note:</span> Asset discovery may take 1-2 mins as we perform deep network crawling, port mapping, and shadow IT identification to ensure full coverage.
+                        <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-top-4 duration-700">
+                            {/* Progress Indicator */}
+                            <div className="flex justify-between items-center px-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
+                                    <span className="text-sm font-black text-slate-900 uppercase tracking-widest">Discovery in progress</span>
+                                </div>
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                    Agent ID: {jobId?.split('-')[0] || 'INIT'}
+                                </span>
+                            </div>
+
+                            {/* Terminal UI */}
+                            <div className="relative group">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[2rem] blur opacity-20 group-hover:opacity-30 transition duration-1000"></div>
+                                <div className="relative bg-slate-900 rounded-[2rem] border border-slate-800 shadow-2xl overflow-hidden">
+                                    {/* Terminal Header */}
+                                    <div className="flex items-center justify-between px-6 py-4 bg-slate-800/50 border-b border-slate-700/50">
+                                        <div className="flex gap-2">
+                                            <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
+                                            <div className="w-3 h-3 rounded-full bg-amber-500/20 border border-amber-500/50" />
+                                            <div className="w-3 h-3 rounded-full bg-emerald-500/20 border border-emerald-500/50" />
+                                        </div>
+                                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                                            <Cpu size={12} />
+                                            Live Process Stream
+                                        </div>
+                                    </div>
+
+                                    {/* Logs Area */}
+                                    <div 
+                                        ref={scrollRef}
+                                        className="h-[400px] overflow-y-auto p-8 font-mono text-sm space-y-2 scrollbar-hide select-none"
+                                    >
+                                        {logs.length === 0 ? (
+                                            <div className="flex items-center gap-3 text-slate-500 italic">
+                                                <Activity size={14} className="animate-spin" />
+                                                Waking up remote discovery agents...
+                                            </div>
+                                        ) : (
+                                            logs.map((log, idx) => {
+                                                const isSystem = log.startsWith('[SYSTEM]');
+                                                const isError = log.startsWith('[ERROR]');
+                                                const isSuccess = log.includes('Complete') || log.includes('found');
+                                                
+                                                return (
+                                                    <div key={idx} className="flex gap-4 animate-in fade-in duration-300">
+                                                        <span className="text-slate-700 shrink-0">{(idx + 1).toString().padStart(3, '0')}</span>
+                                                        <span className={`
+                                                            ${isSystem ? 'text-blue-400 font-bold' : ''}
+                                                            ${isError ? 'text-red-400 font-bold' : ''}
+                                                            ${isSuccess ? 'text-emerald-400 font-bold' : 'text-slate-300'}
+                                                        `}>
+                                                            {log}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })
+                                        )}
+                                        <div className="h-4" />
+                                    </div>
+
+                                    {/* Stages Bar */}
+                                    <div className="px-8 py-4 bg-slate-900 border-t border-slate-800 flex justify-between gap-4 grayscale opacity-60">
+                                        {[
+                                            { name: 'Passive', active: logs.some(l => l.includes('Stage 1')) },
+                                            { name: 'DNS Brute', active: logs.some(l => l.includes('Stage 2')) },
+                                            { name: 'Port Scan', active: logs.some(l => l.includes('Stage 5')) },
+                                            { name: 'Classification', active: logs.some(l => l.includes('Complete')) }
+                                        ].map((stage, i) => (
+                                            <div key={i} className={`flex-1 flex flex-col gap-2 ${stage.active ? 'grayscale-0 opacity-100' : ''}`}>
+                                                <div className={`h-1 rounded-full ${stage.active ? 'bg-blue-500' : 'bg-slate-800'}`} />
+                                                <span className={`text-[10px] font-black uppercase tracking-widest text-center ${stage.active ? 'text-blue-400' : 'text-slate-600'}`}>
+                                                    {stage.name}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p className="text-center text-slate-500 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                                <Info size={14} className="text-blue-600" />
+                                Deep network crawling, port mapping, and shadow IT identification in progress
                             </p>
                         </div>
                     )}
