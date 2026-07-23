@@ -159,9 +159,7 @@ const ScanTab = () => {
 
     const fetchAssets = async (domainId, currentJobId) => {
         try {
-            const url = currentJobId 
-                ? `/asset-discovery/${domainId}/assets?jobId=${currentJobId}` 
-                : `/asset-discovery/${domainId}/assets`;
+            const url = `/asset-discovery/${domainId}/assets`;
             const assetsRes = await API.get(url);
             const fetchedAssets = assetsRes.data.assets;
             setAssets(fetchedAssets);

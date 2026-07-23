@@ -56,7 +56,7 @@ const SecurityChatbot = ({ scanId }) => {
     const renderBotMessage = (text) => {
         // Regex to split by the new headers
         const sections = text.split(/(Answer:|Key Findings:|Technical Reasoning:|PQC Assessment:|Risk Evaluation:|Recommendations:)/g);
-        
+
         return (
             <div className="space-y-3">
                 {sections.map((part, index) => {
@@ -83,7 +83,7 @@ const SecurityChatbot = ({ scanId }) => {
 
                     // Content Styling (Bullet points and standard text)
                     const isContentAfterHeader = index > 0 && headerMap[sections[index - 1].trim()];
-                    
+
                     return (
                         <div key={index} className={`text-xs leading-relaxed ${isContentAfterHeader ? 'text-slate-700 font-medium' : 'text-slate-500'}`}>
                             {trimmed.split('\n').map((line, lIdx) => (
@@ -127,11 +127,10 @@ const SecurityChatbot = ({ scanId }) => {
 
                 {messages.map((msg, i) => (
                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[92%] p-4 rounded-2xl shadow-sm ${
-                            msg.role === 'user' 
-                            ? 'bg-slate-900  rounded-tr-none text-xs font-medium' 
-                            : 'bg-white border border-slate-100 rounded-tl-none'
-                        }`}>
+                        <div className={`max-w-[92%] p-4 rounded-2xl shadow-sm ${msg.role === 'user'
+                                ? 'bg-slate-900  rounded-tr-none text-xs font-medium'
+                                : 'bg-white border border-slate-100 rounded-tl-none'
+                            }`}>
                             {msg.role === 'user' ? msg.text : renderBotMessage(msg.text)}
                         </div>
                     </div>
